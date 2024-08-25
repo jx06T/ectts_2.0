@@ -17,13 +17,13 @@ const allSet = [
     { id: "g55b", title: "W8" },
     { id: "4s4sf", title: "W9" },
     { id: "4v3111", title: "W10" },
-    { id: "4e3243t", title: "W11" },
-    { id: "vet14", title: "W12" },
-    { id: "g52b", title: "W8" },
-    { id: "46f", title: "W9" },
-    { id: "4sddecvte4bfv", title: "W10" },
-    { id: "4e444557993t", title: "W11" },
-    { id: "vet84", title: "W12" },
+    //     { id: "4e3243t", title: "W11" },
+    //     { id: "vet14", title: "W12" },
+    //     { id: "g52b", title: "W8" },
+    //     { id: "46f", title: "W9" },
+    //     { id: "4sddecvte4bfv", title: "W10" },
+    //     { id: "4e444557993t", title: "W11" },
+    //     { id: "vet84", title: "W12" },
 ]
 
 function Aset({ title = "" }: { title: string }) {
@@ -51,13 +51,13 @@ function Sidebar({ showSidebar = true }: { showSidebar?: boolean }) {
 
     return (
         <div className='sidebar h-full flex'>
-            <div className={`bg-blue-50 ${showSidebarL ? "min-w-72 w-72 px-2 p-1" : "min-w-0 w-0 px-0"} fixed xs:static h-full flex flex-col rounded-md transition-all duration-300 ease-in-out overflow-x-hidden`}>
+            <div className={`bg-blue-50 ${showSidebarL ? " w-72 px-2 p-1" : "min-w-0 w-0 px-0"} fixed xs:static h-full flex flex-col rounded-md transition-all duration-300 ease-in-out overflow-x-hidden`}>
                 <div className=' h-8 flex mt-1 items-center justify-between'>
                     <SolarSiderbarBold className=' cursor-pointer text-3xl' onClick={() => setShowSidebarL(!showSidebarL)} />
                     <MaterialAddToPhotos className=' cursor-pointer text-3xl mr-1' />
                 </div>
                 <hr className=' my-1'></hr>
-                <div className={` ${showSidebarL ? "overflow-y-auto" : "overflow-y-hidden"} flex-1 overflow-x-hidden pr-2`}>
+                <div className={` ${showSidebarL ? "overflow-y-auto" : "overflow-y-hidden"} flex-auto overflow-x-hidden pr-2`}>
                     {
                         allSet.map(e => (
                             <Aset key={e.id} title={e.title}></Aset>

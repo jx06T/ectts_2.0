@@ -46,11 +46,11 @@ function MainBlock() {
     };
 
     const handleMove = () => {
-        
+
     };
 
     const handleExport = () => {
-        
+
     };
 
     const handleDoneToggle = (index: number) => {
@@ -72,7 +72,7 @@ function MainBlock() {
     };
 
     return (
-        <div className='main bg-slate-25 w-full h-[calc(100vh-80px)] sm:h-full p-2 px-3 flex flex-col '>
+        <div className='main bg-slate-25 w-full sm:h-full p-2 px-3 flex flex-col '>
             <h1 className='ml-9 m-1 mt-[3px]'>ECTTS 2.0</h1>
             <div className=' flex justify-center -mb-1'>
                 <a className='cursor-pointer w-10 h-10' onClick={() => setState({ ...state, showE: !state.showE })}>
@@ -97,6 +97,7 @@ function MainBlock() {
                     <Fa6SolidFileExport className='text-xl' />
                 </a>
             </div>
+
             <div className='flex justify-center h-full w-full overflow-y-auto'>
                 <div className='h-full max-w-[22rem] sm:max-w-[64rem] min-w-[20rem]'>
                     {words.map((word, index) => (
