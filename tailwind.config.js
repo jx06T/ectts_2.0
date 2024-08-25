@@ -7,7 +7,10 @@ module.exports = {
     extend: {
       backgroundColor: {
         'slate-25': '#f8fdfe', // 自定义颜色
-      }
+      },
+      fontSize: {
+        '2xs': '0.625rem', // 添加 text-2xs 类（相当于 10px）
+      },
     },
   },
   plugins: [],
