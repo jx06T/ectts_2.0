@@ -9,7 +9,8 @@
       "skipLibCheck": true             // 跳过库文件的类型检查（可选）
     },
     "include": [
-      "src/**/*"                       // 包含的文件或文件夹
+      "src/**/*",
+      "src/global.d.ts"                       // 包含的文件或文件夹
     ],
     "exclude": [
       "node_modules"                   // 排除的文件或文件夹

@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.jx-0{
+    @apply bg-transparent outline-none
+}
+
+.jx-1{
+    @apply rounded-md h-10 text-base p-1 flex items-center gap-2 my-[2px]
+}
+
+/* .jx-2{ 
+    accent-color: rgb(95, 95, 95);
+} */
