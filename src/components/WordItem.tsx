@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react"
 interface WordItemProps {
   word: Word;
   index: number;
+  isPlaying: boolean
   isFocused: boolean;
   onChange: (index: number, field: 'english' | 'chinese', value: string) => void;
   onDoneToggle: (index: number) => void;
@@ -11,7 +12,7 @@ interface WordItemProps {
 }
 
 
-function WordItem({ state, word, index, isFocused, onChange, onDoneToggle, onNext }: WordItemProps) {
+function WordItem({ isPlaying, state, word, index, isFocused, onChange, onDoneToggle, onNext }: WordItemProps) {
   const englishRef = useRef<HTMLInputElement>(null);
   const chineseRef = useRef<HTMLInputElement>(null);
   const [showEnglish, setShowEnglish] = useState<boolean>(false);
@@ -72,7 +73,7 @@ function WordItem({ state, word, index, isFocused, onChange, onDoneToggle, onNex
       <div
         onMouseEnter={handleMouseLeave}
         onClick={() => onDoneToggle(index)}
-        className={`jx-1 ${state.editing ? (word.selected ? "bg-purple-400 hover:bg-purple-500" : "bg-purple-100 hover:bg-purple-200") : (word.done ? "bg-green-400 hover:bg-green-500" : "bg-green-100 hover:bg-green-200")} w-8 cursor-pointer`}
+        className={`jx-1 ${isPlaying ? "bg-blue-500" : state.editing ? (word.selected ? "bg-purple-400 hover:bg-purple-500" : "bg-purple-100 hover:bg-purple-200") : (word.done ? "bg-green-400 hover:bg-green-500" : "bg-green-100 hover:bg-green-200")} w-8 cursor-pointer`}
       ></div>
     </div>
   );

@@ -2,28 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { MaterialFileRename, MaterialDeleteRounded, AkarIconsMoreVerticalFill, MaterialAddToPhotos, MdiGithub, SolarSiderbarBold } from '../utils/Icons'
 import { useNotify } from './NotifyContext'
 
-// const initialAllSet = [
-//     { id: "a11fs", title: "W1ddddddddddddddddddddd" },
-//     { id: "s22ef", title: "W2" },
-//     { id: "fv33", title: "W3" },
-//     { id: "r44ewg4", title: "W4" },
-//     { id: "b65te", title: "W5" },
-//     { id: "f65ew5g", title: "W6" },
-//     { id: "b4775", title: "W7" },
-//     { id: "g885b9", title: "W8" },
-//     { id: "4f99", title: "W9" },
-//     { id: "408v", title: "W10" },
-//     { id: "49e743t", title: "W11" },
-//     { id: "ve68t4", title: "W12" },
-//     { id: "g575b", title: "W8" },
-//     { id: "4s64sf", title: "W9" },
-//     { id: "4v53111", title: "W10" },
-//     { id: "ve46t4", title: "W12" },
-//     { id: "g535b", title: "W8" },
-//     { id: "4s342sf", title: "W9" },
-//     { id: "4v32111", title: "W10" },
-// ]
-
 function getRandId(length = 16) {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
@@ -61,13 +39,12 @@ function Options({ show, y, index, callback }: { show: boolean, y: number, index
 }
 
 function Aset({ title = "", index, onShowOption, selected, id }: { title: string, index: number, onShowOption: Function, selected: boolean, id: string }) {
-    // const setRef = useRef<HTMLInputElement>(null)
     const currentPath = window.location.pathname.slice(1);
     const setRef = useRef<HTMLDivElement>(null)
     const selected2 = selected || currentPath === id
     return (
         <div ref={setRef} className={` cursor-pointer rounded-md ${selected2 ? "bg-blue-100" : "bg-blue-50"} hover:bg-blue-100 relative h-10 text-base p-1 flex items-center gap-2 my-[2px] justify-between`}>
-            <a  href={id} className='overflow-x-hidden w-full'>{title}</a>
+            <a href={id} className='overflow-x-hidden w-full'>{title}</a>
             <button className='option-button h-8 hover:bg-blue-150 rounded-md mr-[1px]' onClick={() => onShowOption(selected ? -1 : index, selected ? -99999 : setRef.current?.offsetTop)}>
                 <AkarIconsMoreVerticalFill className='option-button w-5 mr-0 flex-shrink-0' />
             </button>
@@ -91,6 +68,8 @@ function Sidebar({ showSidebar0 = true }: { showSidebar0?: boolean }) {
         const initialAllSet = localStorage.getItem('all-set');
         if (initialAllSet) {
             setAllSet(JSON.parse(initialAllSet));
+        } else {
+            localStorage.setItem('all-set', JSON.stringify([]))
         }
     }, [])
 

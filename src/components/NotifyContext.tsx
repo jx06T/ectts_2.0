@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useCallback, ReactNode } from 'react';
+import React, { createContext, useState, useContext, useCallback, ReactNode, useRef } from 'react';
 
 interface NotifyContextType {
   notify: string;
@@ -8,11 +8,16 @@ interface NotifyContextType {
 const NotifyContext = createContext<NotifyContextType | undefined>(undefined);
 
 export const NotifyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
   const [notify, setNotify] = useState<string>("");
 
   const popNotify = useCallback((content: string): void => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
     setNotify(content);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       setNotify("");
     }, 2000);
   }, []);

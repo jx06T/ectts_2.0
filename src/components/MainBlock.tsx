@@ -1,25 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import WordItem from './WordItem'
-import { MaterialDeleteRounded, MaterialLock, MaterialLockOpen, MaterialFileMove, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, PhSelectionInverseDuotone, BxBxsHide, BxBxsShow, MaterialSymbolsEditRounded } from '../utils/Icons'
+import { Fa6SolidFileImport, MaterialDeleteRounded, MaterialLock, MaterialLockOpen, MaterialFileMove, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, PhSelectionInverseDuotone, BxBxsHide, BxBxsShow, MaterialSymbolsEditRounded } from '../utils/Icons'
 import PlayArea from './PlayArea'
 import { useNotify } from './NotifyContext'
-
-// const initialWords: Word[] = [
-//     { id: "affw434384wafws", chinese: "蘋果", english: "apple", done: true },
-//     { id: "bghj67890jklmn", chinese: "香蕉", english: "banana" },
-//     { id: "cvbn123456opqrs", chinese: "橘子", english: "orange" },
-//     { id: "dfgh456789rtyui", chinese: "葡萄", english: "grape" },
-//     { id: "ertyu098765vbnm", chinese: "西瓜", english: "watermelon" },
-//     { id: "yuiop456789asdf", chinese: "草莓", english: "strawberry" },
-//     { id: "ghjk098765rtyui", chinese: "桃子", english: "peach" },
-//     { id: "zxcvbnm456789qwe", chinese: "梨子", english: "pear" },
-//     { id: "asd123456tyuiop", chinese: "檸檬", english: "lemon" },
-//     { id: "qwe456789rtyuio", chinese: "櫻桃", english: "cherry" },
-//     { id: "hjkl098765ertyui", chinese: "電腦", english: "computer" },
-//     { id: "mnbv456789asdcxz", chinese: "手機", english: "phone" },
-//     { id: "rewq098765mnbvcx", chinese: "書籍", english: "book" },
-//     { id: "plmn456789qwerty", chinese: "桌子", english: "table" },
-// ]
 
 function getRandId(length = 16) {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -78,28 +61,38 @@ function fallbackCopyTextToClipboard(text: string): Promise<void> {
 }
 
 function MainBlock() {
-    const currentPath = window.location.pathname;
-    const setId = "set-" + currentPath.slice(1)
+    const currentPath = window.location.pathname.slice(1);
+    const setId = "set-" + currentPath
 
+    const [currentTitle, setCurrentTitle] = useState<string>("");
     const [words, setWords] = useState<Word[]>([]);
     const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false });
     const [focusIndex, setFocusIndex] = useState<number>(0);
+    const [playPosition, setPlayPosition] = useState<number>(-1);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const inputBoxRef = useRef<HTMLTextAreaElement>(null);
     const { notify, popNotify } = useNotify();
 
     useEffect(() => {
-        const initialWords = localStorage.getItem(setId);
-        if (initialWords) {
-            setWords(JSON.parse(initialWords));
-        } else {
-            const initialAllSet = localStorage.getItem("all-set");
-            console.log(initialWords,setId,initialAllSet)
-            if (initialAllSet) {
-                window.location.href = "/" +JSON.parse(initialAllSet)[0].id
-            } else {
-                window.location.href = ""
-            }
+        const Words0 = localStorage.getItem(setId);
+        if (Words0) {
+            setWords(JSON.parse(Words0));
         }
+
+        const AllSet0 = localStorage.getItem("all-set");
+        if (AllSet0) {
+            const AllSet = JSON.parse(AllSet0)
+            if (AllSet.length > 0) {
+                if (!Words0) {
+                    window.location.href = "/" + AllSet[0].id
+                } else {
+                    setCurrentTitle(AllSet.find((e: Aset) => e.id === currentPath).title)
+                }
+            }
+        } else {
+            window.location.href = ""
+        }
+
     }, [])
 
     useEffect(() => {
@@ -138,6 +131,10 @@ function MainBlock() {
     };
 
     const handleMove = () => {
+
+    };
+
+    const handleImport = () => {
 
     };
 
@@ -186,6 +183,15 @@ function MainBlock() {
         scrollToCenter(words.length)
     };
 
+    const handlePlayCallback = (position: number, isPlaying: boolean) => {
+        console.log(position, isPlaying)
+        if (isPlaying) {
+            setPlayPosition(position)
+        } else {
+            setPlayPosition(-1)
+        }
+    };
+
     return (
         <div className=' main bg-slate-25 w-full sm:h-full p-2 px-3 flex flex-col '>
             <div className='flex'>
@@ -219,9 +225,12 @@ function MainBlock() {
                 }}>
                     <MaterialSymbolsEditRounded className='text-2xl' />
                 </a>
-                <a className='cursor-pointer w-10 h-10' onClick={handleMove}>
-                    <MaterialFileMove className=' text-2xl ' />
+                <a className='cursor-pointer w-10 h-10' onClick={handleImport}>
+                    <Fa6SolidFileImport className=' text-xl mt-[2px]' />
                 </a>
+                {/* <a className='cursor-pointer w-10 h-10' onClick={handleMove}>
+                    <MaterialFileMove className=' text-2xl ' />
+                </a> */}
                 <a className='cursor-pointer w-10 h-10' onClick={handleDelete}>
                     <MaterialDeleteRounded className=' text-2xl ' />
                 </a>
@@ -245,6 +254,7 @@ function MainBlock() {
                             index={index}
                             state={state}
                             isFocused={index === focusIndex}
+                            isPlaying={index === playPosition}
                             onChange={handleWordChange}
                             onDoneToggle={handleDoneToggle}
                             onNext={() => {
@@ -262,7 +272,7 @@ function MainBlock() {
                 </div>
             </div>
 
-            <PlayArea words={words} />
+            <PlayArea callback={handlePlayCallback} currentTitle={currentTitle} words={words} />
         </div >
     )
 }

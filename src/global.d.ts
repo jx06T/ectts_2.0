@@ -29,4 +29,5 @@ interface Settings {
     repeat: number,
     letter: boolean,
     chinese: boolean,
+    init?: boolean
 }
