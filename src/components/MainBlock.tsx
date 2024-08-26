@@ -1,28 +1,34 @@
-import React, { useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import WordItem from './WordItem'
 import { MaterialDeleteRounded, MaterialLock, MaterialLockOpen, MaterialFileMove, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, PhSelectionInverseDuotone, BxBxsHide, BxBxsShow, MaterialSymbolsEditRounded } from '../utils/Icons'
 import PlayArea from './PlayArea'
 import { useNotify } from './NotifyContext'
 
-const initialWords: Word[] = [
-    { id: "affw434384wafws", chinese: "蘋果", english: "apple", done: true },
-    { id: "bghj67890jklmn", chinese: "香蕉", english: "banana" },
-    { id: "cvbn123456opqrs", chinese: "橘子", english: "orange" },
-    { id: "dfgh456789rtyui", chinese: "葡萄", english: "grape" },
-    { id: "ertyu098765vbnm", chinese: "西瓜", english: "watermelon" },
-    { id: "yuiop456789asdf", chinese: "草莓", english: "strawberry" },
-    { id: "ghjk098765rtyui", chinese: "桃子", english: "peach" },
-    { id: "zxcvbnm456789qwe", chinese: "梨子", english: "pear" },
-    { id: "asd123456tyuiop", chinese: "檸檬", english: "lemon" },
-    { id: "qwe456789rtyuio", chinese: "櫻桃", english: "cherry" },
-    { id: "hjkl098765ertyui", chinese: "電腦", english: "computer" },
-    { id: "mnbv456789asdcxz", chinese: "手機", english: "phone" },
-    { id: "rewq098765mnbvcx", chinese: "書籍", english: "book" },
-    { id: "plmn456789qwerty", chinese: "桌子", english: "table" },
-]
+// const initialWords: Word[] = [
+//     { id: "affw434384wafws", chinese: "蘋果", english: "apple", done: true },
+//     { id: "bghj67890jklmn", chinese: "香蕉", english: "banana" },
+//     { id: "cvbn123456opqrs", chinese: "橘子", english: "orange" },
+//     { id: "dfgh456789rtyui", chinese: "葡萄", english: "grape" },
+//     { id: "ertyu098765vbnm", chinese: "西瓜", english: "watermelon" },
+//     { id: "yuiop456789asdf", chinese: "草莓", english: "strawberry" },
+//     { id: "ghjk098765rtyui", chinese: "桃子", english: "peach" },
+//     { id: "zxcvbnm456789qwe", chinese: "梨子", english: "pear" },
+//     { id: "asd123456tyuiop", chinese: "檸檬", english: "lemon" },
+//     { id: "qwe456789rtyuio", chinese: "櫻桃", english: "cherry" },
+//     { id: "hjkl098765ertyui", chinese: "電腦", english: "computer" },
+//     { id: "mnbv456789asdcxz", chinese: "手機", english: "phone" },
+//     { id: "rewq098765mnbvcx", chinese: "書籍", english: "book" },
+//     { id: "plmn456789qwerty", chinese: "桌子", english: "table" },
+// ]
 
-function getRandId() {
-    return Math.random().toString(36).substring(2.9) + Math.random().toString(36).substring(2.9)
+function getRandId(length = 16) {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    const charactersLength = chars.length;
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
 }
 
 
@@ -72,12 +78,45 @@ function fallbackCopyTextToClipboard(text: string): Promise<void> {
 }
 
 function MainBlock() {
-    const [words, setWords] = useState<Word[]>(initialWords);
-    const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: true });
+    const currentPath = window.location.pathname;
+    const setId = "set-" + currentPath.slice(1)
+
+    const [words, setWords] = useState<Word[]>([]);
+    const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false });
     const [focusIndex, setFocusIndex] = useState<number>(0);
-    // const [notify, setnotify] = useState<string>("");
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const scrollRef = useRef<HTMLDivElement>(null);
     const { notify, popNotify } = useNotify();
+
+    useEffect(() => {
+        const initialWords = localStorage.getItem(setId);
+        if (initialWords) {
+            setWords(JSON.parse(initialWords));
+        } else {
+            const initialAllSet = localStorage.getItem("all-set");
+            console.log(initialWords,setId,initialAllSet)
+            if (initialAllSet) {
+                window.location.href = "/" +JSON.parse(initialAllSet)[0].id
+            } else {
+                window.location.href = ""
+            }
+        }
+    }, [])
+
+    useEffect(() => {
+        if (words.length == 0) {
+            return
+        }
+        localStorage.setItem(setId, JSON.stringify(words))
+    }, [words])
+
+    const scrollToCenter = (index: number): void => {
+        setTimeout(() => {
+            scrollRef.current?.scrollTo({
+                top: index * 52 - 220 + window.innerHeight / 2,
+                behavior: 'smooth'
+            });
+        }, 10);
+    }
 
     const handleWordChange = (index: number, field: 'english' | 'chinese', value: string) => {
         setWords(prev => prev.map((word, i) =>
@@ -144,6 +183,7 @@ function MainBlock() {
     const addNewWord = () => {
         setWords(prev => [...prev, { id: getRandId(), chinese: "", english: "" }]);
         setFocusIndex(words.length);
+        scrollToCenter(words.length)
     };
 
     return (
@@ -196,7 +236,7 @@ function MainBlock() {
                 </a>
             </div>
 
-            <div className='flex justify-center h-full w-full overflow-y-auto'>
+            <div ref={scrollRef} className='flex justify-center h-full w-full overflow-y-auto'>
                 <div className='h-full max-w-[22rem] sm:max-w-[64rem] min-w-[20rem] space-y-2'>
                     {words.map((word, index) => (
                         <WordItem
@@ -211,14 +251,18 @@ function MainBlock() {
                                 if (index + 2 > words.length) {
                                     addNewWord()
                                 }
-                                setFocusIndex(index + 1)
+                                setFocusIndex(-1)
+                                setTimeout(() => {
+                                    setFocusIndex(index + 1)
+                                }, 10);
                             }}
                         />
                     ))}
+                    <div className='h-[50%]'></div>
                 </div>
             </div>
 
-            <PlayArea />
+            <PlayArea words={words} />
         </div >
     )
 }

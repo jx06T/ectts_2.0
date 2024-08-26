@@ -18,7 +18,9 @@ function WordItem({ state, word, index, isFocused, onChange, onDoneToggle, onNex
   const [showChinese, setShowChinese] = useState<boolean>(false);
 
   useEffect(() => {
-    if (isFocused) englishRef.current?.focus();
+    if (isFocused) {
+      englishRef.current?.focus();
+    }
   }, [isFocused]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: 'english' | 'chinese') => {
