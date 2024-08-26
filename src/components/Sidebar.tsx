@@ -123,7 +123,7 @@ function Sidebar({ showSidebar0 = true }: { showSidebar0?: boolean }) {
 
     return (
         <div className='sidebar h-full flex'>
-            <div className={`bg-blue-50 ${showSidebar ? " w-72 px-2 p-1" : "min-w-0 w-0 px-0"} fixed xs:static h-full flex flex-col rounded-md transition-all duration-300 ease-in-out overflow-x-hidden`}>
+            <div className={`bg-blue-50 ${showSidebar ? " w-[17rem] px-2 p-1" : "min-w-0 w-0 px-0"} fixed xs:static h-full flex flex-col rounded-md transition-all duration-300 ease-in-out overflow-x-hidden`}>
                 <div className=' h-8 flex mt-1 items-center justify-between'>
                     <SolarSiderbarBold className=' cursor-pointer text-3xl' onClick={() => setshowSidebar(!showSidebar)} />
                     <MaterialAddToPhotos className=' cursor-pointer text-3xl mr-1' />

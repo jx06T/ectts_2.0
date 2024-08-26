@@ -16,3 +16,107 @@
 /* .jx-2{ 
     accent-color: rgb(95, 95, 95);
 } */
+
+/* 自定義 Range Input 樣式 */
+.jx-3 {
+    -webkit-appearance: none;
+    height: 24px; /* 這裡設置整體高度 */
+    background: transparent;
+    outline: none;
+    opacity: 1;
+    padding-top: 4px;
+    transition: opacity .2s;
+  }
+  
+  /* 滑塊（Thumb）樣式 */
+.jx-3::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    margin-top: -3px;
+    background: #871fe9;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: none;
+}
+
+.jx-3::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: #871fe9;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: none;
+}
+  
+.jx-3::-webkit-slider-thumb:hover {
+background: #640db4;
+}
+  
+.jx-3::-moz-range-thumb:hover {
+background: #640db4;
+}
+  
+/* 軌道（Track）樣式 */
+.jx-3::-webkit-slider-runnable-track {
+width: 100%;
+height: 15px;
+cursor: pointer;
+background: #c48aff;
+border-radius: 25px;
+}
+
+.jx-3::-moz-range-track {
+width: 100%;
+height: 15px;
+cursor: pointer;
+background: #c48aff;
+border-radius: 25px;
+}
+
+.jx-3::-webkit-slider-runnable-track:hover {
+background: #b373f3;
+}
+
+.jx-3::-moz-range-track:hover {
+background: #b373f3;
+}
+
+
+.jx-4 {
+    margin-top: 4px;
+    position: relative;
+    display: inline-block;
+    width: 19px; 
+    height: 19px; 
+    
+    opacity: 1;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+ 
+.jx-4::after{
+    opacity: 1;
+    content:"";
+    left: -0.5px;
+    top: -0.5px;
+    position: absolute;
+    /* border: 2px solid #7b16da; */
+    background-color: #caa1f3;
+    border-radius: 5px;
+    width: 20px;
+    height: 20px;
+}
+
+.jx-4:checked:hover::after{
+    background-color: #8016e2;
+}
+.jx-4:hover::after{
+    background-color:  #c590fa;
+}
+
+.jx-4:checked::after{
+    background-color: #9025f3;
+}

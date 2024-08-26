@@ -19,3 +19,14 @@ interface State1 {
     lock: boolean,
     selection: number
 }
+
+interface Settings {
+    timeWW: number,
+    timeEE: number,
+    timeEL: number,
+    timeLC: number,
+    speed: number,
+    repeat: number,
+    letter: boolean,
+    chinese: boolean,
+}

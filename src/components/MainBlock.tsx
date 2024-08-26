@@ -111,7 +111,7 @@ function MainBlock() {
         setWords(prev => {
             const newWords = prev.filter((word, i) => !word.selected)
             popNotify(`${originalLength - newWords.length} words deleted`)
-            if (newWords.length == 0) {
+            if (newWords.length === 0) {
                 newWords.push({ id: getRandId(), chinese: "", english: "" })
             }
             return newWords
