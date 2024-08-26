@@ -41,6 +41,9 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
     const currentProgressRef = useRef<number>(0)
     const [currentProgress, setCurrentProgress] = useState<number>(0)
     const { notify, popNotify } = useNotify();
+    const synth = window.speechSynthesis;
+    const speakerCRef = useRef<string>("");
+    const speakerERef = useRef<string>("");
 
     useEffect(() => {
         const initialSettingsL = localStorage.getItem('ectts-settings');
@@ -59,9 +62,20 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
 
     useEffect(() => {
         setTimeout(() => {
-            const synth = window.speechSynthesis;
             voices.current = synth.getVoices();
+            for (let i = 0; i < voices.current.length; i++) {
+
+                if (voices.current[i].name == "Microsoft Emma Online (Natural) - English (United States)" || voices.current[i].name == "Fred") {
+                    speakerERef.current = voices.current[i].name
+                }
+
+                if (voices.current[i].name == "Microsoft Hanhan - Chinese (Traditional, Taiwan)" || voices.current[i].name == "美嘉" || voices.current[i].name == "Mei-Jia") {
+                    speakerCRef.current = voices.current[i].name
+                }
+            }
+
         }, 1000);
+
         window.addEventListener('beforeunload', (event) => {
             window.speechSynthesis.cancel();
         });
@@ -75,15 +89,10 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
     }, [voices]);
 
     const createUtterances = (word: Word) => {
-        setSettings(prev => {
-            console.log(JSON.stringify(prev))
-            return prev
-        })
-        console.log(JSON.stringify(settings), word)
         const utterances = [];
 
         // English utterances
-        const englishUtterance = createUtterance(word.english, settings.speed, "Microsoft Emma Online (Natural) - English (United States)");
+        const englishUtterance = createUtterance(word.english, settings.speed, speakerERef.current);
         for (let i = 0; i < settings.repeat; i++) {
             utterances.push(englishUtterance);
             if (i < settings.repeat - 1) utterances.push(settings.timeEE);
@@ -92,24 +101,20 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
         // Letter spelling
         if (settings.letter) {
             utterances.push(settings.timeEL);
-            const letterUtterance = createUtterance('"' + word.english.split("").join('","') + '"', 1, "Microsoft Emma Online (Natural) - English (United States)");
+            const letterUtterance = createUtterance('"' + word.english.split("").join('","') + '"', 1, speakerERef.current);
             utterances.push(letterUtterance);
         }
 
         // Chinese translation
         if (settings.chinese) {
             utterances.push(settings.timeLC);
-            const chineseUtterance = createUtterance(word.chinese, 0.9, "Microsoft Hanhan - Chinese (Traditional, Taiwan)");
+            const chineseUtterance = createUtterance(word.chinese, 0.9, speakerCRef.current);
             utterances.push(chineseUtterance);
         }
 
         utterances.push(settings.timeWW);
         return utterances;
     }
-
-    useEffect(() => {
-        console.log("Settings updated:", JSON.stringify(settings));
-    }, [settings]);
 
     const playUtterances = useCallback((utterances: (number | SpeechSynthesisUtterance)[]) => {
         let index = 0;
@@ -119,9 +124,9 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
                 if (currentProgressRef.current < words.length) {
                     playWord(currentProgressRef.current);
                 } else {
+                    currentProgressRef.current = 0
                     callback(currentProgressRef.current, false)
                     setIsPlaying(false);
-                    currentProgressRef.current = 0
                 }
                 return;
             }
@@ -140,22 +145,45 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
     }, [words]);
 
     const playWord = useCallback((index: number) => {
+        if (!words[index]) {
+            currentProgressRef.current = 0
+            callback(currentProgressRef.current, false)
+            setIsPlaying(false);
+            return
+        }
+
+        if (words[index].done) {
+            currentProgressRef.current++
+            playWord(currentProgressRef.current)
+            return
+        }
+
         callback(index, true)
         setCurrentProgress(index)
         const utterances = createUtterances(words[index]);
         playUtterances(utterances);
     }, [words, createUtterances, playUtterances]);
 
+    const stop = () => {
+        for (let _ = 0; _ < 3; _++) {
+            setTimeout(() => {
+                window.speechSynthesis.cancel();
+            }, 10 * _ + 10);
+        }
+        window.speechSynthesis.cancel();
+        setIsPlaying(false);
+    }
+
     const handlePlay = () => {
         callback(currentProgressRef.current, !isPlaying)
         if (!isPlaying) {
             popNotify("Start playing")
             playWord(currentProgressRef.current);
+            setIsPlaying(true);
         } else {
             popNotify("Stop playing")
-            window.speechSynthesis.cancel();
+            stop()
         }
-        setIsPlaying(prev => !prev);
     }
 
     return (
@@ -178,7 +206,13 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
                     <div className="pl-2 min-w-8">{currentTitle}</div>
 
                     <div className="flex flex-shrink-0 justify-center space-x-1">
-                        <button className="js-2">
+                        <button className="js-2" onClick={() => {
+                            if (currentProgressRef.current > 0) {
+                                stop()
+                                currentProgressRef.current--
+                                callback(currentProgressRef.current, false)
+                            }
+                        }}>
                             <FluentPreviousFrame24Filled className=" text-3xl" />
                         </button>
                         <button className="js-2">
@@ -187,7 +221,13 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
                         <button className="js-2" onClick={handlePlay}>
                             {isPlaying ? <FluentPause24Filled className=" text-3xl" /> : <FluentPlay24Filled className=" text-3xl" />}
                         </button>
-                        <button className="js-2">
+                        <button className="js-2" onClick={() => {
+                            if (currentProgressRef.current < words.length - 1) {
+                                stop()
+                                currentProgressRef.current++
+                                callback(currentProgressRef.current, false)
+                            }
+                        }}>
                             <FluentNextFrame24Filled className=" text-3xl" />
                         </button>
                     </div>

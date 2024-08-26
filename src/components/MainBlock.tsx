@@ -68,7 +68,7 @@ function MainBlock() {
     const [words, setWords] = useState<Word[]>([]);
     const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false });
     const [focusIndex, setFocusIndex] = useState<number>(0);
-    const [playPosition, setPlayPosition] = useState<number>(-1);
+    const [playPosition, setPlayPosition] = useState<number>(0);
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputBoxRef = useRef<HTMLTextAreaElement>(null);
     const { notify, popNotify } = useNotify();
@@ -103,9 +103,11 @@ function MainBlock() {
     }, [words])
 
     const scrollToCenter = (index: number): void => {
+        // alert(window.innerHeight)
         setTimeout(() => {
             scrollRef.current?.scrollTo({
-                top: index * 52 - 220 + window.innerHeight / 2,
+                // top: index * 52 - 220 + window.innerHeight / 2,
+                top: index * 52 - 300 + (0.5 * (900 - window.innerHeight)),
                 behavior: 'smooth'
             });
         }, 10);
@@ -135,7 +137,22 @@ function MainBlock() {
     };
 
     const handleImport = () => {
+        if (inputBoxRef.current) {
+            const lines = inputBoxRef.current.value.split("\n")
+            const result = [];
 
+            for (let i = 0; i < lines.length; i += 2) {
+                if (i + 1 < lines.length) {
+                    result.push({
+                        id: getRandId(),
+                        english: lines[i].trim(),
+                        chinese: lines[i + 1].trim()
+                    });
+                }
+            }
+
+            setWords(result)
+        }
     };
 
     const handleDelete = () => {
@@ -156,6 +173,9 @@ function MainBlock() {
 
     const handleExport = () => {
         const WordsExport = words.map(e => e.english + "\n" + e.chinese).join("\n")
+        if (inputBoxRef.current) {
+            inputBoxRef.current.value = WordsExport
+        }
         popNotify("All word copied")
         copyToClipboard(WordsExport)
     };
@@ -184,11 +204,12 @@ function MainBlock() {
     };
 
     const handlePlayCallback = (position: number, isPlaying: boolean) => {
-        console.log(position, isPlaying)
+        // console.log(position, isPlaying)
+        setPlayPosition(position)
         if (isPlaying) {
-            setPlayPosition(position)
+            scrollToCenter(position)
         } else {
-            setPlayPosition(-1)
+            // setPlayPosition(-1)
         }
     };
 
@@ -268,7 +289,9 @@ function MainBlock() {
                             }}
                         />
                     ))}
-                    <div className='h-[50%]'></div>
+                    <div className='h-[50%]'>
+                        <textarea ref={inputBoxRef} className='h-full outline-none w-96 p-2 mt-8'></textarea>
+                    </div>
                 </div>
             </div>
 
