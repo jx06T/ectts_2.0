@@ -4,11 +4,18 @@ interface Word {
     chinese: string;
     english: string;
     done?: boolean;
+    selected?: boolean;
+}
+
+interface Aset {
+    id: string,
+    title: string
 }
 
 interface State1 {
     showE: boolean,
     showC: boolean,
-    Editing: boolean,
+    editing: boolean,
+    lock: boolean,
     selection: number
 }
