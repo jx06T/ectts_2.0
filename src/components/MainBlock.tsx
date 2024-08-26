@@ -203,15 +203,19 @@ function MainBlock() {
         scrollToCenter(words.length)
     };
 
-    const handlePlayCallback = (position: number, isPlaying: boolean) => {
-        // console.log(position, isPlaying)
-        setPlayPosition(position)
-        if (isPlaying) {
-            scrollToCenter(position)
-        } else {
-            // setPlayPosition(-1)
-        }
-    };
+    // const handlePlayCallback = (position: number, isPlaying: boolean) => {
+    //     // console.log(position, isPlaying)
+    //     setPlayPosition(position)
+    //     scrollToCenter(position)
+    //     if (isPlaying) {
+    //     } else {
+    //         // setPlayPosition(-1)
+    //     }
+    // };
+
+    const handlePlayThisWord = (index: number) => {
+        setPlayPosition(index)
+    }
 
     return (
         <div className=' main bg-slate-25 w-full sm:h-full p-2 px-3 flex flex-col '>
@@ -276,6 +280,7 @@ function MainBlock() {
                             state={state}
                             isFocused={index === focusIndex}
                             isPlaying={index === playPosition}
+                            onPlay={handlePlayThisWord}
                             onChange={handleWordChange}
                             onDoneToggle={handleDoneToggle}
                             onNext={() => {
@@ -295,7 +300,8 @@ function MainBlock() {
                 </div>
             </div>
 
-            <PlayArea callback={handlePlayCallback} currentTitle={currentTitle} words={words} />
+            {/* <PlayArea Progress={{playPosition,setPlayPosition}}  callback={handlePlayCallback} currentTitle={currentTitle} words={words} /> */}
+            <PlayArea scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words} />
         </div >
     )
 }

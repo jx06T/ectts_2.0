@@ -33,13 +33,15 @@ const SettingsUI: Record<string, UI> = {
     chinese: { type: "checkbox", hint: "Say chinese ?" },
 }
 
-function PlayArea({ callback, words, currentTitle }: { callback: Function, words: Word[], currentTitle: string }) {
+// function PlayArea({ callback, words, currentTitle }: { callback: Function, words: Word[], currentTitle: string }) {
+function PlayArea({ progress, words, currentTitle, scrollToCenter }: { scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
     const [showSetting, setShowSetting] = useState<boolean>(true)
     const [settings, setSettings] = useState<Settings>(initialSettings);
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const voices = useRef<SpeechSynthesisVoice[]>([])
     const currentProgressRef = useRef<number>(0)
-    const [currentProgress, setCurrentProgress] = useState<number>(0)
+    // const [currentProgress, setCurrentProgress] = useState<number>(0)
+    const { currentProgress, setCurrentProgress } = progress
     const { notify, popNotify } = useNotify();
     const synth = window.speechSynthesis;
     const speakerCRef = useRef<string>("");
@@ -86,9 +88,17 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
         utterance.rate = rate;
         utterance.voice = voices.current.find(v => v.name === voiceName) || voices.current[0];
         return utterance;
-    }, [voices]);
+    }, [voices, settings]);
 
-    const createUtterances = (word: Word) => {
+    useEffect(() => {
+        if (currentProgressRef.current !== currentProgress) {
+            console.log("!")
+            stop()
+            currentProgressRef.current = currentProgress
+        }
+    }, [currentProgress])
+
+    const createUtterances = (settings: Settings, word: Word) => {
         const utterances = [];
 
         // English utterances
@@ -125,7 +135,9 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
                     playWord(currentProgressRef.current);
                 } else {
                     currentProgressRef.current = 0
-                    callback(currentProgressRef.current, false)
+                    // callback(currentProgressRef.current, false)
+                    setCurrentProgress(0)
+                    scrollToCenter(0)
                     setIsPlaying(false);
                 }
                 return;
@@ -142,12 +154,14 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
         };
 
         playNext();
-    }, [words]);
+    }, [words, settings]);
 
     const playWord = useCallback((index: number) => {
         if (!words[index]) {
             currentProgressRef.current = 0
-            callback(currentProgressRef.current, false)
+            // callback(currentProgressRef.current, false)
+            setCurrentProgress(0)
+            scrollToCenter(0)
             setIsPlaying(false);
             return
         }
@@ -158,11 +172,12 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
             return
         }
 
-        callback(index, true)
+        // callback(index, true)
         setCurrentProgress(index)
-        const utterances = createUtterances(words[index]);
+        scrollToCenter(index)
+        const utterances = createUtterances(settings, words[index]);
         playUtterances(utterances);
-    }, [words, createUtterances, playUtterances]);
+    }, [words, createUtterances, playUtterances, settings]);
 
     const stop = () => {
         for (let _ = 0; _ < 3; _++) {
@@ -175,7 +190,7 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
     }
 
     const handlePlay = () => {
-        callback(currentProgressRef.current, !isPlaying)
+        // callback(currentProgressRef.current, !isPlaying)
         if (!isPlaying) {
             popNotify("Start playing")
             playWord(currentProgressRef.current);
@@ -194,7 +209,7 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
                         Object.entries(settings).filter(([key, value]) => key !== "init").map(([key, value], i) => (
                             <div key={i} className=" my-2 flex min-w-[18.5rem] xs:min-w-[18rem] s940:min-w-[17.5rem]  s1200:min-w-[17rem] space-x-3 mx-3">
                                 <span onClick={() => { popNotify(SettingsUI[key].hint || "") }} className="w-16 cursor-help">{key}</span>
-                                <input onChange={(e) => setSettings(prev => ({ ...prev, [key]: isNaN(parseFloat(e.target.value)) ? e.target.value : parseFloat(e.target.value) }))} type={SettingsUI[key].type} className={" accent-purple-700 " + (SettingsUI[key].type === "range" ? "jx-3 w-36" : "w-5 jx-4")} step={SettingsUI[key].step} max={SettingsUI[key].max} min={SettingsUI[key].min} value={value} />
+                                <input checked={value} onChange={(e) => setSettings(prev => ({ ...prev, [key]: isNaN(parseFloat(e.target.value)) ? e.target.value.toString() !== "true" : parseFloat(e.target.value) }))} type={SettingsUI[key].type} className={" accent-purple-700 " + (SettingsUI[key].type === "range" ? "jx-3 w-36" : "w-5 jx-4")} step={SettingsUI[key].step} max={SettingsUI[key].max} min={SettingsUI[key].min} value={value} />
                                 {SettingsUI[key].type === "range" && <span> {value}</span>}
                             </div>
                         ))
@@ -210,7 +225,9 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
                             if (currentProgressRef.current > 0) {
                                 stop()
                                 currentProgressRef.current--
-                                callback(currentProgressRef.current, false)
+                                scrollToCenter(currentProgressRef.current)
+                                setCurrentProgress(currentProgressRef.current)
+                                // callback(currentProgressRef.current, false)
                             }
                         }}>
                             <FluentPreviousFrame24Filled className=" text-3xl" />
@@ -225,7 +242,9 @@ function PlayArea({ callback, words, currentTitle }: { callback: Function, words
                             if (currentProgressRef.current < words.length - 1) {
                                 stop()
                                 currentProgressRef.current++
-                                callback(currentProgressRef.current, false)
+                                scrollToCenter(currentProgressRef.current)
+                                setCurrentProgress(currentProgressRef.current)
+                                // callback(currentProgressRef.current, false)
                             }
                         }}>
                             <FluentNextFrame24Filled className=" text-3xl" />
