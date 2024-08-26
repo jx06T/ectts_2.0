@@ -3,6 +3,7 @@ import './App.css';
 import MainBlock from "./components/MainBlock"
 import Sidebar from './components/Sidebar';
 import { SolarSiderbarBold } from './utils/Icons'
+import { NotifyProvider } from './components/NotifyContext';
 
 function App() {
   const rootRef = useRef<HTMLInputElement>(null)
@@ -18,13 +19,15 @@ function App() {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []); 
-  
+  }, []);
+
   return (
-    <div ref={rootRef} className={` App w-full h-full flex relative`}>
-      <Sidebar ></Sidebar>
-      <MainBlock></MainBlock>
-    </div>
+    <NotifyProvider>
+      <div ref={rootRef} className={` App w-full h-full flex relative`}>
+        <Sidebar ></Sidebar>
+        <MainBlock></MainBlock>
+      </div>
+    </NotifyProvider>
   );
 }
 

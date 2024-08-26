@@ -8,8 +8,10 @@ function PlayArea() {
         <div className="bottom-16 left-0 right-0 px-2 xs:right-0 absolute flex flex-col items-center z-10">
             <div className={`${showSetting ? "h-[22rem]" : "h-[4.2rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-70 transition-all duration-300 ease-in-out flex flex-col justify-end`}>
                 {showSetting && <div className={` min-[28rem] w-full h-72 py-2`}>
-                </div>}
 
+                    
+                </div>}
+                
                 <div className={` min-[28rem] w-full h-16 py-2 items-center flex justify-center space-x-[7%]`}>
                     <div className="min-w-8">W2</div>
 

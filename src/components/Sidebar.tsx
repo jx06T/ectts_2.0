@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { MaterialFileRename, MaterialDeleteRounded, AkarIconsMoreVerticalFill, MaterialAddToPhotos, MdiGithub, SolarSiderbarBold } from '../utils/Icons'
+import { useNotify } from './NotifyContext'
 
 const initialAllSet = [
     { id: "a11fs", title: "W1ddddddddddddddddddddd" },
@@ -70,6 +71,7 @@ function Sidebar({ showSidebar0 = true }: { showSidebar0?: boolean }) {
     const [showReNamed, setShowReNamed] = useState<boolean>(false)
     const scrollBarRef = useRef<HTMLDivElement>(null)
     const reNamedRef = useRef<HTMLInputElement>(null)
+    const { notify, popNotify } = useNotify();
 
     const handleShowOption = (index: number, y: number): void => {
         setOptionY(y)
@@ -106,8 +108,10 @@ function Sidebar({ showSidebar0 = true }: { showSidebar0?: boolean }) {
 
     const handleOptionClick = (index: number, type: "D" | "R"): void => {
         if (type === "D") {
+            popNotify(`${allSet[index].title} deleted`)
             setAllSet(prev => prev.filter((Aset: Aset, i) => (i !== index)))
         } else {
+            popNotify(`Enter in the box on the upper left`)
             setShowReNamed(true)
         }
     }
