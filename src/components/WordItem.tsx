@@ -38,10 +38,6 @@ function WordItem({ onPlay, isPlaying, state, word, index, isFocused, onChange, 
     else setShowChinese(true);
   };
 
-  const handleBlur = (field: 'english' | 'chinese') => {
-    if (field === 'english') setShowEnglish(false);
-    else setShowChinese(false);
-  };
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.buttons === 1) {
@@ -59,20 +55,22 @@ function WordItem({ onPlay, isPlaying, state, word, index, isFocused, onChange, 
         onChange={(e) => onChange(index, 'english', e.target.value)}
         onKeyDown={(e) => handleKeyDown(e, 'english')}
         className="jx-1 bg-blue-50 hover:bg-blue-100 w-[42%]"
-        onFocus={() => handleFocus('english')}
-        onBlur={() => handleBlur('english')}
         readOnly={state.lock}
+        onFocus={() => setShowEnglish(true || !state.lock)}
+        onBlur={() => setShowEnglish(false)}
       />
+
       <input
         ref={chineseRef}
         value={state.showC || showChinese ? word.chinese : "· · · · ·"}
         onChange={(e) => onChange(index, 'chinese', e.target.value)}
         onKeyDown={(e) => handleKeyDown(e, 'chinese')}
         className="jx-1 bg-blue-50 hover:bg-blue-100 w-[42%]"
-        onFocus={() => handleFocus('chinese')}
-        onBlur={() => handleBlur('chinese')}
         readOnly={state.lock}
+        onFocus={() => setShowChinese(true || !state.lock)}
+        onBlur={() => setShowChinese(false)}
       />
+
       <div
         onDoubleClick={() => {
           onPlay(index)

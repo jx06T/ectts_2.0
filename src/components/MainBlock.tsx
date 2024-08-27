@@ -294,7 +294,7 @@ function MainBlock() {
             </div>
 
             <div ref={scrollRef} className='flex justify-center h-full w-full overflow-y-auto'>
-                <div className='h-full max-w-[22rem] sm:max-w-[64rem] min-w-[20rem] space-y-2'>
+                <div className='h-full max-w-[22rem] sm:max-w-[64rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
                     {words.map((word, index) => (
                         <WordItem
                             key={word.id}
