@@ -185,11 +185,11 @@ function Sidebar() {
                 <div className=' h-8 flex mt-1 items-center'>
                     <SolarSiderbarBold className=' text-3xl' onClick={() => setshowSidebar(!showSidebar)} />
                 </div>
-                <div className={` ${showSidebar ? " opacity-0" : " opacity-100 transition-opacity duration-1500 ease-in-out "} h-10 xs:p-1 bottom-1 flex items-center fixed ml-1 mb-[11px]`}>
+                {/* <div className={` ${showSidebar ? " opacity-0" : " opacity-100 transition-opacity duration-1500 ease-in-out "} h-10 xs:p-1 bottom-1 flex items-center fixed ml-1 mb-[11px]`}>
                     <a href='https://github.com/jx06T/ectts_2.0' target='_blank'>
                         <MdiGithub className=' text-3xl' />
                     </a>
-                </div>
+                </div> */}
             </div>
 
             <Options callback={handleOptionClick} index={optionIndex} show={optionY !== -99999} y={optionY - scrollBarY} />
