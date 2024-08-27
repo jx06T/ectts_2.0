@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import WordItem from './WordItem'
-import { Fa6SolidFileImport, MaterialDeleteRounded, MaterialLock, MaterialLockOpen, MaterialFileMove, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, PhSelectionInverseDuotone, BxBxsHide, BxBxsShow, MaterialSymbolsEditRounded } from '../utils/Icons'
+import { MdiDice5, Fa6SolidFileImport, MaterialDeleteRounded, MaterialLock, MaterialLockOpen, MaterialFileMove, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, PhSelectionInverseDuotone, BxBxsHide, BxBxsShow, MaterialSymbolsEditRounded } from '../utils/Icons'
 import PlayArea from './PlayArea'
 import { useNotify } from './NotifyContext'
 
@@ -66,12 +66,14 @@ function MainBlock() {
 
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [words, setWords] = useState<Word[]>([]);
-    const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false });
+    const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false, rand: false });
     const [focusIndex, setFocusIndex] = useState<number>(0);
     const [playPosition, setPlayPosition] = useState<number>(0);
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputBoxRef = useRef<HTMLTextAreaElement>(null);
     const { notify, popNotify } = useNotify();
+
+    const [randNext, setRandNext] = useState<number[] | null>(null)
 
     useEffect(() => {
         const Words0 = localStorage.getItem(setId);
@@ -102,6 +104,21 @@ function MainBlock() {
         localStorage.setItem(setId, JSON.stringify(words))
     }, [words])
 
+
+    const getRandomTable = (words: Word[], r: boolean): number[] | null => {
+        if (!r) {
+            return null
+        }
+        const arr: number[] = words.map((word, i) => (state.editing ? word.selected : !word.done) ? i : -1).filter(e => e !== -1)
+
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr
+    }
+
+
     const scrollToCenter = (index: number): void => {
         // alert(window.innerHeight)
         setTimeout(() => {
@@ -119,40 +136,8 @@ function MainBlock() {
         ));
     };
 
-    const handleReverseSelection = () => {
-        popNotify('Inverse selected')
-        setState({ ...state, selection: 0 })
-        setWords(prev => prev.map((word, i) => ({ ...word, selected: state.editing ? !word.selected : word.selected, done: state.editing ? word.done : !word.done })));
-    };
-
-    const handleSelectAll = () => {
-        const t = state.selection !== 1
-        popNotify(t ? 'All selected' : 'None selected')
-        setState({ ...state, selection: state.selection === 1 ? -1 : 1 })
-        setWords(prev => prev.map((word, i) => ({ ...word, selected: state.editing ? t : word.selected, done: state.editing ? word.done : t })));
-    };
-
     const handleMove = () => {
 
-    };
-
-    const handleImport = () => {
-        if (inputBoxRef.current) {
-            const lines = inputBoxRef.current.value.split("\n")
-            const result = [];
-
-            for (let i = 0; i < lines.length; i += 2) {
-                if (i + 1 < lines.length) {
-                    result.push({
-                        id: getRandId(),
-                        english: lines[i].trim(),
-                        chinese: lines[i + 1].trim()
-                    });
-                }
-            }
-
-            setWords(result)
-        }
     };
 
     const handleDelete = () => {
@@ -171,8 +156,45 @@ function MainBlock() {
         });
     };
 
+    const handleReverseSelection = () => {
+        popNotify('Inverse selected')
+        setState({ ...state, selection: 0 })
+        setWords(prev => prev.map((word, i) => ({ ...word, selected: state.editing ? !word.selected : word.selected, done: state.editing ? word.done : !word.done })));
+    };
+
+    const handleSelectAll = () => {
+        const t = state.selection !== 1
+        popNotify(t ? 'All selected' : 'None selected')
+        setState({ ...state, selection: state.selection === 1 ? -1 : 1 })
+        setWords(prev => prev.map((word, i) => ({ ...word, selected: state.editing ? t : word.selected, done: state.editing ? word.done : t })));
+    };
+
+    const handleImport = () => {
+        if (inputBoxRef.current) {
+            if (inputBoxRef.current.value === "") {
+                popNotify("Please fill in the word list below first")
+                return
+            }
+            const lines = inputBoxRef.current.value.split("\n")
+            const result = [];
+
+            for (let i = 0; i < lines.length; i += 2) {
+                if (i + 1 < lines.length) {
+                    result.push({
+                        id: getRandId(),
+                        english: lines[i].trim(),
+                        chinese: lines[i + 1].trim()
+                    });
+                }
+            }
+
+            setWords(result)
+        }
+    };
+
     const handleExport = () => {
-        const WordsExport = words.map(e => e.english + "\n" + e.chinese).join("\n")
+        const WordsExport = words.map(e => state.editing && !e.selected ? "" : (e.english + "\n" + e.chinese)).join("\n")
+
         if (inputBoxRef.current) {
             inputBoxRef.current.value = WordsExport
         }
@@ -203,19 +225,13 @@ function MainBlock() {
         scrollToCenter(words.length)
     };
 
-    // const handlePlayCallback = (position: number, isPlaying: boolean) => {
-    //     // console.log(position, isPlaying)
-    //     setPlayPosition(position)
-    //     scrollToCenter(position)
-    //     if (isPlaying) {
-    //     } else {
-    //         // setPlayPosition(-1)
-    //     }
-    // };
-
     const handlePlayThisWord = (index: number) => {
         setPlayPosition(index)
     }
+
+    useEffect(() => {
+        setRandNext(getRandomTable(words, state.rand))
+    }, [words])
 
     return (
         <div className=' main bg-slate-25 w-full sm:h-full p-2 px-3 flex flex-col '>
@@ -250,20 +266,27 @@ function MainBlock() {
                 }}>
                     <MaterialSymbolsEditRounded className='text-2xl' />
                 </a>
-                <a className='cursor-pointer w-10 h-10' onClick={handleImport}>
-                    <Fa6SolidFileImport className=' text-xl mt-[2px]' />
-                </a>
                 {/* <a className='cursor-pointer w-10 h-10' onClick={handleMove}>
                     <MaterialFileMove className=' text-2xl ' />
-                </a> */}
+                    </a> */}
                 <a className='cursor-pointer w-10 h-10' onClick={handleDelete}>
-                    <MaterialDeleteRounded className=' text-2xl ' />
+                    <MaterialDeleteRounded className=' text-2xl text-red-800' />
                 </a>
                 <a className='cursor-pointer w-10 h-10' onClick={handleReverseSelection}>
                     <PhSelectionInverseDuotone className='text-2xl' />
                 </a>
                 <a className='cursor-pointer w-10 h-10' onClick={handleSelectAll}>
                     {state.selection == 1 ? <PhSelectionBold className='text-2xl' /> : <PhSelectionDuotone className='text-2xl' />}
+                </a>
+                <a className='cursor-pointer w-10 h-10' onClick={() => {
+                    console.log("SS",getRandomTable(words, !state.rand))
+                    setRandNext(getRandomTable(words, !state.rand))
+                    setState({ ...state, rand: !state.rand })
+                }}>
+                    <MdiDice5 className={` text-2xl ${state.rand ? " text-green-700" : ""}`} />
+                </a>
+                <a className='cursor-pointer w-10 h-10' onClick={handleImport}>
+                    <Fa6SolidFileImport className=' text-xl mt-[2px]  text-red-800' />
                 </a>
                 <a className='w-10 h-10 pt-[2px]' onClick={handleExport}>
                     <Fa6SolidFileExport className='text-xl' />
@@ -300,8 +323,7 @@ function MainBlock() {
                 </div>
             </div>
 
-            {/* <PlayArea Progress={{playPosition,setPlayPosition}}  callback={handlePlayCallback} currentTitle={currentTitle} words={words} /> */}
-            <PlayArea scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words} />
+            <PlayArea rand={randNext} scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words.map(word => ({ ...word, needToPlay: (state.editing ? word.selected : !word.done) }))} />
         </div >
     )
 }

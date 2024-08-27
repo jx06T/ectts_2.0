@@ -52,12 +52,12 @@ function Aset({ title = "", index, onShowOption, selected, id }: { title: string
     )
 }
 
-function Sidebar({ showSidebar0 = true }: { showSidebar0?: boolean }) {
+function Sidebar() {
     const [allSet, setAllSet] = useState<Aset[]>([])
     const [optionY, setOptionY] = useState<number>(-99999)
     const [optionIndex, setOptionIndex] = useState<number>(-1)
     const [scrollBarY, setScrollBarYY] = useState<number>(0)
-    const [showSidebar, setshowSidebar] = useState<boolean>(showSidebar0)
+    const [showSidebar, setshowSidebar] = useState<boolean>(false)
     const [showReNamed, setShowReNamed] = useState<boolean>(false)
     const scrollBarRef = useRef<HTMLDivElement>(null)
     const reNamedRef = useRef<HTMLInputElement>(null)
@@ -152,8 +152,8 @@ function Sidebar({ showSidebar0 = true }: { showSidebar0?: boolean }) {
     };
 
     return (
-        <div className='sidebar h-full flex'>
-            <div className={`bg-blue-50 ${showSidebar ? " w-[17rem] px-2 p-1" : "min-w-0 w-0 px-0"} fixed xs:static h-full flex flex-col rounded-md transition-all duration-300 ease-in-out overflow-x-hidden`}>
+        <div className='sidebar h-full flex z-20'>
+            <div className={`bg-blue-50 ${showSidebar ? " w-[16.5rem] px-2 p-1" : "min-w-0 w-0 px-0"} fixed xs:static h-full flex flex-col rounded-md transition-all duration-300 ease-in-out overflow-x-hidden`}>
                 <div className=' h-8 flex mt-1 items-center justify-between'>
                     <SolarSiderbarBold className=' cursor-pointer text-3xl' onClick={() => setshowSidebar(!showSidebar)} />
                     <MaterialAddToPhotos className=' cursor-pointer text-3xl mr-1' onClick={handleAdd} />
@@ -180,19 +180,16 @@ function Sidebar({ showSidebar0 = true }: { showSidebar0?: boolean }) {
 
             </div>
 
-            <div className={` ${showSidebar ? " opacity-0" : " opacity-100 w-11 pl-2 p-1"} bg-transparent absolute flex flex-col justify-between transition-all duration-300 ease-in-out `}>
-                {!showSidebar &&
-                    <>
-                        <div className=' h-8 flex mt-1 items-center'>
-                            <SolarSiderbarBold className=' text-3xl' onClick={() => setshowSidebar(!showSidebar)} />
-                        </div>
-                        <div className=' z-20 mt-1 h-10 xs:p-1 bottom-1 flex items-center fixed'>
-                            <a href='https://github.com/jx06T/ectts_2.0' target='_blank'>
-                                <MdiGithub className=' text-3xl' />
-                            </a>
-                        </div>
-                    </>
-                }
+            {/* <div className={` ${showSidebar ? " opacity-0" : " opacity-100 w-11 pl-2 p-1"} bg-transparent absolute flex flex-col justify-between transition-all duration-300 ease-in-out `}> */}
+            <div className={` ${showSidebar ? " opacity-0" : " opacity-100 w-11 pl-2 p-1 "} bg-transparent absolute flex flex-col justify-between`}>
+                <div className=' h-8 flex mt-1 items-center'>
+                    <SolarSiderbarBold className=' text-3xl' onClick={() => setshowSidebar(!showSidebar)} />
+                </div>
+                <div className={` ${showSidebar ? " opacity-0" : " opacity-100 transition-opacity duration-1500 ease-in-out "} h-10 xs:p-1 bottom-1 flex items-center fixed ml-1 mb-[11px]`}>
+                    <a href='https://github.com/jx06T/ectts_2.0' target='_blank'>
+                        <MdiGithub className=' text-3xl' />
+                    </a>
+                </div>
             </div>
 
             <Options callback={handleOptionClick} index={optionIndex} show={optionY !== -99999} y={optionY - scrollBarY} />

@@ -5,6 +5,7 @@ interface Word {
     english: string;
     done?: boolean;
     selected?: boolean;
+    needToPlay?: boolean
 }
 
 interface Aset {
@@ -17,7 +18,8 @@ interface State1 {
     showC: boolean,
     editing: boolean,
     lock: boolean,
-    selection: number
+    selection: number,
+    rand: boolean
 }
 
 interface Settings {

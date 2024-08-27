@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MingcuteSettings6Fill, FluentNextFrame24Filled, FluentPreviousFrame24Filled, FluentPause24Filled, FluentPlay24Filled } from "../utils/Icons";
 import { useNotify } from './NotifyContext'
 
@@ -33,19 +33,24 @@ const SettingsUI: Record<string, UI> = {
     chinese: { type: "checkbox", hint: "Say chinese ?" },
 }
 
-// function PlayArea({ callback, words, currentTitle }: { callback: Function, words: Word[], currentTitle: string }) {
-function PlayArea({ progress, words, currentTitle, scrollToCenter }: { scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
-    const [showSetting, setShowSetting] = useState<boolean>(true)
+
+function PlayArea({ rand, progress, words, currentTitle, scrollToCenter }: { rand: number[] | null, scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+    const [showSetting, setShowSetting] = useState<boolean>(false)
     const [settings, setSettings] = useState<Settings>(initialSettings);
+
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
-    const voices = useRef<SpeechSynthesisVoice[]>([])
     const currentProgressRef = useRef<number>(0)
-    // const [currentProgress, setCurrentProgress] = useState<number>(0)
+    const settingsRef = useRef<Settings>(settings)
+    const limitCountRef = useRef<number>(0)
     const { currentProgress, setCurrentProgress } = progress
     const { notify, popNotify } = useNotify();
+
     const synth = window.speechSynthesis;
     const speakerCRef = useRef<string>("");
     const speakerERef = useRef<string>("");
+    const voices = useRef<SpeechSynthesisVoice[]>([])
+
+    const randRef = useRef<number[] | null>(rand);
 
     useEffect(() => {
         const initialSettingsL = localStorage.getItem('ectts-settings');
@@ -91,14 +96,12 @@ function PlayArea({ progress, words, currentTitle, scrollToCenter }: { scrollToC
     }, [voices, settings]);
 
     useEffect(() => {
-        if (currentProgressRef.current !== currentProgress) {
-            console.log("!")
-            stop()
-            currentProgressRef.current = currentProgress
-        }
-    }, [currentProgress])
+        currentProgressRef.current = currentProgress
+        settingsRef.current = settings
+        randRef.current = rand
+    }, [currentProgress, settings, rand])
 
-    const createUtterances = (settings: Settings, word: Word) => {
+    const createUtterances = useCallback((settings: Settings, word: Word) => {
         const utterances = [];
 
         // English utterances
@@ -124,22 +127,13 @@ function PlayArea({ progress, words, currentTitle, scrollToCenter }: { scrollToC
 
         utterances.push(settings.timeWW);
         return utterances;
-    }
+    }, [words, settings]);
 
-    const playUtterances = useCallback((utterances: (number | SpeechSynthesisUtterance)[]) => {
+    const playUtterances = useCallback((utterances: (number | SpeechSynthesisUtterance)[], ProgressIndex: number) => {
         let index = 0;
         const playNext = () => {
             if (index >= utterances.length) {
-                currentProgressRef.current++;
-                if (currentProgressRef.current < words.length) {
-                    playWord(currentProgressRef.current);
-                } else {
-                    currentProgressRef.current = 0
-                    // callback(currentProgressRef.current, false)
-                    setCurrentProgress(0)
-                    scrollToCenter(0)
-                    setIsPlaying(false);
-                }
+                playWord(ProgressIndex + 1);
                 return;
             }
 
@@ -154,46 +148,59 @@ function PlayArea({ progress, words, currentTitle, scrollToCenter }: { scrollToC
         };
 
         playNext();
-    }, [words, settings]);
+    }, [words, settings, currentProgress]);
 
     const playWord = useCallback((index: number) => {
-        if (!words[index]) {
-            currentProgressRef.current = 0
-            // callback(currentProgressRef.current, false)
+        let newIndex = index
+
+        if (index != currentProgressRef.current + 1 && !randRef.current) {
+            if (limitCountRef.current < 2000) {
+                limitCountRef.current++
+                newIndex = currentProgressRef.current
+            } else {
+                setIsPlaying(false);
+                return
+            }
+        }
+
+        if (words[newIndex] && !words[newIndex].needToPlay) {
+            setCurrentProgress(newIndex)
+            setTimeout(() => {
+                playWord(newIndex + 1)
+            }, 100);
+            return
+        }
+
+        const newNewIndex = randRef.current ? randRef.current[newIndex] : newIndex
+        console.log(newIndex, randRef.current, newNewIndex)
+
+        if (!words[newNewIndex]) {
             setCurrentProgress(0)
             scrollToCenter(0)
             setIsPlaying(false);
             return
         }
 
-        if (words[index].done) {
-            currentProgressRef.current++
-            playWord(currentProgressRef.current)
-            return
-        }
-
-        // callback(index, true)
-        setCurrentProgress(index)
-        scrollToCenter(index)
-        const utterances = createUtterances(settings, words[index]);
-        playUtterances(utterances);
-    }, [words, createUtterances, playUtterances, settings]);
+        setCurrentProgress(newNewIndex)
+        scrollToCenter(newNewIndex)
+        const utterances = createUtterances(settingsRef.current, words[newNewIndex]);
+        playUtterances(utterances, newIndex);
+    }, [words, createUtterances, playUtterances, settings, currentProgress]);
 
     const stop = () => {
+        setIsPlaying(false);
         for (let _ = 0; _ < 3; _++) {
             setTimeout(() => {
                 window.speechSynthesis.cancel();
-            }, 10 * _ + 10);
+            }, 100 * _ + 100);
         }
         window.speechSynthesis.cancel();
-        setIsPlaying(false);
     }
 
     const handlePlay = () => {
-        // callback(currentProgressRef.current, !isPlaying)
         if (!isPlaying) {
             popNotify("Start playing")
-            playWord(currentProgressRef.current);
+            playWord(currentProgress);
             setIsPlaying(true);
         } else {
             popNotify("Stop playing")
@@ -217,17 +224,13 @@ function PlayArea({ progress, words, currentTitle, scrollToCenter }: { scrollToC
                     <hr />
                 </>}
 
-                <div className={` min-[28rem] w-full h-14 py-1 items-center flex justify-center space-x-[7%]`}>
-                    <div className="pl-2 min-w-8">{currentTitle}</div>
+                <div className={` min-[28rem] w-full h-14 py-1 flex justify-center items-center space-x-[2%] mdlg:space-x-[6%] xs:space-x-[8%] 2xs:space-x-[5%]`}>
+                    <div className="min-w-8 text-center ">{currentTitle}</div>
 
-                    <div className="flex flex-shrink-0 justify-center space-x-1">
+                    <div className="flex flex-shrink-0 justify-center space-x-1 mt-1">
                         <button className="js-2" onClick={() => {
-                            if (currentProgressRef.current > 0) {
-                                stop()
-                                currentProgressRef.current--
-                                scrollToCenter(currentProgressRef.current)
-                                setCurrentProgress(currentProgressRef.current)
-                                // callback(currentProgressRef.current, false)
+                            if (currentProgress > 0) {
+                                setCurrentProgress((prev: number) => prev - 1)
                             }
                         }}>
                             <FluentPreviousFrame24Filled className=" text-3xl" />
@@ -239,19 +242,19 @@ function PlayArea({ progress, words, currentTitle, scrollToCenter }: { scrollToC
                             {isPlaying ? <FluentPause24Filled className=" text-3xl" /> : <FluentPlay24Filled className=" text-3xl" />}
                         </button>
                         <button className="js-2" onClick={() => {
-                            if (currentProgressRef.current < words.length - 1) {
-                                stop()
-                                currentProgressRef.current++
-                                scrollToCenter(currentProgressRef.current)
-                                setCurrentProgress(currentProgressRef.current)
-                                // callback(currentProgressRef.current, false)
+                            if (currentProgress < words.length - 1) {
+                                setCurrentProgress((prev: number) => prev + 1)
                             }
                         }}>
                             <FluentNextFrame24Filled className=" text-3xl" />
                         </button>
                     </div>
 
-                    <div className="min-w-8 pr-2">{words[currentProgress] ? (words[currentProgress].english + "／" + words[currentProgress].chinese) : ""}</div>
+                    <div className="min-w-8 pr-2">
+                        {words[currentProgress] ? words[currentProgress].english : ""}
+                        <br></br>
+                        {words[currentProgress] ? words[currentProgress].chinese : ""}
+                    </div>
                 </div >
             </div>
         </div>
