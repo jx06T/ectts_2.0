@@ -120,6 +120,7 @@ function MainBlock() {
 
 
     const scrollToCenter = (index: number): void => {
+        console.log("!!!", index,scrollRef.current)
         // alert(window.innerHeight)
         setTimeout(() => {
             scrollRef.current?.scrollTo({
@@ -127,7 +128,7 @@ function MainBlock() {
                 top: index * 52 - 300 + (0.5 * (900 - window.innerHeight)),
                 behavior: 'smooth'
             });
-        }, 10);
+        }, 100);
     }
 
     const handleWordChange = (index: number, field: 'english' | 'chinese', value: string) => {
@@ -279,7 +280,6 @@ function MainBlock() {
                     {state.selection == 1 ? <PhSelectionBold className='text-2xl' /> : <PhSelectionDuotone className='text-2xl' />}
                 </a>
                 <a className='cursor-pointer w-10 h-10' onClick={() => {
-                    console.log("SS",getRandomTable(words, !state.rand))
                     setRandNext(getRandomTable(words, !state.rand))
                     setState({ ...state, rand: !state.rand })
                 }}>
@@ -293,8 +293,8 @@ function MainBlock() {
                 </a>
             </div>
 
-            <div ref={scrollRef} className='flex justify-center h-full w-full overflow-y-auto'>
-                <div className='h-full max-w-[22rem] sm:max-w-[64rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
+            <div className='flex justify-center h-full w-full overflow-y-auto'>
+                <div ref={scrollRef} className='h-full max-w-[22rem] sm:max-w-[64rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
                     {words.map((word, index) => (
                         <WordItem
                             key={word.id}

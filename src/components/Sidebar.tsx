@@ -43,8 +43,8 @@ function Aset({ title = "", index, onShowOption, selected, id }: { title: string
     const setRef = useRef<HTMLDivElement>(null)
     const selected2 = selected || currentPath === id
     return (
-        <div ref={setRef} className={` cursor-pointer rounded-md ${selected2 ? "bg-blue-100" : "bg-blue-50"} hover:bg-blue-100 relative h-10 text-base p-1 flex items-center gap-2 my-[2px] justify-between`}>
-            <a href={id} className='overflow-x-hidden w-full'>{title}</a>
+        <div ref={setRef} className={` cursor-pointer rounded-md ${selected2 ? "bg-blue-100" : "bg-blue-50"} hover:bg-blue-100 relative h-10 text-base flex items-center gap-2 my-[2px] justify-between`}>
+            <a href={id} className='h-full p-2 overflow-x-hidden w-full'>{title}</a>
             <button className='option-button h-8 hover:bg-blue-150 rounded-md mr-[1px]' onClick={() => onShowOption(selected ? -1 : index, selected ? -99999 : setRef.current?.offsetTop)}>
                 <AkarIconsMoreVerticalFill className='option-button w-5 mr-0 flex-shrink-0' />
             </button>

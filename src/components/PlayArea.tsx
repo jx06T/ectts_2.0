@@ -172,7 +172,7 @@ function PlayArea({ rand, progress, words, currentTitle, scrollToCenter }: { ran
         }
 
         const newNewIndex = randRef.current ? randRef.current[newIndex] : newIndex
-        console.log(newIndex, randRef.current, newNewIndex)
+        // console.log(newIndex, randRef.current, newNewIndex)
 
         if (!words[newNewIndex]) {
             setCurrentProgress(0)
@@ -225,9 +225,9 @@ function PlayArea({ rand, progress, words, currentTitle, scrollToCenter }: { ran
                 </>}
 
                 <div className={` min-[28rem] w-full h-14 py-1 flex justify-center items-center space-x-[2%] mdlg:space-x-[6%] xs:space-x-[8%] 2xs:space-x-[5%]`}>
-                    <div className="min-w-8 text-center ">{currentTitle}</div>
+                    <div className=" w-[16%] xs:w-[26%] text-right flex-shrink-0 text-sm ">{currentTitle}</div>
 
-                    <div className="flex flex-shrink-0 justify-center space-x-1 mt-1">
+                    <div className="flex flex-shrink-0 justify-center space-x-[-1px] mt-1">
                         <button className="js-2" onClick={() => {
                             if (currentProgress > 0) {
                                 setCurrentProgress((prev: number) => prev - 1)
@@ -250,7 +250,7 @@ function PlayArea({ rand, progress, words, currentTitle, scrollToCenter }: { ran
                         </button>
                     </div>
 
-                    <div className="min-w-8 pr-2">
+                    <div className=" w-[28%] xs:w-[30%] pr-2 text-sm   ">
                         {words[currentProgress] ? words[currentProgress].english : ""}
                         <br></br>
                         {words[currentProgress] ? words[currentProgress].chinese : ""}
