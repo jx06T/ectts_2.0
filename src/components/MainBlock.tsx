@@ -160,7 +160,7 @@ function MainBlock() {
                 return
             }
             createConfirmDialog(
-                "Are you sure you want to import these words? This action will replace your current word list. Additionally, you can import words into a new set.",
+                "Are you sure you want to import these words? \nThis action will replace your current word list. \nIf you want to keep the current word list, you can import words into a new set.",
                 () => {
                     const lines = inputBoxRef.current!.value.split("\n");
                     const result = [];

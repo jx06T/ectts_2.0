@@ -116,10 +116,10 @@ function Sidebar() {
     const handleOptionClick = (index: number, type: "D" | "R"): void => {
         if (type === "D") {
             createConfirmDialog(
-                "Are you sure you want to delete this set?　　　This operation is irreversible.",
+                `You are trying to delete "${allSet[index].title}".\nAre you sure you want to delete this set? \nThis operation is irreversible.`,
                 () => {
                     popNotify(`"${allSet[index].title}" deleted`)
-                    localStorage.removeItem("set-"+allSet[index].id);
+                    localStorage.removeItem("set-" + allSet[index].id);
                     setAllSet(prev => prev.filter((Aset: Aset, i) => (i !== index)))
                 },
                 () => {
