@@ -235,7 +235,7 @@ function MainBlock() {
         <div className=' main bg-slate-25 w-full sm:h-full p-2 px-3 flex flex-col '>
             <div className='flex'>
                 <h1 className='ml-9 m-1 mt-[3px] min-w-[70px] -mr-6'>ECTTS 2.0</h1>
-                <div className='flex flex-grow justify-center fixed right-[5%] mdlg:right-[12%] lg:right-[24%] ' >
+                <div className='flex flex-grow justify-center fixed right-[5%] mdlg:right-[12%] lg:right-[24%] z-40' >
                     <h1 className={` ${notify === "" ? " opacity-0" : " opacity-100"} bg-stone-700 rounded-full px-4 text-white max-w-80 w-full ml-9 m-1 mt-[3px] transition-opacity duration-300 z-10`}>{notify}</h1>
                 </div>
             </div>
