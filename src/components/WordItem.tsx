@@ -79,7 +79,8 @@ function WordItem({ onPlay, isPlaying, state, word, index, isFocused, onChange, 
         }}
         onMouseEnter={handleMouseLeave}
         onClick={() => onDoneToggle(index)}
-        className={`jx-1 ${state.editing ? (word.selected ? "bg-purple-400 hover:bg-purple-500" : "bg-purple-100 hover:bg-purple-200") : (word.done ? "bg-green-400 hover:bg-green-500" : "bg-green-100 hover:bg-green-200")} w-8 cursor-pointer ${isPlaying ? " border-2 border-blue-400" : ""} `}
+        // title={state.deleting ? "delete it" : state.editing ? "select it" : "Marked as done"}
+        className={`jx-1 ${state.deleting ? "bg-red-400 hover:bg-red-500" : state.editing ? (word.selected ? "bg-purple-400 hover:bg-purple-500" : "bg-purple-100 hover:bg-purple-200") : (word.done ? "bg-green-400 hover:bg-green-500" : "bg-green-100 hover:bg-green-200")} w-8 cursor-pointer ${isPlaying ? " border-2 border-blue-400" : ""} `}
       ></div>
     </div>
   );

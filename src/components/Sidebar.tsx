@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { MaterialFileRename, MaterialDeleteRounded, AkarIconsMoreVerticalFill, MaterialAddToPhotos, MdiGithub, SolarSiderbarBold } from '../utils/Icons'
 import { useNotify } from './NotifyContext'
+import createConfirmDialog from './ConfirmDialog';
 
 function getRandId(length = 16) {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -114,14 +115,24 @@ function Sidebar() {
 
     const handleOptionClick = (index: number, type: "D" | "R"): void => {
         if (type === "D") {
-            popNotify(`${allSet[index].title} deleted`)
-            setAllSet(prev => prev.filter((Aset: Aset, i) => (i !== index)))
+            createConfirmDialog(
+                "Are you sure you want to delete this set?　　　This operation is irreversible.",
+                () => {
+                    popNotify(`"${allSet[index].title}" deleted`)
+                    localStorage.removeItem("set-"+allSet[index].id);
+                    setAllSet(prev => prev.filter((Aset: Aset, i) => (i !== index)))
+                },
+                () => {
+                    popNotify("Delete operation canceled.");
+                }
+            );
+
         } else {
             popNotify(`Enter in the box on the upper left`)
             setShowReNamed(true)
-            setTimeout(() => {
-                reNamedRef.current?.focus()
-            }, 100);
+            // setTimeout(() => {
+            //     reNamedRef.current?.focus()
+            // }, 200);
         }
     }
 
@@ -140,9 +151,9 @@ function Sidebar() {
         setOptionIndex(0)
         setShowReNamed(true)
         isNew.current = id
-        setTimeout(() => {
-            reNamedRef.current?.focus()
-        }, 100);
+        // setTimeout(() => {
+        //     reNamedRef.current?.focus()
+        // }, 1000);
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -195,7 +206,7 @@ function Sidebar() {
             <Options callback={handleOptionClick} index={optionIndex} show={optionY !== -99999} y={optionY - scrollBarY} />
 
             {showReNamed && <div className={`option-button2 w-72 h-10 shadow-md bg-purple-200 left-2 top-16 absolute z-10 rounded-lg p-2 flex`}>
-                <input onKeyDown={handleKeyDown} ref={reNamedRef} property='name' defaultValue={optionIndex > 0 ? allSet[optionIndex].title : ""} type="text" className='option-button2 jx-0 border-b-2 border-stone-50 w-full rounded-none' />
+                <input autoFocus onKeyDown={handleKeyDown} ref={reNamedRef} property='name' defaultValue={optionIndex > 0 ? allSet[optionIndex].title : ""} type="text" className='option-button2 jx-0 border-b-2 border-stone-50 w-full rounded-none' />
                 <button onClick={handleReNamed} className=' ml-2 w-6 rounded-lg flex-shrink-0 bg-purple-400 option-button2'>▶</button>
             </div >}
         </div>

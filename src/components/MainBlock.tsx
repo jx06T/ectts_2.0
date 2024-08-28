@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import WordItem from './WordItem'
-import { MdiDice5, Fa6SolidFileImport, MaterialDeleteRounded, MaterialLock, MaterialLockOpen, MaterialFileMove, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, PhSelectionInverseDuotone, BxBxsHide, BxBxsShow, MaterialSymbolsEditRounded } from '../utils/Icons'
+import { MaterialChecklistRtl, CarbonSelectWindow, MdiDice5, Fa6SolidFileImport, MaterialDeleteRounded, MaterialLock, MaterialLockOpen, MaterialFileMove, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, PhSelectionInverseDuotone, BxBxsHide, BxBxsShow, MaterialSymbolsEditRounded } from '../utils/Icons'
 import PlayArea from './PlayArea'
 import { useNotify } from './NotifyContext'
+import createConfirmDialog from './ConfirmDialog';
+
 
 function getRandId(length = 16) {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -66,7 +68,7 @@ function MainBlock() {
 
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [words, setWords] = useState<Word[]>([]);
-    const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false, rand: false });
+    const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false, rand: false, deleting: false });
     const [focusIndex, setFocusIndex] = useState<number>(0);
     const [playPosition, setPlayPosition] = useState<number>(0);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -120,11 +122,8 @@ function MainBlock() {
 
 
     const scrollToCenter = (index: number): void => {
-        console.log("!!!", index,scrollRef.current)
-        // alert(window.innerHeight)
         setTimeout(() => {
             scrollRef.current?.scrollTo({
-                // top: index * 52 - 220 + window.innerHeight / 2,
                 top: index * 52 - 300 + (0.5 * (900 - window.innerHeight)),
                 behavior: 'smooth'
             });
@@ -139,22 +138,6 @@ function MainBlock() {
 
     const handleMove = () => {
 
-    };
-
-    const handleDelete = () => {
-        if (!state.editing) {
-            popNotify('Select words first')
-            return
-        }
-        const originalLength = words.length
-        setWords(prev => {
-            const newWords = prev.filter((word, i) => !word.selected)
-            popNotify(`${originalLength - newWords.length} words deleted`)
-            if (newWords.length === 0) {
-                newWords.push({ id: getRandId(), chinese: "", english: "" })
-            }
-            return newWords
-        });
     };
 
     const handleReverseSelection = () => {
@@ -173,48 +156,62 @@ function MainBlock() {
     const handleImport = () => {
         if (inputBoxRef.current) {
             if (inputBoxRef.current.value === "") {
-                popNotify("Please fill in the word list below first")
+                popNotify("Please fill the textarea below first")
                 return
             }
-            const lines = inputBoxRef.current.value.split("\n")
-            const result = [];
+            createConfirmDialog(
+                "Are you sure you want to import these words? This action will replace your current word list. Additionally, you can import words into a new set.",
+                () => {
+                    const lines = inputBoxRef.current!.value.split("\n");
+                    const result = [];
 
-            for (let i = 0; i < lines.length; i += 2) {
-                if (i + 1 < lines.length) {
-                    result.push({
-                        id: getRandId(),
-                        english: lines[i].trim(),
-                        chinese: lines[i + 1].trim()
-                    });
+                    for (let i = 0; i < lines.length; i += 2) {
+                        if (i + 1 < lines.length) {
+                            result.push({
+                                id: getRandId(),
+                                english: lines[i].trim(),
+                                chinese: lines[i + 1].trim()
+                            });
+                        }
+                    }
+
+                    setWords(result);
+                    popNotify("Words imported successfully!");
+                },
+                () => {
+                    popNotify("Import canceled.");
                 }
-            }
-
-            setWords(result)
+            );
         }
     };
 
     const handleExport = () => {
-        const WordsExport = words.map(e => state.editing && !e.selected ? "" : (e.english + "\n" + e.chinese)).join("\n")
+        const WordsToExport = words.map(e => state.editing && !e.selected ? "$^#*&" : (e.english + "\n" + e.chinese)).filter(e => e !== "$^#*&")
+        const ExportText = WordsToExport.join("\n")
 
         if (inputBoxRef.current) {
-            inputBoxRef.current.value = WordsExport
+            inputBoxRef.current.value = ExportText
         }
-        popNotify("All word copied")
-        copyToClipboard(WordsExport)
+        popNotify(WordsToExport.length + " words copied & exported")
+        copyToClipboard(ExportText)
     };
 
     const handleDoneToggle = (index: number) => {
+        if (state.deleting) {
+            setWords(prev => prev.filter((e, i) => i !== index))
+            return
+        }
         setState({ ...state, selection: 0 })
         if (!state.editing) {
             setWords(prev => {
                 const newEords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
-                popNotify(newEords.filter(word => word.done).length + " words done")
+                popNotify(`${newEords.filter(word => word.done).length}／${words.length} words done`)
                 return newEords
             });
         } else {
             setWords(prev => {
                 const newEords = prev.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
-                popNotify(newEords.filter(word => word.selected).length + " words selected")
+                popNotify(`${newEords.filter(word => word.selected).length}／${words.length} words selected`)
                 return newEords
             });
         }
@@ -242,7 +239,7 @@ function MainBlock() {
                     <h1 className={` ${notify === "" ? " opacity-0" : " opacity-100"} bg-stone-700 rounded-full px-4 text-white max-w-80 w-full ml-9 m-1 mt-[3px] transition-opacity duration-300 z-10`}>{notify}</h1>
                 </div>
             </div>
-            <div className=' flex justify-center -mb-1 pr-0 xs:pr-4 space-x-1 mt-2'>
+            <div className=' flex justify-center -mb-1 pr-0 space-x-1 mt-2 -mr-0 2xs:-mr-6 sm:-mr-2'>
                 <a className='cursor-pointer w-10 h-10' onClick={() => {
                     popNotify(state.showE ? "Hide English" : "Show English")
                     setState({ ...state, showE: !state.showE })
@@ -262,16 +259,19 @@ function MainBlock() {
                     {!state.lock ? <MaterialLockOpen className='text-2xl' /> : <MaterialLock className='text-2xl' />}
                 </a>
                 <a className='cursor-pointer w-10 h-10' onClick={() => {
-                    popNotify(state.editing ? "Edit mode ends" : "Edit mode enabled")
+                    popNotify(state.editing ? "Select mode" : "Normal mode")
                     setState({ ...state, editing: !state.editing })
                 }}>
-                    <MaterialSymbolsEditRounded className='text-2xl' />
+                    {state.editing ? <MaterialChecklistRtl className='text-2xl' /> : <CarbonSelectWindow className='text-2xl' />}
                 </a>
                 {/* <a className='cursor-pointer w-10 h-10' onClick={handleMove}>
                     <MaterialFileMove className=' text-2xl ' />
                     </a> */}
-                <a className='cursor-pointer w-10 h-10' onClick={handleDelete}>
-                    <MaterialDeleteRounded className=' text-2xl text-red-800' />
+                <a className='cursor-pointer w-10 h-10' onClick={() => {
+                    popNotify('Click the right box to delete')
+                    setState({ ...state, deleting: !state.deleting })
+                }}>
+                    <MaterialSymbolsEditRounded className={` text-2xl ${state.deleting ? "text-red-800" : ""}`} />
                 </a>
                 <a className='cursor-pointer w-10 h-10' onClick={handleReverseSelection}>
                     <PhSelectionInverseDuotone className='text-2xl' />
@@ -280,6 +280,7 @@ function MainBlock() {
                     {state.selection == 1 ? <PhSelectionBold className='text-2xl' /> : <PhSelectionDuotone className='text-2xl' />}
                 </a>
                 <a className='cursor-pointer w-10 h-10' onClick={() => {
+                    popNotify(!state.rand ? "Random mode" : "Normal mode")
                     setRandNext(getRandomTable(words, !state.rand))
                     setState({ ...state, rand: !state.rand })
                 }}>
@@ -294,7 +295,7 @@ function MainBlock() {
             </div>
 
             <div className='flex justify-center h-full w-full overflow-y-auto'>
-                <div ref={scrollRef} className='h-full max-w-[22rem] sm:max-w-[64rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
+                <div ref={scrollRef} className='jx-5 h-full max-w-[22rem] sm:max-w-[64rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
                     {words.map((word, index) => (
                         <WordItem
                             key={word.id}
@@ -318,7 +319,7 @@ function MainBlock() {
                         />
                     ))}
                     <div className='h-[50%]'>
-                        <textarea ref={inputBoxRef} className='h-full outline-none w-96 p-2 mt-8'></textarea>
+                        <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-96 p-2 mt-8'></textarea>
                     </div>
                 </div>
             </div>

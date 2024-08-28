@@ -11,7 +11,6 @@
 }
 
 .js-2{
-    /* @apply hover:bg-purple-300 rounded-md w-11 h-11 pl-[7px] */
     @apply hover:bg-purple-300 rounded-md w-11 h-11 pl-[7px]
 }
 /* .jx-2{ 
@@ -120,4 +119,13 @@ background: #b373f3;
 
 .jx-4:checked::after{
     background-color: #9025f3;
+}
+
+.jx-5::-webkit-scrollbar {
+    display: none; /* 隱藏滾動條 */
+}
+.jx-5 {
+    /* 隱藏滾動條（WebKit 瀏覽器，如 Chrome、Safari） */
+    -ms-overflow-style: none;  /* 針對 Internet Explorer 和 Edge */
+    scrollbar-width: none;  /* 針對 Firefox */
 }

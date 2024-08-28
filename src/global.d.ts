@@ -19,7 +19,8 @@ interface State1 {
     editing: boolean,
     lock: boolean,
     selection: number,
-    rand: boolean
+    rand: boolean,
+    deleting:boolean
 }
 
 interface Settings {
