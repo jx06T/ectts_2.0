@@ -228,7 +228,6 @@ function MainBlock() {
     const handlePlayThisWord = (index: number) => {
         setTimeout(() => {
             setRandomTable(prev => {
-                console.log(prev, index, prev.indexOf(index))
                 setPlayPosition(prev.indexOf(index))
                 return prev
             })

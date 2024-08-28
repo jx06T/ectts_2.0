@@ -99,7 +99,6 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
     }, [voices, settings]);
 
     useEffect(() => {
-        console.log("000SS", isPlaying)
         currentProgressRef.current = currentProgress
         settingsRef.current = settings
         randomTableRef.current = randomTable
@@ -137,7 +136,6 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
     const playUtterances = useCallback((utterances: (number | SpeechSynthesisUtterance)[], ProgressIndex: number) => {
         let index = 0;
         const playNext = () => {
-            console.log(isPlayingRef.current, currentProgressRef.current, ProgressIndex)
             if (!isPlayingRef.current) {
                 return
             }
@@ -164,7 +162,6 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
     }, [words, settings, currentProgress]);
 
     const playWord = useCallback((index: number) => {
-        console.log(limitCountRef.current, index, currentProgressRef.current)
         let newIndex = index
 
         if (randomTableRef.current![index] != randomTableRef.current![currentProgressRef.current + 1]) {
