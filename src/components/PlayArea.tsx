@@ -34,23 +34,26 @@ const SettingsUI: Record<string, UI> = {
 }
 
 
-function PlayArea({ rand, progress, words, currentTitle, scrollToCenter }: { rand: number[] | null, scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }: { randomTable: number[], scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
     const [showSetting, setShowSetting] = useState<boolean>(false)
-    const [settings, setSettings] = useState<Settings>(initialSettings);
-
-    const [isPlaying, setIsPlaying] = useState<boolean>(false);
-    const currentProgressRef = useRef<number>(0)
-    const settingsRef = useRef<Settings>(settings)
-    const limitCountRef = useRef<number>(0)
-    const { currentProgress, setCurrentProgress } = progress
     const { notify, popNotify } = useNotify();
 
+    const [settings, setSettings] = useState<Settings>(initialSettings);
+    const settingsRef = useRef<Settings>(settings)
+
+    const [isPlaying, setIsPlaying] = useState<boolean>(false);
+    const isPlayingRef = useRef<boolean>(false)
+
+    const { currentProgress, setCurrentProgress } = progress
+    const currentProgressRef = useRef<number>(0)
+
+    const limitCountRef = useRef<number>(0)
     const synth = window.speechSynthesis;
     const speakerCRef = useRef<string>("");
     const speakerERef = useRef<string>("");
     const voices = useRef<SpeechSynthesisVoice[]>([])
 
-    const randRef = useRef<number[] | null>(rand);
+    const randomTableRef = useRef<number[] | null>(randomTable);
 
     useEffect(() => {
         const initialSettingsL = localStorage.getItem('ectts-settings');
@@ -96,10 +99,12 @@ function PlayArea({ rand, progress, words, currentTitle, scrollToCenter }: { ran
     }, [voices, settings]);
 
     useEffect(() => {
+        console.log("000SS", isPlaying)
         currentProgressRef.current = currentProgress
         settingsRef.current = settings
-        randRef.current = rand
-    }, [currentProgress, settings, rand])
+        randomTableRef.current = randomTable
+        isPlayingRef.current = isPlaying
+    }, [currentProgress, settings, randomTable, isPlaying])
 
     const createUtterances = useCallback((settings: Settings, word: Word) => {
         const utterances = [];
@@ -132,6 +137,14 @@ function PlayArea({ rand, progress, words, currentTitle, scrollToCenter }: { ran
     const playUtterances = useCallback((utterances: (number | SpeechSynthesisUtterance)[], ProgressIndex: number) => {
         let index = 0;
         const playNext = () => {
+            console.log(isPlayingRef.current, currentProgressRef.current, ProgressIndex)
+            if (!isPlayingRef.current) {
+                return
+            }
+            if (currentProgressRef.current !== ProgressIndex) {
+                playWord(-10);
+                return
+            }
             if (index >= utterances.length) {
                 playWord(ProgressIndex + 1);
                 return;
@@ -151,9 +164,10 @@ function PlayArea({ rand, progress, words, currentTitle, scrollToCenter }: { ran
     }, [words, settings, currentProgress]);
 
     const playWord = useCallback((index: number) => {
+        console.log(limitCountRef.current, index, currentProgressRef.current)
         let newIndex = index
 
-        if (index != currentProgressRef.current + 1 && !randRef.current) {
+        if (randomTableRef.current![index] != randomTableRef.current![currentProgressRef.current + 1]) {
             if (limitCountRef.current < 2000) {
                 limitCountRef.current++
                 newIndex = currentProgressRef.current
@@ -171,23 +185,26 @@ function PlayArea({ rand, progress, words, currentTitle, scrollToCenter }: { ran
             return
         }
 
-        const newNewIndex = randRef.current ? randRef.current[newIndex] : newIndex
-        // console.log(newIndex, randRef.current, newNewIndex)
+        // const newNewIndex = randomTable.current ? randomTable.current[newIndex] : newIndex
+        // console.log(newIndex, randomTable.current, newNewIndex)
 
-        if (!words[newNewIndex]) {
+        if (!words[randomTableRef.current![newIndex]]) {
             setCurrentProgress(0)
             scrollToCenter(0)
             setIsPlaying(false);
             return
         }
 
-        setCurrentProgress(newNewIndex)
-        scrollToCenter(newNewIndex)
-        const utterances = createUtterances(settingsRef.current, words[newNewIndex]);
+        setCurrentProgress(newIndex)
+        currentProgressRef.current = newIndex
+        scrollToCenter(randomTableRef.current![newIndex])
+        const utterances = createUtterances(settingsRef.current, words[randomTableRef.current![newIndex]]);
         playUtterances(utterances, newIndex);
+
     }, [words, createUtterances, playUtterances, settings, currentProgress]);
 
     const stop = () => {
+        limitCountRef.current = 0
         setIsPlaying(false);
         for (let _ = 0; _ < 3; _++) {
             setTimeout(() => {
@@ -199,9 +216,10 @@ function PlayArea({ rand, progress, words, currentTitle, scrollToCenter }: { ran
 
     const handlePlay = () => {
         if (!isPlaying) {
+            isPlayingRef.current = true
+            setIsPlaying(true);
             popNotify("Start playing")
             playWord(currentProgress);
-            setIsPlaying(true);
         } else {
             popNotify("Stop playing")
             stop()
@@ -251,9 +269,9 @@ function PlayArea({ rand, progress, words, currentTitle, scrollToCenter }: { ran
                     </div>
 
                     <div className=" w-[28%] xs:w-[30%] pr-2 text-sm xs:text-lg  ">
-                        {words[currentProgress] ? words[currentProgress].english : ""}
+                        {words[randomTableRef.current![currentProgress]] ? words[randomTableRef.current![currentProgress]].english : ""}
                         <br></br>
-                        {words[currentProgress] ? words[currentProgress].chinese : ""}
+                        {words[randomTableRef.current![currentProgress]] ? words[randomTableRef.current![currentProgress]].chinese : ""}
                     </div>
                 </div >
             </div>

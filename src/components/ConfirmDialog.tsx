@@ -2,7 +2,6 @@ import React from 'react'
 import { createRoot } from 'react-dom/client';
 
 function createConfirmDialog(message: string, onConfirm: Function, onCancel: Function): void {
-    console.log("DD")
     const dialogRoot = document.createElement('div');
     document.body.appendChild(dialogRoot);
 

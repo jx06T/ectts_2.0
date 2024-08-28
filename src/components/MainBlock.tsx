@@ -75,7 +75,8 @@ function MainBlock() {
     const inputBoxRef = useRef<HTMLTextAreaElement>(null);
     const { notify, popNotify } = useNotify();
 
-    const [randNext, setRandNext] = useState<number[] | null>(null)
+    // const [randomTable, setRandomTable] = useState<number[] | null>(null)
+    const [randomTable, setRandomTable] = useState<number[]>([])
 
     useEffect(() => {
         const Words0 = localStorage.getItem(setId);
@@ -107,11 +108,12 @@ function MainBlock() {
     }, [words])
 
 
-    const getRandomTable = (words: Word[], r: boolean): number[] | null => {
-        if (!r) {
-            return null
-        }
+    const getRandomTable = (words: Word[], r: boolean): number[] => {
+
         const arr: number[] = words.map((word, i) => (state.editing ? word.selected : !word.done) ? i : -1).filter(e => e !== -1)
+        if (!r) {
+            return arr
+        }
 
         for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -224,11 +226,17 @@ function MainBlock() {
     };
 
     const handlePlayThisWord = (index: number) => {
-        setPlayPosition(index)
+        setTimeout(() => {
+            setRandomTable(prev => {
+                console.log(prev, index, prev.indexOf(index))
+                setPlayPosition(prev.indexOf(index))
+                return prev
+            })
+        }, 100);
     }
 
     useEffect(() => {
-        setRandNext(getRandomTable(words, state.rand))
+        setRandomTable(getRandomTable(words, state.rand))
     }, [words])
 
     return (
@@ -281,7 +289,7 @@ function MainBlock() {
                 </a>
                 <a className='cursor-pointer w-10 h-10' onClick={() => {
                     popNotify(!state.rand ? "Random mode" : "Normal mode")
-                    setRandNext(getRandomTable(words, !state.rand))
+                    setRandomTable(getRandomTable(words, !state.rand))
                     setState({ ...state, rand: !state.rand })
                 }}>
                     <MdiDice5 className={` text-2xl ${state.rand ? " text-green-700" : ""}`} />
@@ -303,7 +311,7 @@ function MainBlock() {
                             index={index}
                             state={state}
                             isFocused={index === focusIndex}
-                            isPlaying={index === playPosition}
+                            isPlaying={index === randomTable[playPosition]}
                             onPlay={handlePlayThisWord}
                             onChange={handleWordChange}
                             onDoneToggle={handleDoneToggle}
@@ -324,7 +332,7 @@ function MainBlock() {
                 </div>
             </div>
 
-            <PlayArea rand={randNext} scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words.map(word => ({ ...word, needToPlay: (state.editing ? word.selected : !word.done) }))} />
+            <PlayArea randomTable={randomTable} scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words.map(word => ({ ...word, needToPlay: (state.editing ? word.selected : !word.done) }))} />
         </div >
     )
 }
