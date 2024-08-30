@@ -20,7 +20,8 @@ interface State1 {
     lock: boolean,
     selection: number,
     rand: boolean,
-    deleting:boolean
+    deleting: boolean,
+    init?: boolean,
 }
 
 interface Settings {

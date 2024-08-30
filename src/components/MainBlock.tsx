@@ -68,7 +68,7 @@ function MainBlock() {
 
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [words, setWords] = useState<Word[]>([]);
-    const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false, rand: false, deleting: false });
+    const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false, rand: false, deleting: false, init: true });
     const [focusIndex, setFocusIndex] = useState<number>(0);
     const [playPosition, setPlayPosition] = useState<number>(0);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -106,6 +106,23 @@ function MainBlock() {
         }
         localStorage.setItem(setId, JSON.stringify(words))
     }, [words])
+
+    useEffect(() => {
+        const state0 = localStorage.getItem("ectts-state");
+        if (state0) {
+            setState({...JSON.parse(state0),deleting:false});
+        } else {
+            setState({ ...state, init: false });
+        }
+
+    }, [])
+
+    useEffect(() => {
+        if (state.init) {
+            return
+        }
+        localStorage.setItem("ectts-state", JSON.stringify(state))
+    }, [state])
 
 
     const getRandomTable = (words: Word[], r: boolean): number[] => {
