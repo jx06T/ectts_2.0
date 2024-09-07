@@ -87,7 +87,7 @@ function MainBlock() {
         const AllSet0 = localStorage.getItem("all-set");
         if (AllSet0) {
             const AllSet = JSON.parse(AllSet0)
-            if (AllSet.length > 0) {
+            if (AllSet.length > 0 && AllSet[0].id !== currentPath) {
                 if (!Words0) {
                     window.location.href = "/" + AllSet[0].id
                 } else {
