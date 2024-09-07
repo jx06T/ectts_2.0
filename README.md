@@ -1,70 +1,36 @@
-# Getting Started with Create React App
+# ECTTS 2.0
+###### *version-V2.0.1* 
+---
+## 簡介&功能
+- 前往 [ectts-2.vercel.app](https://ectts-2.vercel.app/)
+- 左側欄可建立單字集
+- 進入單字集後中間可輸入英文和中文
+- 上方功能列表:
+  - 顯示或隱藏單字
+  - 鎖定編輯(若為隱藏狀態則點選會暫時顯示)
+  - 切換只念選中單字或是只念未完成單字模式(點擊右邊框框切換，綠色為完成，紫色為選中)
+  - 開啟刪除模式(點擊右邊框框切換，此時框框為紅色)
+  - 反向選取
+  - 全選/全不選
+  - 隨機撥放模式(雙擊右邊框框跳到該單字撥放)
+  - 導入(在下方依照導出格式貼上後按下即可匯入，此操作會覆蓋當前單字集所有單字)
+  - 導出(自動複製到剪貼簿)
+- 下方匯出匯入區域
+- 底部播放區
+  - 中間可調整朗讀參數(見下方說明，或在網頁中單擊選項查看提示) 
+  - 切換前後單字
+  - 開始與暫停
+ 
+## 朗讀設定
+- WW-每兩個單字的間隔
+- EE-英文重複的間隔
+- EL-英文與逐字朗讀的間隔
+- LC-逐字朗讀與中文的間隔
+- speed-英文的朗讀速度
+- repeat-英文的重複次數
+- letter-是否逐字朗讀英文
+- chinese-是否念中文
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 待辦
+- 語音選擇(非必要)
+- 全部匯出與匯入
