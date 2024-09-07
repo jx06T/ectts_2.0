@@ -93,6 +93,8 @@ function MainBlock() {
                 } else {
                     setCurrentTitle(AllSet.find((e: Aset) => e.id === currentPath).title)
                 }
+            }else{
+                window.location.href = ""
             }
         } else {
             window.location.href = ""
