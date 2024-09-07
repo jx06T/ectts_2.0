@@ -87,17 +87,19 @@ function MainBlock() {
         const AllSet0 = localStorage.getItem("all-set");
         if (AllSet0) {
             const AllSet = JSON.parse(AllSet0)
-            if (AllSet.length > 0 && AllSet[0].id !== currentPath) {
-                if (!Words0) {
-                    window.location.href = "/" + AllSet[0].id
+            if (currentPath !== "") {
+                if (AllSet.length > 0) {
+                    if (!Words0) {
+                        window.location.href = "/" + AllSet[0].id
+                    } else {
+                        setCurrentTitle(AllSet.find((e: Aset) => e.id === currentPath).title)
+                    }
                 } else {
-                    setCurrentTitle(AllSet.find((e: Aset) => e.id === currentPath).title)
+                    window.location.href = "/"
                 }
-            }else{
-                window.location.href = ""
             }
         } else {
-            window.location.href = ""
+            window.location.href = "/"
         }
 
     }, [])
@@ -112,7 +114,7 @@ function MainBlock() {
     useEffect(() => {
         const state0 = localStorage.getItem("ectts-state");
         if (state0) {
-            setState({...JSON.parse(state0),deleting:false});
+            setState({ ...JSON.parse(state0), deleting: false });
         } else {
             setState({ ...state, init: false });
         }
