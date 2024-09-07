@@ -65,10 +65,17 @@ function Sidebar() {
     const { notify, popNotify } = useNotify();
     const isNew = useRef<string | null>(null)
 
+    const currentPath = window.location.pathname.slice(1);
+
     useEffect(() => {
         const initialAllSet = localStorage.getItem('all-set');
         if (initialAllSet) {
             setAllSet(JSON.parse(initialAllSet));
+            const setLocation = JSON.parse(initialAllSet).findIndex((e: Aset) => e.id === currentPath)
+            if (setLocation !== -1 && setLocation !== 0) {
+                const thisSet = JSON.parse(initialAllSet).find((e: Aset) => e.id === currentPath)
+                setAllSet([thisSet,...JSON.parse(initialAllSet).filter((e: Aset) => e.id !== currentPath)]);
+            }
         } else {
             localStorage.setItem('all-set', JSON.stringify([]))
         }
@@ -185,7 +192,7 @@ function Sidebar() {
                         <MdiGithub className=' text-3xl' />
                     </a>
                     {showSidebar && <span className='ml-2 text-xs text-slate-300'>
-                        2.0.0 - jx06T
+                        2.0.1 - jx06T
                     </span>}
                 </div>
 
