@@ -155,6 +155,11 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
             } else {
                 window.speechSynthesis.speak(item);
                 item.onend = playNext;
+                // item.onerror = function (event) {
+                //     console.error('Error occurred while speaking:', event.error);
+                //     alert('Error occurred while speaking:');
+                //     // 這裡可以進行錯誤處理
+                // };
             }
             index++;
         };
@@ -218,20 +223,25 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
             setIsPlaying(true);
             popNotify("Start playing")
             playWord(currentProgress);
+            createSilentAudio();
 
-            if (audioRef.current) {
-                audioRef.current.volume = 1
-                audioRef.current.play();
-            }
+            // if (audioRef.current) {
+            //     audioRef.current.volume = 1
+            //     audioRef.current.play();
+            // }
 
         } else {
             popNotify("Stop playing")
             stop()
 
-            if (audioRef.current) {
-                audioRef.current.volume = 1
-                audioRef.current.pause();
+            // if (audioRef.current) {
+            //     audioRef.current.volume = 1
+            //     audioRef.current.pause();
 
+            // }
+
+            if (audioContext) {
+                audioContext.close();
             }
         }
     }
@@ -257,29 +267,56 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
         }
     }
 
-    function simulateClick(element:HTMLElement) {
-        // 创建一个鼠标事件对象
-        const clickEvent = new MouseEvent('click', {
-            view: window,
-            bubbles: true,
-            cancelable: true,
-            // 其他需要的事件属性，如 clientX, clientY 等
+    let audioContext :AudioContext;
+    let silentAudio;
+
+    function createSilentAudio() {
+        audioContext = new (window.AudioContext)();
+        silentAudio = audioContext.createBuffer(1, 1, 22050);
+        const source = audioContext.createBufferSource();
+        source.buffer = silentAudio;
+        source.loop = true;
+        source.connect(audioContext.destination);
+        source.start();
+    }
+
+    // function simulateClick(element: HTMLElement) {
+    //     // 创建一个鼠标事件对象
+    //     const clickEvent = new MouseEvent('click', {
+    //         view: window,
+    //         bubbles: true,
+    //         cancelable: true,
+    //         // 其他需要的事件属性，如 clientX, clientY 等
+    //     });
+
+    //     // 分发事件到指定的元素
+    //     element.dispatchEvent(clickEvent);
+    // }
+
+    // const handleEnded = () => {
+    //     if (audioRef.current) {
+    //         audioRef.current.play();
+    //         simulateClick(audioRef.current);
+    //     }
+    // }
+
+    useEffect(() => {
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // 页面隐藏时，创建并播放静音音频
+                createSilentAudio();
+            } else {
+                // 页面可见时，停止静音音频（如果存在）
+                if (audioContext) {
+                    audioContext.close();
+                }
+            }
         });
-
-        // 分发事件到指定的元素
-        element.dispatchEvent(clickEvent);
-    }
-
-    const handleEnded = () => {
-        if (audioRef.current) {
-            audioRef.current.play();
-            simulateClick(audioRef.current);
-        }
-    }
+    }, [])
 
     return (
         <div className="bottom-2 left-0 right-0 px-2 xs:right-0 absolute flex flex-col items-center z-10">
-            <audio onPause={handlePlay0} onPlay={handlePlay0} onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="test.wav"></audio>
+            {/* <audio onPause={handlePlay0} onPlay={handlePlay0} onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="test.wav"></audio> */}
             <div className={`${showSetting ? "h-[25rem] xs:h-[15rem] s940:h-[13rem]  s1200:h-[10rem]" : "h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 transition-all duration-300 ease-in-out flex flex-col justify-end`}>
                 {showSetting && <>
                     <div className='w-full flex flex-wrap justify-center'>{
