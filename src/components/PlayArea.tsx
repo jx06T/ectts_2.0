@@ -54,6 +54,7 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
     const voices = useRef<SpeechSynthesisVoice[]>([])
 
     const randomTableRef = useRef<number[] | null>(randomTable);
+    const audioRef = useRef<HTMLAudioElement>(null)
 
     useEffect(() => {
         const initialSettingsL = localStorage.getItem('ectts-settings');
@@ -217,14 +218,30 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
             setIsPlaying(true);
             popNotify("Start playing")
             playWord(currentProgress);
+
+            if (audioRef.current) {
+                audioRef.current.volume = 0.1
+                audioRef.current.play();
+            }
         } else {
             popNotify("Stop playing")
             stop()
+
+            if (audioRef.current) {
+                audioRef.current.pause();
+            }
+        }
+    }
+
+    const handleEnded = ()=>{
+        if (audioRef.current) {
+            audioRef.current.play();
         }
     }
 
     return (
         <div className="bottom-2 left-0 right-0 px-2 xs:right-0 absolute flex flex-col items-center z-10">
+            <audio onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="test.wav" loop></audio>
             <div className={`${showSetting ? "h-[25rem] xs:h-[15rem] s940:h-[13rem]  s1200:h-[10rem]" : "h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 transition-all duration-300 ease-in-out flex flex-col justify-end`}>
                 {showSetting && <>
                     <div className='w-full flex flex-wrap justify-center'>{
