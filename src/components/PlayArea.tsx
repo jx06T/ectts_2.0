@@ -237,6 +237,8 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
     }
 
     const handlePlay0 = () => {
+        // console.log(audioRef.current!.ended ,audioRef.current!.paused,isPlaying)
+        // alert(audioRef.current!.ended+  "" + audioRef.current!.paused + isPlaying)
         if (audioRef.current!.ended || !audioRef.current!.paused === isPlaying) {
             return
         }
@@ -246,17 +248,32 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
             setIsPlaying(true);
             popNotify("Start playing")
             playWord(currentProgress);
-            
+
         } else {
+            // alert("SSS")
             popNotify("Stop playing")
             stop()
-            
+
         }
+    }
+
+    function simulateClick(element:HTMLElement) {
+        // 创建一个鼠标事件对象
+        const clickEvent = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+            // 其他需要的事件属性，如 clientX, clientY 等
+        });
+
+        // 分发事件到指定的元素
+        element.dispatchEvent(clickEvent);
     }
 
     const handleEnded = () => {
         if (audioRef.current) {
             audioRef.current.play();
+            simulateClick(audioRef.current);
         }
     }
 
