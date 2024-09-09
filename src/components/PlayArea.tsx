@@ -220,20 +220,37 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
             playWord(currentProgress);
 
             if (audioRef.current) {
-                audioRef.current.volume = 0.1
+                audioRef.current.volume = 1
                 audioRef.current.play();
             }
+
         } else {
             popNotify("Stop playing")
             stop()
 
             if (audioRef.current) {
+                audioRef.current.volume = 1
                 audioRef.current.pause();
             }
         }
     }
 
-    const handleEnded = ()=>{
+    const handlePlay0 = () => {
+
+        if (!audioRef.current!.paused && !audioRef.current!.ended) {
+            isPlayingRef.current = true
+            setIsPlaying(true);
+            popNotify("Start playing")
+            playWord(currentProgress);
+
+        } else {
+            popNotify("Stop playing")
+            stop()
+
+        }
+    }
+
+    const handleEnded = () => {
         if (audioRef.current) {
             audioRef.current.play();
         }
@@ -241,7 +258,7 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
 
     return (
         <div className="bottom-2 left-0 right-0 px-2 xs:right-0 absolute flex flex-col items-center z-10">
-            <audio onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="test.wav" loop></audio>
+            <audio onPause={handlePlay0} onPlay={handlePlay0} onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="test.wav"></audio>
             <div className={`${showSetting ? "h-[25rem] xs:h-[15rem] s940:h-[13rem]  s1200:h-[10rem]" : "h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 transition-all duration-300 ease-in-out flex flex-col justify-end`}>
                 {showSetting && <>
                     <div className='w-full flex flex-wrap justify-center'>{
@@ -271,6 +288,7 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
                             <MingcuteSettings6Fill className=" text-3xl" onClick={() => setShowSetting(!showSetting)} />
                         </button>
                         <button className="js-2" onClick={handlePlay}>
+                            {/* <button className="js-2" onClick={handlePlay0}> */}
                             {isPlaying ? <FluentPause24Filled className=" text-3xl" /> : <FluentPlay24Filled className=" text-3xl" />}
                         </button>
                         <button className="js-2" onClick={() => {
