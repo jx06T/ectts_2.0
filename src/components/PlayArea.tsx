@@ -236,8 +236,11 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
     }
 
     const handlePlay0 = () => {
+        if ( audioRef.current!.ended) {
+            return
+        }
 
-        if (!audioRef.current!.paused && !audioRef.current!.ended) {
+        if (!audioRef.current!.paused) {
             isPlayingRef.current = true
             setIsPlaying(true);
             popNotify("Start playing")
