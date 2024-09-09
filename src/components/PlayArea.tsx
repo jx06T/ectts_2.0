@@ -231,12 +231,13 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
             if (audioRef.current) {
                 audioRef.current.volume = 1
                 audioRef.current.pause();
+
             }
         }
     }
 
     const handlePlay0 = () => {
-        if ( audioRef.current!.ended) {
+        if (audioRef.current!.ended || !audioRef.current!.paused === isPlaying) {
             return
         }
 
@@ -245,11 +246,11 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
             setIsPlaying(true);
             popNotify("Start playing")
             playWord(currentProgress);
-
+            
         } else {
             popNotify("Stop playing")
             stop()
-
+            
         }
     }
 
