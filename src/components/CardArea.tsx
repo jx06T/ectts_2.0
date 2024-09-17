@@ -181,7 +181,7 @@ function CardArea({ handleDoneToggle, randomTable, words, progress }: { handleDo
     }
 
     return (
-        <div className=" overflow-hidden card-area left-0 right-0 -top-3 bottom-[70px] absolute flex flex-col items-center z-30 bg-transparent">
+        <div className=" overflow-hidden card-area left-0 right-0 -top-3 bottom-[64px] absolute flex flex-col items-center z-30 bg-transparent">
             <Card chinese={nextWord.chinese} english={nextWord.english} toNext={toNext} back={true} />
             <Card chinese={currentWord.chinese} english={currentWord.english} index={randomTable[currentProgress]} toNext={toNext} handleDoneToggle={handleDoneToggle} />
         </div>
