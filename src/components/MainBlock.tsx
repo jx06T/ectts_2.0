@@ -239,6 +239,9 @@ function MainBlock() {
             setWords(prev => {
                 const newEords = prev.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
                 popNotify(`${newEords.filter(word => word.selected).length}／${words.length} words selected`)
+                if (playPosition > index) {
+                    setPlayPosition(playPosition + (newEords[index].done ? 1 : -1))
+                }
                 return newEords
             });
         }
