@@ -129,3 +129,21 @@ background: #b373f3;
     -ms-overflow-style: none;  /* 針對 Internet Explorer 和 Edge */
     scrollbar-width: none;  /* 針對 Firefox */
 }
+
+.small-card{
+    @apply absolute rounded-2xl bg-white select-none cursor-move w-full h-full flex items-center justify-center;
+    opacity: 1;
+    transition: opacity 0.1s ease-in-out, transform 0.4s ease-out;
+}
+
+.small-card.dragging{
+    opacity: 0.8;
+}
+
+.small-card.dragging{
+    opacity: 0.8;
+}
+
+.small-card.dragging{
+    opacity: 0.8;
+}

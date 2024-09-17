@@ -340,9 +340,9 @@ function MainBlock() {
                         setShowRight(!showRight)
                     }}>
                         {showRight ?
-                            <IcRoundMenuOpenL className={` text-2xl ${state.rand ? " text-green-700" : ""}`} />
+                            <IcRoundMenuOpenL className={` text-2xl`} />
                             :
-                            <IcRoundMenuOpenR className={` text-2xl ${state.rand ? " text-green-700" : ""}`} />
+                            <IcRoundMenuOpenR className={` text-2xl`} />
                         }
                     </a>
                 </div>
