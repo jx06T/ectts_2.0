@@ -144,6 +144,10 @@ background: #b373f3;
     opacity: 0.8;
 }
 
-.small-card.dragging{
+.card.learning{
+    opacity: 0.8;
+}
+
+.card.got-it{
     opacity: 0.8;
 }

@@ -180,17 +180,6 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
             }
         }
 
-        // if (words[newIndex] && !words[newIndex].needToPlay) {
-        //     setCurrentProgress(newIndex)
-        //     setTimeout(() => {
-        //         playWord(newIndex + 1)
-        //     }, 100);
-        //     return
-        // }
-
-        // const newNewIndex = randomTable.current ? randomTable.current[newIndex] : newIndex
-        // console.log(newIndex, randomTable.current, newNewIndex)
-
         if (!words[randomTableRef.current![newIndex]]) {
             setCurrentProgress(0)
             scrollToCenter(0)

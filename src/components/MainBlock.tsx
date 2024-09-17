@@ -68,7 +68,7 @@ function MainBlock() {
 
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [words, setWords] = useState<Word[]>([]);
-    const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false, rand: false , cards: false, deleting: false, init: true });
+    const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false, rand: false, cards: false, deleting: false, init: true });
     const [focusIndex, setFocusIndex] = useState<number>(0);
     const [playPosition, setPlayPosition] = useState<number>(0);
     const [showRight, setShowRight] = useState<boolean>(false);
@@ -220,7 +220,20 @@ function MainBlock() {
         copyToClipboard(ExportText)
     };
 
-    const handleDoneToggle = (index: number) => {
+    const handleDoneToggle = (index: number, newValue: boolean | null = null) => {
+        if (state.cards) {
+            setWords(prev => {
+                const newEords = prev.map((word, i) => i === index ? { ...word, done: newValue as boolean } : word)
+                popNotify(`${newEords.filter(word => word.done).length}／${words.length} words selected`)
+                if (playPosition > index) {
+                    setPlayPosition(playPosition + (newEords[index].done ? 1 : -1))
+                }
+                return newEords
+            });
+
+            return
+        }
+
         if (state.deleting) {
             setWords(prev => prev.filter((e, i) => i !== index))
             return
@@ -240,7 +253,7 @@ function MainBlock() {
                 const newEords = prev.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
                 popNotify(`${newEords.filter(word => word.selected).length}／${words.length} words selected`)
                 if (playPosition > index) {
-                    setPlayPosition(playPosition + (newEords[index].done ? 1 : -1))
+                    setPlayPosition(playPosition + (newEords[index].selected ? 1 : -1))
                 }
                 return newEords
             });
@@ -310,6 +323,7 @@ function MainBlock() {
                         </a>
                         <a className='cursor-pointer w-10 h-10' onClick={() => {
                             popNotify(!state.cards ? "Cards mode" : "Normal mode")
+                            setPlayPosition(0)
                             setState({ ...state, cards: !state.cards })
                         }}>
                             <MdiCardsOutline className={` text-2xl ${state.cards ? " text-purple-700" : ""}`} />
@@ -346,10 +360,9 @@ function MainBlock() {
                         }
                     </a>
                 </div>
-                {state.cards && <CardArea  randomTable={randomTable} words={words.map(word => ({ ...word, needToPlay: (state.editing ? word.selected : !word.done)}))} />}
             </div>
 
-            <div className='flex justify-center h-full w-full overflow-y-auto'>
+            <div className=' relative flex justify-center h-full w-full overflow-y-auto'>
                 <div ref={scrollRef} className='jx-5 h-full max-w-[22rem] sm:max-w-[64rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
                     {words.map((word, index) => (
                         <WordItem
@@ -377,9 +390,9 @@ function MainBlock() {
                         <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-96 p-2 mt-8'></textarea>
                     </div>
                 </div>
+                {state.cards && <CardArea handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} words={words} />}
             </div>
-
-            <PlayArea randomTable={randomTable} scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words.map(word => ({ ...word, needToPlay: (state.editing ? word.selected : !word.done) }))} />
+            <PlayArea randomTable={randomTable} scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words} />
         </div >
     )
 }
