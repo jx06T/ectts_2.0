@@ -43,10 +43,11 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
                 handleDoneToggle(index, true)
                 handleMove(1000, 0)
             }
+            setIsFlipped(false);
+
             setTimeout(() => {
                 setIsMoving(true)
                 handleMove(0, 0)
-                setIsFlipped(false);
                 toNext()
             }, 200);
         }
@@ -145,7 +146,7 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
             onMouseDown={handleDragStart}
         >
             <div
-                className={` small-card ${isDragging ? 'dragging' : ''}`}
+                className={` small-card ${isDragging ? 'dragging' : ''} ${isMoving ? "moving" : ""}`}
                 style={{
                     transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
                     backfaceVisibility: 'hidden',
@@ -153,7 +154,7 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
                 <h1 className=" select-text leading-none text-center text-4xl">{chinese}</h1>
             </div>
             <div
-                className={` small-card ${isDragging ? 'dragging' : ''}`}
+                className={` small-card ${isDragging ? 'dragging' : ''} ${isMoving ? "moving" : ""}`}
                 style={{
                     transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
                     backfaceVisibility: 'hidden',
@@ -180,7 +181,7 @@ function CardArea({ handleDoneToggle, randomTable, words, progress }: { handleDo
     }
 
     return (
-        <div className=" overflow-hidden card-area left-0 right-0 -top-3 bottom-[70px] absolute flex flex-col items-center z-30 bg-transparent">
+        <div className=" overflow-hidden card-area left-0 right-0 -top-3 bottom-[64px] absolute flex flex-col items-center z-30 bg-transparent">
             <Card chinese={nextWord.chinese} english={nextWord.english} toNext={toNext} back={true} />
             <Card chinese={currentWord.chinese} english={currentWord.english} index={randomTable[currentProgress]} toNext={toNext} handleDoneToggle={handleDoneToggle} />
         </div>

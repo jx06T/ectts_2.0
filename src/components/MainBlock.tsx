@@ -130,7 +130,7 @@ function MainBlock() {
     }, [state])
 
 
-    const getRandomTable = (words: Word[], r: boolean): number[] => {
+    const getRandomTable = (words: Word[], r: boolean, state: State1): number[] => {
 
         const arr: number[] = words.map((word, i) => (state.editing ? word.selected : !word.done) ? i : -1).filter(e => e !== -1)
         if (!r) {
@@ -276,7 +276,7 @@ function MainBlock() {
     }
 
     useEffect(() => {
-        setRandomTable(getRandomTable(words, state.rand))
+        setRandomTable(getRandomTable(words, state.rand, state))
     }, [words])
 
     return (
@@ -289,38 +289,37 @@ function MainBlock() {
             </div>
             <div className=' flex justify-center -mb-2 sm:-mb-1 mt-1'>
                 <div className=' flex justify-between w-80'>
-                    {!showRight && <div className='flex justify-center'>
-                        <a className='cursor-pointer w-[39px] h-10 pt-[1px]' onClick={() => {
-                            popNotify(state.showE ? "Hide English" : "Show English")
-                            setState({ ...state, showE: !state.showE })
-                        }}>
-                            {!state.showE ? <BxBxsHide className='text-2xl' /> : <BxBxsShow className='text-2xl' />}
+                    {showRight && <div className='flex justify-center'>
+                        <a className='cursor-pointer w-10 h-10' onClick={handleReverseSelection}>
+                            <PhSelectionInverseDuotone className='text-2xl' />
                         </a>
-                        <a className='cursor-pointer w-10 h-10 pt-[1px]' onClick={() => {
-                            popNotify(state.showC ? "Hide Chinese" : "Show Chinese")
-                            setState({ ...state, showC: !state.showC })
-                        }}>
-                            {!state.showC ? <BxBxsHide className='text-2xl' /> : <BxBxsShow className='text-2xl' />}
+
+                        <a className='cursor-pointer w-10 h-10' onClick={handleSelectAll}>
+                            {state.selection == 1 ? <PhSelectionBold className='text-2xl' /> : <PhSelectionDuotone className='text-2xl' />}
                         </a>
-                        <a className='cursor-pointer w-10 h-10' onClick={() => {
-                            popNotify(state.lock ? "Unlocked" : "locked")
-                            setState({ ...state, lock: !state.lock })
-                        }}>
-                            {!state.lock ? <MaterialLockOpen className='text-2xl' /> : <MaterialLock className='text-2xl' />}
-                        </a>
+
                         <a className='cursor-pointer w-10 h-10' onClick={() => {
                             popNotify(state.editing ? "Select mode" : "Normal mode")
-                            setState({ ...state, editing: !state.editing })
+                            setState((pre: State1) => {
+                                const newState = { ...pre, editing: !pre.editing }
+                                setRandomTable(getRandomTable(words, newState.rand, newState))
+                                return newState
+                            })
                         }}>
                             {state.editing ? <MaterialChecklistRtl className='text-2xl' /> : <CarbonSelectWindow className='text-2xl' />}
                         </a>
+
                         <a className='cursor-pointer w-10 h-10' onClick={() => {
                             popNotify(!state.rand ? "Random mode" : "Normal mode")
-                            setRandomTable(getRandomTable(words, !state.rand))
-                            setState({ ...state, rand: !state.rand })
+                            setState((pre: State1) => {
+                                const newState = { ...pre, rand: !pre.rand }
+                                setRandomTable(getRandomTable(words, newState.rand, newState))
+                                return newState
+                            })
                         }}>
                             <MdiDice5 className={` text-2xl ${state.rand ? " text-green-700" : ""}`} />
                         </a>
+
                         <a className='cursor-pointer w-10 h-10' onClick={() => {
                             popNotify(!state.cards ? "Cards mode" : "Normal mode")
                             setPlayPosition(0)
@@ -329,23 +328,39 @@ function MainBlock() {
                             <MdiCardsOutline className={` text-2xl ${state.cards ? " text-purple-700" : ""}`} />
                         </a>
                     </div>}
-                    {showRight && <div className='flex justify-center'>
+                    {!showRight && <div className='flex justify-center'>
+                        <a className='cursor-pointer w-[39px] h-10 pt-[1px]' onClick={() => {
+                            popNotify(state.showE ? "Hide English" : "Show English")
+                            setState({ ...state, showE: !state.showE })
+                        }}>
+                            {!state.showE ? <BxBxsHide className='text-2xl' /> : <BxBxsShow className='text-2xl' />}
+                        </a>
+
+                        <a className='cursor-pointer w-10 h-10 pt-[1px]' onClick={() => {
+                            popNotify(state.showC ? "Hide Chinese" : "Show Chinese")
+                            setState({ ...state, showC: !state.showC })
+                        }}>
+                            {!state.showC ? <BxBxsHide className='text-2xl' /> : <BxBxsShow className='text-2xl' />}
+                        </a>
+
+                        <a className='cursor-pointer w-10 h-10' onClick={() => {
+                            popNotify(state.lock ? "Unlocked" : "locked")
+                            setState({ ...state, lock: !state.lock })
+                        }}>
+                            {!state.lock ? <MaterialLockOpen className='text-2xl' /> : <MaterialLock className='text-2xl' />}
+                        </a>
+
                         <a className='cursor-pointer w-10 h-10' onClick={() => {
                             popNotify('Click the right box to delete')
                             setState({ ...state, deleting: !state.deleting })
                         }}>
                             <MaterialSymbolsEditRounded className={` text-2xl ${state.deleting ? "text-red-800" : ""}`} />
                         </a>
-                        <a className='cursor-pointer w-10 h-10' onClick={handleReverseSelection}>
-                            <PhSelectionInverseDuotone className='text-2xl' />
-                        </a>
-                        <a className='cursor-pointer w-10 h-10' onClick={handleSelectAll}>
-                            {state.selection == 1 ? <PhSelectionBold className='text-2xl' /> : <PhSelectionDuotone className='text-2xl' />}
-                        </a>
 
                         <a className='cursor-pointer w-10 h-10' onClick={handleImport}>
                             <Fa6SolidFileImport className=' text-xl mt-[2px]  text-red-800' />
                         </a>
+
                         <a className='w-10 h-10 pt-[2px]' onClick={handleExport}>
                             <Fa6SolidFileExport className='text-xl' />
                         </a>

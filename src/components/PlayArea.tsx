@@ -293,20 +293,6 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
         }
     }
 
-    // useEffect(() => {
-    //     document.addEventListener('visibilitychange', () => {
-    //         if (document.hidden) {
-    //             // 页面隐藏时，创建并播放静音音频
-    //             createSilentAudio();
-    //         } else {
-    //             // 页面可见时，停止静音音频（如果存在）
-    //             if (audioContext) {
-    //                 audioContext.close();
-    //             }
-    //         }
-    //     });
-    // }, [])
-
     return (
         <div className="bottom-2 left-0 right-0 px-2 xs:right-0 absolute flex flex-col items-center z-10">
             <audio onPause={handlePlay0} onPlay={handlePlay0} onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="test.wav"></audio>

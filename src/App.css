@@ -136,6 +136,10 @@ background: #b373f3;
     transition: opacity 0.1s ease-in-out, transform 0.4s ease-out;
 }
 
+.small-card.moving{
+    transition: none;
+}
+
 .small-card.dragging{
     opacity: 0.8;
 }
