@@ -207,7 +207,7 @@ function PlayArea({state,updataTable ,randomTable, progress, words, currentTitle
 
     const handlePlay = () => {
         if (!isPlaying) {
-           if (!randomTable ) {
+           if (!randomTable || randomTable.length) {
             updataTable()
            }
 

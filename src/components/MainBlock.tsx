@@ -158,7 +158,7 @@ function MainBlock() {
         setWords(prev => prev.map((word, i) =>
             i === index ? { ...word, [field]: value } : word
         ));
-        updataRandomTable()
+        // updataRandomTable()
     };
 
     const handleMove = () => {
@@ -237,6 +237,7 @@ function MainBlock() {
 
         if (state.deleting) {
             setWords(prev => prev.filter((e, i) => i !== index))
+            updataRandomTable()
             return
         }
         setState({ ...state, selection: 0 })
@@ -265,6 +266,7 @@ function MainBlock() {
         setWords(prev => [...prev, { id: getRandId(), chinese: "", english: "" }]);
         setFocusIndex(words.length);
         scrollToCenter(words.length)
+        updataRandomTable()
     };
 
     const handlePlayThisWord = (index: number) => {
