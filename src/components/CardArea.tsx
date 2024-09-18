@@ -60,8 +60,6 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
         setIsMoving(false)
         const startX = e.clientX - position.x;
         const startY = e.clientY - position.y;
-        overRef.current = false
-alert(5)
         const handleMouseMove = (moveEvent: MouseEvent) => {
             const newX = moveEvent.clientX - startX;
             const newY = moveEvent.clientY - startY;
@@ -71,13 +69,13 @@ alert(5)
                 overRef.current = true
             }
 
+            overRef.current = false
             handleMove(newX, newY)
         };
 
         const handleMouseUp = (upEvent: MouseEvent) => {
             const newX = upEvent.clientX - startX;
             const newY = upEvent.clientY - startY;
-alert(overRef.current)
             if (!overRef.current) {
                 setIsFlipped(!isFlipped);
             }
