@@ -226,7 +226,7 @@ function MainBlock() {
                 const newEords = prev.map((word, i) => i === index ? { ...word, done: newValue as boolean } : word)
                 popNotify(`${newEords.filter(word => word.done).length}／${words.length} words selected`)
                 if (randomTable[playPosition] > index) {
-                    setPlayPosition(playPosition + (newEords[index].done ? 1 : -1))
+                    // setPlayPosition(playPosition + (newEords[index].done ? 1 : -1))
                 }
                 return newEords
             });
@@ -244,7 +244,7 @@ function MainBlock() {
                 const newEords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
                 popNotify(`${newEords.filter(word => word.done).length}／${words.length} words done`)
                 if (randomTable[playPosition] > index) {
-                    setPlayPosition(playPosition + (newEords[index].done ? -1 : 1))
+                    // setPlayPosition(playPosition + (newEords[index].done ? -1 : 1))
                 }
                 return newEords
             });
@@ -253,7 +253,7 @@ function MainBlock() {
                 const newEords = prev.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
                 popNotify(`${newEords.filter(word => word.selected).length}／${words.length} words selected`)
                 if (randomTable[playPosition] > index) {
-                    setPlayPosition(playPosition + (newEords[index].selected ? 1 : -1))
+                    // setPlayPosition(playPosition + (newEords[index].selected ? 1 : -1))
                 }
                 return newEords
             });
