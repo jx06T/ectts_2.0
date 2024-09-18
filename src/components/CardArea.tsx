@@ -61,7 +61,7 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
         const startX = e.clientX - position.x;
         const startY = e.clientY - position.y;
         overRef.current = false
-
+alert(5)
         const handleMouseMove = (moveEvent: MouseEvent) => {
             const newX = moveEvent.clientX - startX;
             const newY = moveEvent.clientY - startY;
