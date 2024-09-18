@@ -112,6 +112,7 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
 
             if (Math.abs(newX - lastX.current) > 2 || Math.abs(newY - lastY.current) > 2) {
                 overRef.current = true
+                alert(44)
             }
 
             handleMove(newX, newY)
