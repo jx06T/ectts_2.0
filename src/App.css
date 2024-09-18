@@ -131,7 +131,7 @@ background: #b373f3;
 }
 
 .small-card{
-    @apply absolute bg-blue-100 rounded-2xl select-none cursor-move w-full h-full flex items-center justify-center;
+    @apply absolute rounded-2xl select-none cursor-move w-full h-full flex items-center justify-center;
     opacity: 1;
     transition: opacity 0.1s ease-in-out, transform 0.4s ease-out;
 }

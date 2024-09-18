@@ -135,7 +135,7 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
     return (
         <div
             ref={cardRef}
-            className={`${action == -1 ? "learning border-2 border-red-500" : (action == 1 ? "got-it border-2 border-green-500" : "")} card  absolute top-0 bottom-16 select-none w-[95%] mt-3 rounded-2xl max-w-[440px] min-w-80 z-30 bg-blues-300 ${back?"bg-opacity-0":"bg-opacity-30"} `}
+            className={`${action == -1 ? "learning border-2 border-red-500" : (action == 1 ? "got-it border-2 border-green-500" : "")} card  absolute top-0 bottom-16 select-none w-[95%] mt-3 rounded-2xl max-w-[440px] min-w-80 z-30 bg-blues-300 ${back ? "bg-opacity-0" : "bg-opacity-30"} `}
             style={{
                 transform: `translate(${position.x}px, ${position.y}px) rotate(${angle}deg)`,
                 transition: isDragging || isMoving ? 'none' : 'transform 0.2s ease-out',
@@ -146,7 +146,7 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
             onMouseDown={handleDragStart}
         >
             <div
-                className={` small-card ${isDragging ? 'dragging' : ''} ${isMoving ? "moving" : ""}`}
+                className={` small-card ${isDragging ? 'dragging' : ''} ${isMoving ? "moving" : ""} ${!back ? "bg-blue-100" : "bg-slate-50"}`}
                 style={{
                     transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
                     backfaceVisibility: 'hidden',
@@ -154,7 +154,7 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
                 <h1 className=" select-text leading-none text-center text-4xl">{chinese}</h1>
             </div>
             <div
-                className={` small-card ${isDragging ? 'dragging' : ''} ${isMoving ? "moving" : ""}`}
+                className={` small-card ${isDragging ? 'dragging' : ''} ${isMoving ? "moving" : ""} ${!back ? "bg-blue-100" : "bg-slate-50"}`}
                 style={{
                     transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
                     backfaceVisibility: 'hidden',
