@@ -22,6 +22,7 @@ interface State1 {
     rand: boolean,
     cards: boolean,
     deleting: boolean,
+    page0: boolean,
     init?: boolean,
 }
 

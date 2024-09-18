@@ -68,10 +68,9 @@ function MainBlock() {
 
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [words, setWords] = useState<Word[]>([]);
-    const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false, rand: false, cards: false, deleting: false, init: true });
+    const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false, rand: false, cards: false, deleting: false, init: true, page0: true });
     const [focusIndex, setFocusIndex] = useState<number>(0);
     const [playPosition, setPlayPosition] = useState<number>(0);
-    const [showRight, setShowRight] = useState<boolean>(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputBoxRef = useRef<HTMLTextAreaElement>(null);
     const { notify, popNotify } = useNotify();
@@ -115,20 +114,21 @@ function MainBlock() {
         localStorage.setItem(setId, JSON.stringify(words))
     }, [words])
 
+    console.log(99)
     useEffect(() => {
-        const state0 = localStorage.getItem("ectts-state");
-        if (state0) {
-            setState({ ...JSON.parse(state0), deleting: false });
-        } else {
-            setState({ ...state, init: false });
-        }
-
-    }, [])
-
-    useEffect(() => {
+        console.log("ss", state)
         if (state.init) {
+            const state0 = localStorage.getItem("ectts-state");
+            if (state0) {
+                setState({ ...JSON.parse(state0), deleting: false, init: false });
+                console.log(state0)
+            } else {
+                console.log("state0")
+                setState({ ...state, init: false });
+            }
             return
         }
+        console.log("DDDD", state)
         localStorage.setItem("ectts-state", JSON.stringify(state))
     }, [state])
 
@@ -306,7 +306,7 @@ function MainBlock() {
             </div>
             <div className=' flex justify-center -mb-2 sm:-mb-1 mt-1'>
                 <div className=' flex justify-between w-80'>
-                    {showRight && <div className='flex justify-center'>
+                    {state.page0 && <div className='flex justify-center'>
                         <a className='cursor-pointer w-10 h-10' onClick={handleReverseSelection}>
                             <PhSelectionInverseDuotone className='text-2xl' />
                         </a>
@@ -347,7 +347,7 @@ function MainBlock() {
                             <MdiCardsOutline className={` text-2xl ${state.cards ? " text-purple-700" : ""}`} />
                         </a>
                     </div>}
-                    {!showRight && <div className='flex justify-center'>
+                    {!state.page0 && <div className='flex justify-center'>
                         <a className='cursor-pointer w-[39px] h-10 pt-[1px]' onClick={() => {
                             popNotify(state.showE ? "Hide English" : "Show English")
                             setState({ ...state, showE: !state.showE })
@@ -385,9 +385,9 @@ function MainBlock() {
                         </a>
                     </div>}
                     <a className='cursor-pointer w-10 h-10' onClick={() => {
-                        setShowRight(!showRight)
+                        setState({ ...state, page0: !state.page0 })
                     }}>
-                        {showRight ?
+                        {state.page0 ?
                             <IcRoundMenuOpenL className={` text-2xl`} />
                             :
                             <IcRoundMenuOpenR className={` text-2xl`} />

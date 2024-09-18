@@ -74,7 +74,7 @@ function Sidebar() {
             const setLocation = JSON.parse(initialAllSet).findIndex((e: Aset) => e.id === currentPath)
             if (setLocation !== -1 && setLocation !== 0) {
                 const thisSet = JSON.parse(initialAllSet).find((e: Aset) => e.id === currentPath)
-                setAllSet([thisSet,...JSON.parse(initialAllSet).filter((e: Aset) => e.id !== currentPath)]);
+                setAllSet([thisSet, ...JSON.parse(initialAllSet).filter((e: Aset) => e.id !== currentPath)]);
             }
         } else {
             localStorage.setItem('all-set', JSON.stringify([]))
@@ -207,7 +207,7 @@ function Sidebar() {
             <Options callback={handleOptionClick} index={optionIndex} show={optionY !== -99999} y={optionY - scrollBarY} />
 
             {showReNamed && <div className={`option-button2 w-72 h-10 shadow-md bg-purple-200 left-2 top-16 absolute z-10 rounded-lg p-2 flex`}>
-                <input autoFocus onKeyDown={handleKeyDown} ref={reNamedRef} property='name' defaultValue={optionIndex > 0 ? allSet[optionIndex].title : ""} type="text" className='option-button2 jx-0 border-b-2 border-stone-50 w-full rounded-none' />
+                <input autoFocus onKeyDown={handleKeyDown} ref={reNamedRef} property='name' defaultValue={optionIndex >= 0 ? allSet[optionIndex].title : ""} type="text" className='option-button2 jx-0 border-b-2 border-stone-50 w-full rounded-none' />
                 <button onClick={handleReNamed} className=' ml-2 w-6 rounded-lg flex-shrink-0 bg-purple-400 option-button2'>▶</button>
             </div >}
         </div>
