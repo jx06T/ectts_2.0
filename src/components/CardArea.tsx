@@ -135,7 +135,7 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
     return (
         <div
             ref={cardRef}
-            className={`${action == -1 ? "learning border-2 border-red-500" : (action == 1 ? "got-it border-2 border-green-500" : "")} card  absolute top-0 bottom-16 select-none w-[95%] mt-3 rounded-2xl max-w-[440px] min-w-80 z-30 bg-blues-300 ${back ? "bg-opacity-0" : "bg-opacity-30"} `}
+            className={`${action == -1 ? "learning border-2 border-red-500" : (action == 1 ? "got-it border-2 border-green-500" : "")} card pointer-events-auto absolute top-16 bottom-[70px] select-none w-[95%] mt-3 rounded-2xl max-w-[440px] min-w-80 z-30 bg-blues-300 ${back ? "bg-opacity-0" : "bg-opacity-30"} `}
             style={{
                 transform: `translate(${position.x}px, ${position.y}px) rotate(${angle}deg)`,
                 transition: isDragging || isMoving ? 'none' : 'transform 0.2s ease-out',
@@ -181,7 +181,7 @@ function CardArea({ handleDoneToggle, randomTable, words, progress }: { handleDo
     }
 
     return (
-        <div className=" pb-16 overflow-hidden card-area left-0 right-0 -top-3 bottom-0 absolute flex flex-col items-center z-30 bg-slate-100 bg-opacity-30">
+        <div className=" pointer-events-none pb-16 overflow-hidden card-area left-0 right-0 top-0 bottom-0 absolute flex flex-col items-center z-50 bg-slate-100 bg-opacity-30">
             <Card chinese={nextWord.chinese} english={nextWord.english} toNext={toNext} back={true} />
             <Card chinese={currentWord.chinese} english={currentWord.english} index={randomTable[currentProgress]} toNext={toNext} handleDoneToggle={handleDoneToggle} />
         </div>

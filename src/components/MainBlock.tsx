@@ -280,7 +280,7 @@ function MainBlock() {
     }, [words])
 
     return (
-        <div className=' main bg-slate-25 w-full sm:h-full px-1 sm:px-3 py-2 flex flex-col '>
+        <div className=' main bg-slate-25 w-full sm:h-full px-1 sm:px-3 py-2 flex flex-col relative'>
             <div className='flex'>
                 <h1 className='ml-9 m-1 mt-[3px] min-w-[70px] -mr-6'>ECTTS 2.0</h1>
                 <div className='flex flex-grow justify-center fixed right-[5%] mdlg:right-[12%] lg:right-[24%] z-40' >
@@ -405,8 +405,8 @@ function MainBlock() {
                         <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-96 p-2 mt-8'></textarea>
                     </div>
                 </div>
-                {state.cards && <CardArea handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} words={words} />}
             </div>
+                {state.cards && <CardArea handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} words={words} />}
             <PlayArea randomTable={randomTable} scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words} />
         </div >
     )
