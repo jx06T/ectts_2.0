@@ -77,7 +77,7 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
         const handleMouseUp = (upEvent: MouseEvent) => {
             const newX = upEvent.clientX - startX;
             const newY = upEvent.clientY - startY;
-
+alert(overRef.current)
             if (!overRef.current) {
                 setIsFlipped(!isFlipped);
             }
@@ -112,7 +112,6 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
 
             if (Math.abs(newX - lastX.current) > 2 || Math.abs(newY - lastY.current) > 2) {
                 overRef.current = true
-                alert(44)
             }
 
             handleMove(newX, newY)
