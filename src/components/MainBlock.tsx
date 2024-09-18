@@ -76,13 +76,13 @@ function MainBlock() {
     const inputBoxRef = useRef<HTMLTextAreaElement>(null);
     const { notify, popNotify } = useNotify();
 
-    
+
     const bigRandomTableRef = useRef<number[] | null>([]);
     const [randomTable, setRandomTable] = useState<number[]>([])
 
     useEffect(() => {
         updataRandomTable()
-        
+
         const Words0 = localStorage.getItem(setId);
         if (Words0) {
             setWords(JSON.parse(Words0));
@@ -135,14 +135,11 @@ function MainBlock() {
 
     const getRandomTable = (words: Word[], r: boolean, state: State1): number[] => {
 
-        const arr: number[] = words.map((word, i) => (state.editing ? word.selected : !word.done) ? i : -1).filter(e => e !== -1)
-        if (!r) {
-            return arr
+        const arr: number[] = r ? bigRandomTableRef.current!.filter(i => (state.editing ? words[i].selected : !words[i].done)) : words.map((word, i) => (state.editing ? word.selected : !word.done) ? i : -1).filter(e => e !== -1)
+        if (arr.length === 0) {
+            setState({ ...state, cards: false })
         }
-
-        // return arr.map(i=> bigRandomTableRef.current![i])
-        console.log(bigRandomTableRef.current!.filter(i=>(state.editing ? words[i].selected : !words[i].done)))
-        return bigRandomTableRef.current!.filter(i=>(state.editing ? words[i].selected : !words[i].done))
+        return arr
     }
 
     const scrollToCenter = (index: number): void => {
@@ -222,16 +219,11 @@ function MainBlock() {
 
     const handleDoneToggle = (index: number, newValue: boolean | null = null) => {
         if (state.cards) {
+
             setWords(prev => {
-                const newEords = prev.map((word, i) => i === index ? { ...word, done: newValue as boolean } : word)
+                const newEords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
                 popNotify(`${newEords.filter(word => word.done).length}／${words.length} words selected`)
-                console.log(randomTable[playPosition],newEords[index].done,index)
-                if (randomTable[playPosition] >= index) {
-                    setTimeout(() => {
-                        
-                    }, 0);
-                    // setPlayPosition(playPosition + (newEords[index].done ? -1 : 1))
-                }
+
                 return newEords
             });
 
@@ -243,7 +235,9 @@ function MainBlock() {
             updataRandomTable()
             return
         }
+
         setState({ ...state, selection: 0 })
+
         if (!state.editing) {
             setWords(prev => {
                 const newEords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
@@ -273,34 +267,32 @@ function MainBlock() {
     };
 
     const handlePlayThisWord = (index: number) => {
+        console.log(index)
         setTimeout(() => {
             setRandomTable(prev => {
                 setPlayPosition(prev.indexOf(index))
-                console.log(prev,index)
+                console.log(prev, index)
                 return prev
             })
         }, 100);
     }
 
     useEffect(() => {
-        // if (state.cards) {
-        //     return
-        // }
-        if (bigRandomTableRef.current!.length===0) {
+        if (bigRandomTableRef.current!.length === 0) {
             updataRandomTable()
-            console.log(66)
         }
+
         setRandomTable(getRandomTable(words, state.rand, state))
     }, [words])
-    
-    const updataRandomTable=()=>{
+
+    const updataRandomTable = () => {
         const arr: number[] = words.map((word, i) => i)
         for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [arr[i], arr[j]] = [arr[j], arr[i]];
         }
         bigRandomTableRef.current = arr
-        console.log(bigRandomTableRef.current,words)
+
         setRandomTable(getRandomTable(words, state.rand, state))
     }
 
@@ -433,8 +425,8 @@ function MainBlock() {
                     </div>
                 </div>
             </div>
-                {state.cards && <CardArea updataTable={updataRandomTable} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} words={words} />}
-            <PlayArea state={state} updataTable={updataRandomTable} randomTable={randomTable} scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words} />
+            {state.cards && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} words={words} />}
+            <PlayArea state={state} randomTable={randomTable} scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words} />
         </div >
     )
 }

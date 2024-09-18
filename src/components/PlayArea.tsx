@@ -34,7 +34,7 @@ const SettingsUI: Record<string, UI> = {
 }
 
 
-function PlayArea({ state, updataTable, randomTable, progress, words, currentTitle, scrollToCenter }: { state: State1, updataTable: Function, randomTable: number[], scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+function PlayArea({ state, randomTable, progress, words, currentTitle, scrollToCenter }: { state: State1, randomTable: number[], scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
     const [showSetting, setShowSetting] = useState<boolean>(false)
     const { notify, popNotify } = useNotify();
 
@@ -156,8 +156,6 @@ function PlayArea({ state, updataTable, randomTable, progress, words, currentTit
                 window.speechSynthesis.speak(item);
                 item.onend = playNext;
                 // item.onerror = function (event) {
-                //     console.error('Error occurred while speaking:', event.error);
-                //     alert('Error occurred while speaking:');
                 // };
             }
             index++;
@@ -207,10 +205,6 @@ function PlayArea({ state, updataTable, randomTable, progress, words, currentTit
 
     const handlePlay = () => {
         if (!isPlaying) {
-            if (!randomTable || randomTable.length === 0) {
-                // updataTable()
-            }
-
             isPlayingRef.current = true
             setIsPlaying(true);
             popNotify("Start playing")
@@ -341,9 +335,9 @@ function PlayArea({ state, updataTable, randomTable, progress, words, currentTit
                     </div>
 
                     <div className=" w-[28%] xs:w-[30%] pr-2 text-sm xs:text-lg  ">
-                        {words[randomTableRef.current![currentProgress]] ? words[randomTableRef.current![currentProgress]].english : ""}
+                        {state.cards ? "✓ " + words.filter(word => word.done).length : (words[randomTableRef.current![currentProgress]] ? words[randomTableRef.current![currentProgress]].english : "")}
                         <br></br>
-                        {words[randomTableRef.current![currentProgress]] ? words[randomTableRef.current![currentProgress]].chinese : ""}
+                        {state.cards ? "✕ " + words.filter(word => !word.done).length : (words[randomTableRef.current![currentProgress]] ? words[randomTableRef.current![currentProgress]].chinese : "")}
                     </div>
                 </div >
             </div>

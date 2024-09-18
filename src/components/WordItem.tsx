@@ -33,10 +33,10 @@ function WordItem({ onPlay, isPlaying, state, word, index, isFocused, onChange, 
     }
   };
 
-  const handleFocus = (field: 'english' | 'chinese') => {
-    if (field === 'english') setShowEnglish(true);
-    else setShowChinese(true);
-  };
+  // const handleFocus = (field: 'english' | 'chinese') => {
+  //   if (field === 'english') setShowEnglish(true);
+  //   else setShowChinese(true);
+  // };
 
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -74,6 +74,7 @@ function WordItem({ onPlay, isPlaying, state, word, index, isFocused, onChange, 
       <div
         onDoubleClick={() => {
           onPlay(index)
+          console.log(33)
           //@ts-ignore
           window.getSelection().removeAllRanges()
         }}
