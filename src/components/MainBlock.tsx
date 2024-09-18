@@ -276,7 +276,7 @@ function MainBlock() {
     }
 
     useEffect(() => {
-        setRandomTable(getRandomTable(words, state.rand, state))
+        // setRandomTable(getRandomTable(words, state.rand, state))
     }, [words])
 
     return (
