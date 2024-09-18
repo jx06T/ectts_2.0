@@ -158,6 +158,7 @@ function MainBlock() {
         setWords(prev => prev.map((word, i) =>
             i === index ? { ...word, [field]: value } : word
         ));
+        updataRandomTable()
     };
 
     const handleMove = () => {
@@ -279,7 +280,7 @@ function MainBlock() {
         if (state.cards) {
             return
         }
-        setRandomTable(getRandomTable(words, state.rand, state))
+        // setRandomTable(getRandomTable(words, state.rand, state))
     }, [words])
     
     const updataRandomTable=()=>{
