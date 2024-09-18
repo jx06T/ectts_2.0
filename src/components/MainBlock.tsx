@@ -278,6 +278,10 @@ function MainBlock() {
     useEffect(() => {
         // setRandomTable(getRandomTable(words, state.rand, state))
     }, [words])
+    
+    const updataRandomTable=()=>{
+        setRandomTable(getRandomTable(words, state.rand, state))
+    }
 
     return (
         <div className=' main bg-slate-25 w-full sm:h-full px-1 sm:px-3 py-2 flex flex-col relative'>
@@ -406,8 +410,8 @@ function MainBlock() {
                     </div>
                 </div>
             </div>
-                {state.cards && <CardArea handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} words={words} />}
-            <PlayArea randomTable={randomTable} scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words} />
+                {state.cards && <CardArea updataTable={updataRandomTable} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} words={words} />}
+            <PlayArea updataTable={updataRandomTable} randomTable={randomTable} scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words} />
         </div >
     )
 }

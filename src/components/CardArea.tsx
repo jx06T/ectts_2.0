@@ -163,7 +163,7 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
     )
 }
 
-function CardArea({ handleDoneToggle, randomTable, words, progress }: { handleDoneToggle: Function, progress: { currentProgress: number, setCurrentProgress: Function }, randomTable: number[], words: Word[] }) {
+function CardArea({updataTable ,handleDoneToggle, randomTable, words, progress }: { updataTable:Function,handleDoneToggle: Function, progress: { currentProgress: number, setCurrentProgress: Function }, randomTable: number[], words: Word[] }) {
     const { currentProgress, setCurrentProgress } = progress
 
     const currentWord = words[randomTable[currentProgress]]
@@ -173,8 +173,14 @@ function CardArea({ handleDoneToggle, randomTable, words, progress }: { handleDo
         setCurrentProgress(currentProgress + 1)
     }
 
+    useEffect(()=>{
+        if (!currentWord) {
+            setCurrentProgress(0)
+            updataTable()
+        }
+    },[])
+
     if (!currentWord) {
-        setCurrentProgress(0)
         return null
     }
 

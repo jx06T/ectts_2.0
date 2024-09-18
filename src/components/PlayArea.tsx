@@ -34,7 +34,7 @@ const SettingsUI: Record<string, UI> = {
 }
 
 
-function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }: { randomTable: number[], scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+function PlayArea({updataTable ,randomTable, progress, words, currentTitle, scrollToCenter }: { updataTable:Function,randomTable: number[], scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
     const [showSetting, setShowSetting] = useState<boolean>(false)
     const { notify, popNotify } = useNotify();
 
@@ -208,6 +208,10 @@ function PlayArea({ randomTable, progress, words, currentTitle, scrollToCenter }
 
     const handlePlay = () => {
         if (!isPlaying) {
+           if (currentProgress === 0) {
+            updataTable()
+           }
+
             isPlayingRef.current = true
             setIsPlaying(true);
             popNotify("Start playing")
