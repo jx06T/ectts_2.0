@@ -34,7 +34,7 @@ const SettingsUI: Record<string, UI> = {
 }
 
 
-function PlayArea({state,updataTable ,randomTable, progress, words, currentTitle, scrollToCenter }: { state:State1,updataTable:Function,randomTable: number[], scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+function PlayArea({ state, updataTable, randomTable, progress, words, currentTitle, scrollToCenter }: { state: State1, updataTable: Function, randomTable: number[], scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
     const [showSetting, setShowSetting] = useState<boolean>(false)
     const { notify, popNotify } = useNotify();
 
@@ -207,24 +207,24 @@ function PlayArea({state,updataTable ,randomTable, progress, words, currentTitle
 
     const handlePlay = () => {
         if (!isPlaying) {
-           if (!randomTable || randomTable.length) {
-            updataTable()
-           }
+            if (!randomTable || randomTable.length === 0) {
+                updataTable()
+            }
 
             isPlayingRef.current = true
             setIsPlaying(true);
             popNotify("Start playing")
             playWord(currentProgress);
-            
+
             if (audioRef.current) {
                 audioRef.current.volume = 1
                 audioRef.current.play();
             }
-            
+
 
             setTimeout(() => {
                 createSilentAudio();
-                
+
             }, 1000);
         } else {
             popNotify("Stop playing")
@@ -262,7 +262,7 @@ function PlayArea({state,updataTable ,randomTable, progress, words, currentTitle
         }
     }
 
-    let audioContext :AudioContext;
+    let audioContext: AudioContext;
     let silentAudio;
 
     function createSilentAudio() {
