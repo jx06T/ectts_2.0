@@ -140,7 +140,9 @@ function MainBlock() {
             return arr
         }
 
-        return arr.map(i=> bigRandomTableRef.current![i])
+        // return arr.map(i=> bigRandomTableRef.current![i])
+        console.log(bigRandomTableRef.current!.filter(i=>(state.editing ? words[i].selected : !words[i].done)))
+        return bigRandomTableRef.current!.filter(i=>(state.editing ? words[i].selected : !words[i].done))
     }
 
     const scrollToCenter = (index: number): void => {
@@ -228,7 +230,7 @@ function MainBlock() {
                     setTimeout(() => {
                         
                     }, 0);
-                    setPlayPosition(playPosition + (newEords[index].done ? -1 : 1))
+                    // setPlayPosition(playPosition + (newEords[index].done ? -1 : 1))
                 }
                 return newEords
             });
@@ -274,6 +276,7 @@ function MainBlock() {
         setTimeout(() => {
             setRandomTable(prev => {
                 setPlayPosition(prev.indexOf(index))
+                console.log(prev,index)
                 return prev
             })
         }, 100);
@@ -283,6 +286,10 @@ function MainBlock() {
         // if (state.cards) {
         //     return
         // }
+        if (bigRandomTableRef.current!.length===0) {
+            updataRandomTable()
+            console.log(66)
+        }
         setRandomTable(getRandomTable(words, state.rand, state))
     }, [words])
     
@@ -293,6 +300,7 @@ function MainBlock() {
             [arr[i], arr[j]] = [arr[j], arr[i]];
         }
         bigRandomTableRef.current = arr
+        console.log(bigRandomTableRef.current,words)
         setRandomTable(getRandomTable(words, state.rand, state))
     }
 
@@ -330,7 +338,7 @@ function MainBlock() {
                             popNotify(!state.rand ? "Random mode" : "Normal mode")
                             setState((pre: State1) => {
                                 const newState = { ...pre, rand: !pre.rand }
-                                // setRandomTable(getRandomTable(words, newState.rand, newState))
+                                setRandomTable(getRandomTable(words, newState.rand, newState))
                                 updataRandomTable()
                                 return newState
                             })
@@ -340,7 +348,7 @@ function MainBlock() {
 
                         <a className='cursor-pointer w-10 h-10' onClick={() => {
                             popNotify(!state.cards ? "Cards mode" : "Normal mode")
-                            // setRandomTable(getRandomTable(words, state.rand, state))
+                            setRandomTable(getRandomTable(words, state.rand, state))
                             setPlayPosition(0)
                             setState({ ...state, cards: !state.cards })
                         }}>

@@ -48,7 +48,7 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
             setTimeout(() => {
                 setIsMoving(true)
                 handleMove(0, 0)
-                // toNext()
+                toNext()
             }, 200);
         }
     }
