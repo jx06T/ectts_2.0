@@ -76,10 +76,13 @@ function MainBlock() {
     const inputBoxRef = useRef<HTMLTextAreaElement>(null);
     const { notify, popNotify } = useNotify();
 
-    // const [randomTable, setRandomTable] = useState<number[] | null>(null)
+    
+    const bigRandomTableRef = useRef<number[] | null>([]);
     const [randomTable, setRandomTable] = useState<number[]>([])
 
     useEffect(() => {
+        updataRandomTable()
+        
         const Words0 = localStorage.getItem(setId);
         if (Words0) {
             setWords(JSON.parse(Words0));
@@ -137,13 +140,8 @@ function MainBlock() {
             return arr
         }
 
-        for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr
+        return arr.map(i=> bigRandomTableRef.current![i])
     }
-
 
     const scrollToCenter = (index: number): void => {
         setTimeout(() => {
@@ -158,7 +156,6 @@ function MainBlock() {
         setWords(prev => prev.map((word, i) =>
             i === index ? { ...word, [field]: value } : word
         ));
-        // updataRandomTable()
     };
 
     const handleMove = () => {
@@ -226,8 +223,12 @@ function MainBlock() {
             setWords(prev => {
                 const newEords = prev.map((word, i) => i === index ? { ...word, done: newValue as boolean } : word)
                 popNotify(`${newEords.filter(word => word.done).length}／${words.length} words selected`)
-                if (randomTable[playPosition] > index) {
-                    // setPlayPosition(playPosition + (newEords[index].done ? 1 : -1))
+                console.log(randomTable[playPosition],newEords[index].done,index)
+                if (randomTable[playPosition] >= index) {
+                    setTimeout(() => {
+                        
+                    }, 0);
+                    setPlayPosition(playPosition + (newEords[index].done ? -1 : 1))
                 }
                 return newEords
             });
@@ -246,7 +247,7 @@ function MainBlock() {
                 const newEords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
                 popNotify(`${newEords.filter(word => word.done).length}／${words.length} words done`)
                 if (randomTable[playPosition] > index) {
-                    // setPlayPosition(playPosition + (newEords[index].done ? -1 : 1))
+                    setPlayPosition(playPosition + (newEords[index].done ? -1 : 1))
                 }
                 return newEords
             });
@@ -255,7 +256,7 @@ function MainBlock() {
                 const newEords = prev.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
                 popNotify(`${newEords.filter(word => word.selected).length}／${words.length} words selected`)
                 if (randomTable[playPosition] > index) {
-                    // setPlayPosition(playPosition + (newEords[index].selected ? 1 : -1))
+                    setPlayPosition(playPosition + (newEords[index].selected ? 1 : -1))
                 }
                 return newEords
             });
@@ -279,13 +280,19 @@ function MainBlock() {
     }
 
     useEffect(() => {
-        if (state.cards) {
-            return
-        }
-        // setRandomTable(getRandomTable(words, state.rand, state))
+        // if (state.cards) {
+        //     return
+        // }
+        setRandomTable(getRandomTable(words, state.rand, state))
     }, [words])
     
     const updataRandomTable=()=>{
+        const arr: number[] = words.map((word, i) => i)
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        bigRandomTableRef.current = arr
         setRandomTable(getRandomTable(words, state.rand, state))
     }
 
@@ -312,7 +319,7 @@ function MainBlock() {
                             popNotify(state.editing ? "Select mode" : "Normal mode")
                             setState((pre: State1) => {
                                 const newState = { ...pre, editing: !pre.editing }
-                                setRandomTable(getRandomTable(words, newState.rand, newState))
+                                // setRandomTable(getRandomTable(words, newState.rand, newState))
                                 return newState
                             })
                         }}>
@@ -323,7 +330,8 @@ function MainBlock() {
                             popNotify(!state.rand ? "Random mode" : "Normal mode")
                             setState((pre: State1) => {
                                 const newState = { ...pre, rand: !pre.rand }
-                                setRandomTable(getRandomTable(words, newState.rand, newState))
+                                // setRandomTable(getRandomTable(words, newState.rand, newState))
+                                updataRandomTable()
                                 return newState
                             })
                         }}>
@@ -332,7 +340,7 @@ function MainBlock() {
 
                         <a className='cursor-pointer w-10 h-10' onClick={() => {
                             popNotify(!state.cards ? "Cards mode" : "Normal mode")
-                            setRandomTable(getRandomTable(words, state.rand, state))
+                            // setRandomTable(getRandomTable(words, state.rand, state))
                             setPlayPosition(0)
                             setState({ ...state, cards: !state.cards })
                         }}>

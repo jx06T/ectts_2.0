@@ -48,7 +48,7 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
             setTimeout(() => {
                 setIsMoving(true)
                 handleMove(0, 0)
-                toNext()
+                // toNext()
             }, 200);
         }
     }
@@ -176,7 +176,7 @@ function CardArea({updataTable ,handleDoneToggle, randomTable, words, progress }
     useEffect(()=>{
         if (!currentWord) {
             setCurrentProgress(0)
-            updataTable()
+            // updataTable()
         }
     },[])
 
