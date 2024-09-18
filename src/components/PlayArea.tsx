@@ -34,7 +34,7 @@ const SettingsUI: Record<string, UI> = {
 }
 
 
-function PlayArea({updataTable ,randomTable, progress, words, currentTitle, scrollToCenter }: { updataTable:Function,randomTable: number[], scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+function PlayArea({state,updataTable ,randomTable, progress, words, currentTitle, scrollToCenter }: { state:State1,updataTable:Function,randomTable: number[], scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
     const [showSetting, setShowSetting] = useState<boolean>(false)
     const { notify, popNotify } = useNotify();
 
@@ -158,7 +158,6 @@ function PlayArea({updataTable ,randomTable, progress, words, currentTitle, scro
                 // item.onerror = function (event) {
                 //     console.error('Error occurred while speaking:', event.error);
                 //     alert('Error occurred while speaking:');
-                //     // 這裡可以進行錯誤處理
                 // };
             }
             index++;
@@ -208,7 +207,7 @@ function PlayArea({updataTable ,randomTable, progress, words, currentTitle, scro
 
     const handlePlay = () => {
         if (!isPlaying) {
-           if (currentProgress === 0) {
+           if (!randomTable ) {
             updataTable()
            }
 
