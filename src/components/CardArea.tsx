@@ -66,8 +66,8 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
             const newX = moveEvent.clientX - startX;
             const newY = moveEvent.clientY - startY;
 
-            setIsDragging(Math.abs(newX - lastX.current) > 5 || Math.abs(newY - lastY.current) > 5);
-            if (Math.abs(newX - lastX.current) > 5 || Math.abs(newY - lastY.current) > 5) {
+            setIsDragging(Math.abs(newX - lastX.current) > 2 || Math.abs(newY - lastY.current) > 2);
+            if (Math.abs(newX - lastX.current) > 2 || Math.abs(newY - lastY.current) > 2) {
                 overRef.current = true
             }
 
@@ -108,9 +108,9 @@ function Card({ english, chinese, index = 0, toNext, back = false, handleDoneTog
             const newX = moceTouch.clientX - startX;
             const newY = moceTouch.clientY - startY;
 
-            setIsDragging(Math.abs(newX - lastX.current) > 5 || Math.abs(newY - lastY.current) > 5);
+            setIsDragging(Math.abs(newX - lastX.current) > 2 || Math.abs(newY - lastY.current) > 2);
 
-            if (Math.abs(newX - lastX.current) > 5 || Math.abs(newY - lastY.current) > 5) {
+            if (Math.abs(newX - lastX.current) > 2 || Math.abs(newY - lastY.current) > 2) {
                 overRef.current = true
             }
 
@@ -181,7 +181,7 @@ function CardArea({ handleDoneToggle, randomTable, words, progress }: { handleDo
     }
 
     return (
-        <div className=" pointer-events-none pb-16 overflow-hidden card-area left-0 right-0 top-0 bottom-0 absolute flex flex-col items-center z-50 bg-slate-100 bg-opacity-30">
+        <div className=" pointer-events-none pb-16 overflow-hidden card-area left-0 right-0 top-0 bottom-0 absolute flex flex-col items-center z-50 bg-slate-100 bg-opacity-5">
             <Card chinese={nextWord.chinese} english={nextWord.english} toNext={toNext} back={true} />
             <Card chinese={currentWord.chinese} english={currentWord.english} index={randomTable[currentProgress]} toNext={toNext} handleDoneToggle={handleDoneToggle} />
         </div>
