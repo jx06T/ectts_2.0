@@ -44,6 +44,9 @@ function Card({ english, state, chinese, done, index = 0, toNext, back = false, 
             setTimeout(() => {
                 setIsMoving(true)
                 setIsFlipped(false);
+            },180);
+            
+            setTimeout(() => {
                 handleMove(0, 0)
 
                 if (newX < -150 && done === true) {
