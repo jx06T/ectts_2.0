@@ -40,11 +40,10 @@ function Card({ english, state, chinese, done, index = 0, toNext, back = false, 
             } else if (newX > 150) {
                 handleMove(1000, 0)
             }
-
-            setIsFlipped(false);
-
+            
             setTimeout(() => {
                 setIsMoving(true)
+                setIsFlipped(false);
                 handleMove(0, 0)
 
                 if (newX < -150 && done === true) {
