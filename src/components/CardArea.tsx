@@ -47,16 +47,18 @@ function Card({ english, state, chinese, done, index = 0, toNext, back = false, 
             },180);
             
             setTimeout(() => {
-                handleMove(0, 0)
 
                 if (newX < -150 && done === true) {
                     handleDoneToggle(index)
-                }
-                if (done === false && newX > 150) {
+                    handleMove(0, 0)
+                } else if (done === false && newX > 150) {
                     handleDoneToggle(index, true)
+                    handleMove(0, 0)
                     if (!state.editing) {
                         return
                     }
+                }else{
+                    handleMove(0, 0)
                 }
 
                 toNext(1)
