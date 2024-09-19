@@ -40,24 +40,26 @@ function Card({ english, state, chinese, done, index = 0, toNext, back = false, 
             } else if (newX > 150) {
                 handleMove(1000, 0)
             }
-            
             setTimeout(() => {
                 setIsMoving(true)
                 setIsFlipped(false);
-            },180);
-            
-            setTimeout(() => {
-
+                
                 if (newX < -150 && done === true) {
                     handleDoneToggle(index)
                     handleMove(0, 0)
+                    
                 } else if (done === false && newX > 150) {
                     handleDoneToggle(index, true)
-                    handleMove(0, 0)
+                    
+                    setTimeout(() => {
+                        handleMove(0, 0)
+                    }, 20);
+
                     if (!state.editing) {
                         return
                     }
-                }else{
+
+                } else {
                     handleMove(0, 0)
                 }
 
