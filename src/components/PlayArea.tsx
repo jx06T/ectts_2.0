@@ -119,7 +119,7 @@ function PlayArea({ state, randomTable, progress, words, currentTitle, scrollToC
         // Letter spelling
         if (settings.letter) {
             utterances.push(settings.timeEL);
-            const letterUtterance = createUtterance('"' + word.english.split("").join('","') + '"', 1, speakerERef.current);
+            const letterUtterance = createUtterance('"' + word.english.split("").join('","').replaceAll('," "'," ") + '"', 1, speakerERef.current);
             utterances.push(letterUtterance);
         }
 

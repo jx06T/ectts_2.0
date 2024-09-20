@@ -306,7 +306,7 @@ function MainBlock() {
             </div>
             <div className=' flex justify-center -mb-2 sm:-mb-1 mt-1'>
                 <div className=' flex justify-between w-80'>
-                    {state.page0 && <div className='flex justify-center'>
+                    {state.page0 && <div className='flex justify-center space-x-1'>
                         <a className='cursor-pointer w-10 h-10' onClick={handleReverseSelection}>
                             <PhSelectionInverseDuotone className='text-2xl' />
                         </a>
@@ -347,7 +347,8 @@ function MainBlock() {
                             <MdiCardsOutline className={` text-2xl ${state.cards ? " text-purple-700" : ""}`} />
                         </a>
                     </div>}
-                    {!state.page0 && <div className='flex justify-center'>
+                    
+                    {!state.page0 && <div className='flex justify-center space-x-1'>
                         <a className='cursor-pointer w-[39px] h-10 pt-[1px]' onClick={() => {
                             popNotify(state.showE ? "Hide English" : "Show English")
                             setState({ ...state, showE: !state.showE })
@@ -384,9 +385,9 @@ function MainBlock() {
                             <Fa6SolidFileExport className='text-xl' />
                         </a>
                     </div>}
-                    <a className='cursor-pointer w-10 h-10' onClick={() => {
+                    <a className='flex cursor-pointer w-10 h-10 pt-[1px]' onClick={() => {
                         setState({ ...state, page0: !state.page0 })
-                    }}>
+                    }}><label className=' -mt-[1px] '>|</label>
                         {state.page0 ?
                             <IcRoundMenuOpenL className={` text-2xl`} />
                             :
