@@ -221,10 +221,9 @@ function MainBlock() {
         if (state.cards) {
 
             setWords(prev => {
-                const newEords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
-                popNotify(`${newEords.filter(word => word.done).length}／${words.length} words selected`)
-
-                return newEords
+                const newWords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
+                popNotify(`${newWords.filter(word => word.done).length}／${words.length} words selected`)
+                return newWords
             });
 
             return
@@ -240,21 +239,21 @@ function MainBlock() {
 
         if (!state.editing) {
             setWords(prev => {
-                const newEords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
-                popNotify(`${newEords.filter(word => word.done).length}／${words.length} words done`)
+                const newWords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
+                popNotify(`${newWords.filter(word => word.done).length}／${words.length} words done`)
                 if (randomTable[playPosition] > index) {
-                    setPlayPosition(playPosition + (newEords[index].done ? -1 : 1))
+                    setPlayPosition(playPosition + (newWords[index].done ? -1 : 1))
                 }
-                return newEords
+                return newWords
             });
         } else {
             setWords(prev => {
-                const newEords = prev.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
-                popNotify(`${newEords.filter(word => word.selected).length}／${words.length} words selected`)
+                const newWords = prev.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
+                popNotify(`${newWords.filter(word => word.selected).length}／${words.length} words selected`)
                 if (randomTable[playPosition] > index) {
-                    setPlayPosition(playPosition + (newEords[index].selected ? 1 : -1))
+                    setPlayPosition(playPosition + (newWords[index].selected ? 1 : -1))
                 }
-                return newEords
+                return newWords
             });
         }
     };
@@ -278,6 +277,7 @@ function MainBlock() {
     }
 
     useEffect(() => {
+        console.log(words)
         if (bigRandomTableRef.current!.length === 0) {
             updataRandomTable()
         }
@@ -347,7 +347,7 @@ function MainBlock() {
                             <MdiCardsOutline className={` text-2xl ${state.cards ? " text-purple-700" : ""}`} />
                         </a>
                     </div>}
-                    
+
                     {!state.page0 && <div className='flex justify-center space-x-1'>
                         <a className='cursor-pointer w-[39px] h-10 pt-[1px]' onClick={() => {
                             popNotify(state.showE ? "Hide English" : "Show English")
@@ -385,13 +385,13 @@ function MainBlock() {
                             <Fa6SolidFileExport className='text-xl' />
                         </a>
                     </div>}
-                    <a className='flex cursor-pointer w-10 h-10 pt-[1px]' onClick={() => {
+                    <a className='flex cursor-pointer w-10 h-10 -mt-[1.5px]' onClick={() => {
                         setState({ ...state, page0: !state.page0 })
-                    }}><label className=' -mt-[1px] '>|</label>
+                    }}><label className=' mr-3 select-none '>|</label>
                         {state.page0 ?
-                            <IcRoundMenuOpenL className={` text-2xl`} />
+                            <IcRoundMenuOpenL className={` text-3xl`} />
                             :
-                            <IcRoundMenuOpenR className={` text-2xl`} />
+                            <IcRoundMenuOpenR className={` text-3xl`} />
                         }
                     </a>
                 </div>
