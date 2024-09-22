@@ -20,7 +20,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
         setPosition({ x: newX, y: newY });
         setAngle(newX * 0.1)
 
-        setAlpha(Math.min(90, Math.max(0, (Math.abs(newX) - overX.current + 70) * 0.5)))
+        // setAlpha(Math.min(90, Math.max(0, (Math.abs(newX) - overX.current + 70) * 0.5)))
         // document.documentElement.style.setProperty('--color-l', `${50}%`);
 
         if (newX < -overX.current) {
@@ -33,23 +33,27 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
 
     }
 
+    useEffect(() => {
+        setAlpha(Math.min(90, Math.max(0, (Math.abs(position.x) - overX.current + 70) * 0.5)))
+    }, [position])
+
     const handleMoveEnd = (newX: number, newY: number): void => {
         lastX.current = newX
         lastY.current = newY
         setIsDragging(false);
+        setIsMoving(false)
 
         if (Math.abs(newX) < overX.current) {
             handleMove(0, 0)
         } else {
             if (newX < -overX.current) {
-                handleMove(-1000, 0)
+                handleMove(-0.4 * window.screen.width - 400, 0)
             } else if (newX > overX.current) {
-                handleMove(1000, 0)
+                handleMove(0.4* window.screen.width + 400, 0)
             }
 
             setTimeout(() => {
                 setIsMoving(true)
-                setIsFlipped(false);
 
                 if (newX < -overX.current && done === true) {
                     handleDoneToggle(index)
@@ -58,23 +62,21 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
                 } else if (done === false && newX > overX.current) {
                     handleDoneToggle(index, true)
 
-                    setTimeout(() => {
-                        handleMove(0, 0)
-                    }, 20);
-
                     if (!state.editing) {
                         setTimeout(() => {
                             addBias()
                             handleMove(0, 0)
-                        }, 0);
+                        }, 5);
+
                         return
                     }
+                    handleMove(0, 0)
                 }
 
-                handleMove(0, 0)
                 toNext()
+                handleMove(0, 0)
 
-            }, 50);
+            }, 200);
         }
     }
 
@@ -158,7 +160,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
     return (
         <div
             ref={cardRef}
-            className={` card pointer-events-auto absolute top-16 bottom-[70px] select-none w-[95%] mt-3 rounded-2xl max-w-[440px] min-w-80 bg-blues-300 ${back ? "bg-opacity-0  z-20" : "bg-opacity-0  z-30"} `}
+            className={` card pointer-events-auto absolute top-16 bottom-[70px] select-none w-[95%] mt-3 rounded-2xl max-w-[440px] min-w-80 ${back ? "bg-opacity-0  z-20" : "bg-opacity-0  z-30"} `}
             style={{
                 transform: `translate(${position.x}px, ${position.y}px) rotate(${angle}deg)`,
                 transition: isDragging || isMoving ? 'none' : 'transform 0.2s ease-out',
@@ -169,22 +171,37 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
             onMouseDown={handleDragStart}
         >
             <div
-                className={` small-card ${isDragging ? 'dragging' : ''} ${back ? "back" : ""} ${action === -1 ? " border-2 border-red-500" : (action === 1 ? "border-2 border-green-500" : "")}`}
+                className={`bg-blue-200 small-card ${back ? "back" : ""}`}
                 style={{
                     transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
                     backfaceVisibility: 'hidden',
-                    backgroundColor: `hsla(${position.x < 0 ? 14 : 94}deg, 80%, 50%, ${alpha}%`,
+
                 }}>
-                <h1 className=" select-text leading-none text-center text-4xl">{chinese}</h1>
+                <div
+                    className={` small-card ${isDragging ? 'dragging' : ''}  ${action === -1 ? " border-2 border-red-500" : (action === 1 ? "border-2 border-green-500" : "")}`}
+                    style={{
+                        backgroundColor: `hsla(${position.x < 0 ? 14 : 94}deg, 80%, 50%, ${alpha}%`,
+                        transition: isDragging ? 'none' : 'background-color 0.2s ease-out',
+                    }}
+                >
+                    <h1 className=" select-text leading-none text-center text-4xl">{chinese}</h1>
+                </div>
             </div>
             <div
-                className={` small-card ${isDragging ? 'dragging' : ''} ${back ? "back" : ""} ${action === -1 ? " border-2 border-red-500" : (action === 1 ? "border-2 border-green-500" : "")}`}
+                className={`bg-blue-200 small-card ${back ? "back" : ""}`}
                 style={{
                     transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
                     backfaceVisibility: 'hidden',
-                    backgroundColor: `hsla(${position.x < 0 ? 14 : 94}deg, 80%, 50%, ${alpha}%`,
                 }}>
-                <h1 className=" select-text leading-none text-center text-4xl">{english}</h1>
+                <div
+                    className={` small-card ${isDragging ? 'dragging' : ''} ${action === -1 ? " border-2 border-red-500" : (action === 1 ? "border-2 border-green-500" : "")}`}
+                    style={{
+                        backgroundColor: `hsla(${position.x < 0 ? 14 : 94}deg, 80%, 50%, ${alpha}%`,
+                        transition: isDragging ? 'none' : 'background-color 0.2s ease-out',
+                    }}
+                >
+                    <h1 className=" select-text leading-none text-center text-4xl">{english}</h1>
+                </div>
             </div>
         </div >
     )

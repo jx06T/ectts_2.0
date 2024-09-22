@@ -138,23 +138,15 @@
 
 .small-card {
   @apply absolute rounded-2xl select-none cursor-move w-full h-full flex items-center justify-center;
-  opacity: 1;
-  /* transition: opacity 0.1s ease-in-out, transform 0.4s ease-out, background-color 0.3s ease-in-out; */
-  transition: opacity 0.1s ease-in-out, transform 0.4s ease-out;
+  transition: transform 0.4s ease-out;
 }
 
 .card {
-  transition: border 0.7s ease-in-out, border-color 0.7s ease-in-out;
   @apply bg-blue-100;
 }
 
-body {
-  /* --color-l: 50%; */
-  /* --color-a: 100%; */
-}
-
 .small-card.back {
-  --tw-bg-opacity: 1 !important;
+  --tw-bg-opacity: 0.5 !important;
   background-color: rgb(219 234 254 / var(--tw-bg-opacity)) !important;
 }
 
