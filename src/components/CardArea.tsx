@@ -13,14 +13,16 @@ function Card({ english, state, chinese, done, index = 0, toNext, back = false, 
     const lastY = useRef<number>(0)
     const cardRef = useRef<HTMLDivElement>(null);
     const overRef = useRef<boolean>(false);
+    const overX = useRef<number>(120);
 
     const handleMove = (newX: number, newY: number): void => {
         setPosition({ x: newX, y: newY });
         setAngle(newX * 0.1)
-
-        if (newX < -150) {
+        document.documentElement.style.setProperty('--color-l', `${Math.min(90, Math.max(50, 90 - (Math.abs(newX) - overX.current) ** 0.7))}%`);
+        // document.documentElement.style.setProperty('--color-l', `${50}%`);
+        if (newX < -overX.current) {
             setAction(-1)
-        } else if (newX > 150) {
+        } else if (newX > overX.current) {
             setAction(1)
         } else {
             setAction(0)
@@ -32,25 +34,25 @@ function Card({ english, state, chinese, done, index = 0, toNext, back = false, 
         lastX.current = newX
         lastY.current = newY
         setIsDragging(false);
-        if (Math.abs(newX) < 150) {
+        if (Math.abs(newX) < overX.current) {
             handleMove(0, 0)
         } else {
-            if (newX < -150) {
+            if (newX < -overX.current) {
                 handleMove(-1000, 0)
-            } else if (newX > 150) {
+            } else if (newX > overX.current) {
                 handleMove(1000, 0)
             }
             setTimeout(() => {
                 setIsMoving(true)
                 setIsFlipped(false);
-                
-                if (newX < -150 && done === true) {
+
+                if (newX < -overX.current && done === true) {
                     handleDoneToggle(index)
                     handleMove(0, 0)
-                    
-                } else if (done === false && newX > 150) {
+
+                } else if (done === false && newX > overX.current) {
                     handleDoneToggle(index, true)
-                    
+
                     setTimeout(() => {
                         handleMove(0, 0)
                     }, 20);
@@ -159,7 +161,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back = false, 
             onMouseDown={handleDragStart}
         >
             <div
-                className={` small-card ${isDragging ? 'dragging' : ''} ${isMoving ? "moving" : ""} ${!back ? "bg-blue-100" : "bg-slate-50"}`}
+                className={` small-card ${isDragging ? 'dragging' : ''} ${isMoving ? "moving" : ""} ${!back ? (action === -1 ? "learning" : (action === 1 ? "got-it" : "")) : "bg-slate-50"}`}
                 style={{
                     transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
                     backfaceVisibility: 'hidden',
@@ -167,7 +169,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back = false, 
                 <h1 className=" select-text leading-none text-center text-4xl">{chinese}</h1>
             </div>
             <div
-                className={` small-card ${isDragging ? 'dragging' : ''} ${isMoving ? "moving" : ""} ${!back ? "bg-blue-100" : "bg-slate-50"}`}
+                className={` small-card ${isDragging ? 'dragging' : ''} ${isMoving ? "moving" : ""} ${!back ? (action === -1 ? "learning" : (action === 1 ? "got-it" : "")) : "bg-slate-50"}`}
                 style={{
                     transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
                     backfaceVisibility: 'hidden',

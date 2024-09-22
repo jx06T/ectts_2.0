@@ -2,17 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-.jx-0{
+.jx-0 {
     @apply bg-transparent outline-none
 }
 
-.jx-1{
+.jx-1 {
     @apply rounded-md h-10 text-base p-1 flex items-center gap-2 my-[2px]
 }
 
-.js-2{
+.js-2 {
     @apply hover:bg-purple-300 rounded-md w-11 h-11 pl-[7px]
 }
+
 /* .jx-2{ 
     accent-color: rgb(95, 95, 95);
 } */
@@ -20,15 +21,16 @@
 /* 自定義 Range Input 樣式 */
 .jx-3 {
     -webkit-appearance: none;
-    height: 24px; /* 這裡設置整體高度 */
+    height: 24px;
+    /* 這裡設置整體高度 */
     background: transparent;
     outline: none;
     opacity: 1;
     padding-top: 4px;
     transition: opacity .2s;
-  }
-  
-  /* 滑塊（Thumb）樣式 */
+}
+
+/* 滑塊（Thumb）樣式 */
 .jx-3::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
@@ -49,38 +51,38 @@
     border-radius: 50%;
     box-shadow: none;
 }
-  
+
 .jx-3::-webkit-slider-thumb:hover {
-background: #640db4;
+    background: #640db4;
 }
-  
+
 .jx-3::-moz-range-thumb:hover {
-background: #640db4;
+    background: #640db4;
 }
-  
+
 /* 軌道（Track）樣式 */
 .jx-3::-webkit-slider-runnable-track {
-width: 100%;
-height: 15px;
-cursor: pointer;
-background: #c48aff;
-border-radius: 25px;
+    width: 100%;
+    height: 15px;
+    cursor: pointer;
+    background: #c48aff;
+    border-radius: 25px;
 }
 
 .jx-3::-moz-range-track {
-width: 100%;
-height: 15px;
-cursor: pointer;
-background: #c48aff;
-border-radius: 25px;
+    width: 100%;
+    height: 15px;
+    cursor: pointer;
+    background: #c48aff;
+    border-radius: 25px;
 }
 
 .jx-3::-webkit-slider-runnable-track:hover {
-background: #b373f3;
+    background: #b373f3;
 }
 
 .jx-3::-moz-range-track:hover {
-background: #b373f3;
+    background: #b373f3;
 }
 
 
@@ -88,18 +90,18 @@ background: #b373f3;
     margin-top: 4px;
     position: relative;
     display: inline-block;
-    width: 19px; 
-    height: 19px; 
-    
+    width: 19px;
+    height: 19px;
+
     opacity: 1;
     background-color: transparent;
     border: none;
     outline: none;
 }
- 
-.jx-4::after{
+
+.jx-4::after {
     opacity: 1;
-    content:"";
+    content: "";
     left: -0.5px;
     top: -0.5px;
     position: absolute;
@@ -110,48 +112,63 @@ background: #b373f3;
     height: 20px;
 }
 
-.jx-4:checked:hover::after{
+.jx-4:checked:hover::after {
     background-color: #8016e2;
 }
-.jx-4:hover::after{
-    background-color:  #c590fa;
+
+.jx-4:hover::after {
+    background-color: #c590fa;
 }
 
-.jx-4:checked::after{
+.jx-4:checked::after {
     background-color: #9025f3;
 }
 
 .jx-5::-webkit-scrollbar {
-    display: none; /* 隱藏滾動條 */
-}
-.jx-5 {
-    /* 隱藏滾動條（WebKit 瀏覽器，如 Chrome、Safari） */
-    -ms-overflow-style: none;  /* 針對 Internet Explorer 和 Edge */
-    scrollbar-width: none;  /* 針對 Firefox */
+    display: none;
+    /* 隱藏滾動條 */
 }
 
-.small-card{
+.jx-5 {
+    /* 隱藏滾動條（WebKit 瀏覽器，如 Chrome、Safari） */
+    -ms-overflow-style: none;
+    /* 針對 Internet Explorer 和 Edge */
+    scrollbar-width: none;
+    /* 針對 Firefox */
+}
+
+.small-card {
     @apply absolute rounded-2xl select-none cursor-move w-full h-full flex items-center justify-center;
     opacity: 1;
+    /* transition: opacity 0.1s ease-in-out, transform 0.4s ease-out, background-color 0.3s ease-in-out; */
     transition: opacity 0.1s ease-in-out, transform 0.4s ease-out;
 }
 
-.small-card.moving{
-    transition: none;
+/* .small-card.moving { */
+/* transition: background-color 0.3s ease-in-out; */
+/* } */
+
+.card {
+    transition: border 0.7s ease-in-out, border-color 0.7s ease-in-out, ;
+    @apply bg-blue-100;
 }
 
-.small-card.dragging{
-    opacity: 0.8;
+/* .small-card.dragging{ */
+/* opacity: 0.8; */
+/* } */
+
+:root {
+    --color-l: 0%;
 }
 
-.small-card.dragging{
-    opacity: 0.8;
+.small-card {
+    @apply bg-blue-100;
 }
 
-.card.learning{
-    opacity: 0.8;
+.learning.small-card {
+    background-color: hsl(14deg, 80%, var(--color-l));
 }
 
-.card.got-it{
-    opacity: 0.8;
+.got-it.small-card {
+    background-color: hsl(94deg, 80%, var(--color-l));
 }
