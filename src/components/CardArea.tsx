@@ -13,13 +13,15 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
     const lastY = useRef<number>(0)
     const cardRef = useRef<HTMLDivElement>(null);
     const overRef = useRef<boolean>(false);
-    const overX = useRef<number>(110);
+    const overX = useRef<number>(90);
 
     const handleMove = (newX: number, newY: number): void => {
         setPosition({ x: newX, y: newY });
         setAngle(newX * 0.1)
-        document.documentElement.style.setProperty('--color-l', `${Math.min(90, Math.max(50, 90 - (Math.abs(newX) - overX.current) ** 0.7))}%`);
+        
+        document.documentElement.style.setProperty('--color-a', `${Math.min(90, Math.max(0, (Math.abs(newX) - overX.current) * 0.6))}%`);
         // document.documentElement.style.setProperty('--color-l', `${50}%`);
+        
         if (newX < -overX.current) {
             setAction(-1)
         } else if (newX > overX.current) {
@@ -155,7 +157,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
     return (
         <div
             ref={cardRef}
-            className={`${action === -1 ? " border-2 border-red-500  opacity-80" : (action === 1 ? " border-2 border-green-500 opacity-80" : "")} card pointer-events-auto absolute top-16 bottom-[70px] select-none w-[95%] mt-3 rounded-2xl max-w-[440px] min-w-80 bg-blues-300 ${back ? "bg-opacity-0  z-20" : "bg-opacity-30  z-30"} `}
+            className={` card pointer-events-auto absolute top-16 bottom-[70px] select-none w-[95%] mt-3 rounded-2xl max-w-[440px] min-w-80 bg-blues-300 ${back ? "bg-opacity-0  z-20" : "bg-opacity-0  z-30"} `}
             style={{
                 transform: `translate(${position.x}px, ${position.y}px) rotate(${angle}deg)`,
                 transition: isDragging || isMoving ? 'none' : 'transform 0.2s ease-out',
@@ -166,7 +168,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
             onMouseDown={handleDragStart}
         >
             <div
-                className={` small-card ${isDragging ? 'dragging' : ''} ${isMoving ? "moving" : ""} ${!back ? (action === -1 ? "learning" : (action === 1 ? "got-it" : "")) : "bg-slate-50"}`}
+                className={` small-card ${isDragging ? 'dragging' : ''} ${!back ? (action === -1 ? " border-2 border-red-500 learning" : (action === 1 ? "got-it border-2 border-green-500 opacity-80" : "")) : "bg-slate-50"}`}
                 style={{
                     transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
                     backfaceVisibility: 'hidden',
@@ -174,7 +176,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
                 <h1 className=" select-text leading-none text-center text-4xl">{chinese}</h1>
             </div>
             <div
-                className={` small-card ${isDragging ? 'dragging' : ''} ${isMoving ? "moving" : ""} ${!back ? (action === -1 ? "learning" : (action === 1 ? "got-it" : "")) : "bg-slate-50"}`}
+                className={` small-card ${isDragging ? 'dragging' : ''}  ${!back ? (action === -1 ? " border-2 border-red-500 learning" : (action === 1 ? "got-it border-2 border-green-500 opacity-80" : "")) : "bg-slate-50"}`}
                 style={{
                     transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
                     backfaceVisibility: 'hidden',
