@@ -13,7 +13,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back = false, 
     const lastY = useRef<number>(0)
     const cardRef = useRef<HTMLDivElement>(null);
     const overRef = useRef<boolean>(false);
-    const overX = useRef<number>(120);
+    const overX = useRef<number>(110);
 
     const handleMove = (newX: number, newY: number): void => {
         setPosition({ x: newX, y: newY });
