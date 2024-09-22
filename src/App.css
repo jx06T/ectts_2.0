@@ -149,12 +149,13 @@
 }
 
 body {
-  --color-l: 50%;
+  /* --color-l: 50%; */
   /* --color-a: 100%; */
 }
 
-.small-card {
-  @apply bg-blue-100;
+.small-card.back {
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(219 234 254 / var(--tw-bg-opacity)) !important;
 }
 
 .learning.small-card {

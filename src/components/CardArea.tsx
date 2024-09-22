@@ -8,20 +8,21 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
     const [angle, setAngle] = useState<number>(0);
     const [isFlipped, setIsFlipped] = useState<boolean>(false);
     const [action, setAction] = useState<number>(0);
+    const [alpha, setAlpha] = useState<number>(0);
 
     const lastX = useRef<number>(0)
     const lastY = useRef<number>(0)
     const cardRef = useRef<HTMLDivElement>(null);
     const overRef = useRef<boolean>(false);
-    const overX = useRef<number>(90);
+    const overX = useRef<number>(100);
 
     const handleMove = (newX: number, newY: number): void => {
         setPosition({ x: newX, y: newY });
         setAngle(newX * 0.1)
-        
-        document.documentElement.style.setProperty('--color-a', `${Math.min(90, Math.max(0, (Math.abs(newX) - overX.current) * 0.6))}%`);
+
+        setAlpha(Math.min(90, Math.max(0, (Math.abs(newX) - overX.current + 70) * 0.5)))
         // document.documentElement.style.setProperty('--color-l', `${50}%`);
-        
+
         if (newX < -overX.current) {
             setAction(-1)
         } else if (newX > overX.current) {
@@ -168,22 +169,24 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
             onMouseDown={handleDragStart}
         >
             <div
-                className={` small-card ${isDragging ? 'dragging' : ''} ${!back ? (action === -1 ? " border-2 border-red-500 learning" : (action === 1 ? "got-it border-2 border-green-500 opacity-80" : "")) : "bg-slate-50"}`}
+                className={` small-card ${isDragging ? 'dragging' : ''} ${back ? "back" : ""} ${action === -1 ? " border-2 border-red-500" : (action === 1 ? "border-2 border-green-500" : "")}`}
                 style={{
                     transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
                     backfaceVisibility: 'hidden',
+                    backgroundColor: `hsla(${position.x < 0 ? 14 : 94}deg, 80%, 50%, ${alpha}%`,
                 }}>
                 <h1 className=" select-text leading-none text-center text-4xl">{chinese}</h1>
             </div>
             <div
-                className={` small-card ${isDragging ? 'dragging' : ''}  ${!back ? (action === -1 ? " border-2 border-red-500 learning" : (action === 1 ? "got-it border-2 border-green-500 opacity-80" : "")) : "bg-slate-50"}`}
+                className={` small-card ${isDragging ? 'dragging' : ''} ${back ? "back" : ""} ${action === -1 ? " border-2 border-red-500" : (action === 1 ? "border-2 border-green-500" : "")}`}
                 style={{
                     transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)',
                     backfaceVisibility: 'hidden',
+                    backgroundColor: `hsla(${position.x < 0 ? 14 : 94}deg, 80%, 50%, ${alpha}%`,
                 }}>
                 <h1 className=" select-text leading-none text-center text-4xl">{english}</h1>
             </div>
-        </div>
+        </div >
     )
 }
 
