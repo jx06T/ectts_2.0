@@ -341,6 +341,9 @@ function MainBlock() {
                         <a className='cursor-pointer w-10 h-10' onClick={() => {
                             popNotify(!state.cards ? "Cards mode" : "Normal mode")
                             setRandomTable(getRandomTable(words, state.rand, state))
+                            if (randomTable.length === 0) {
+                                return
+                            }
                             setPlayPosition(0)
                             setState({ ...state, cards: !state.cards })
                         }}>

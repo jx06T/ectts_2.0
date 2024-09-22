@@ -47,23 +47,24 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
                 setIsMoving(true)
                 setIsFlipped(false);
 
-                
+
                 if (newX < -150 && done === true) {
                     handleDoneToggle(index, false)
-                    
+
                 } else if (done === false && newX > 150) {
                     handleDoneToggle(index, true)
-                    
+
                     if (!state.editing) {
                         setTimeout(() => {
                             addBias()
+                            handleMove(0, 0)
                         }, 0);
-                        // return
+                        return
                     }
                 }
-                
-                // handleMove(0, 0)
-                // toNext(1)
+
+                handleMove(0, 0)
+                toNext()
 
             }, 50);
         }
@@ -181,31 +182,32 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
 
 function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { state: State1, handleDoneToggle: Function, progress: { currentProgress: number, setCurrentProgress: Function }, randomTable: number[], words: Word[] }) {
     const { currentProgress, setCurrentProgress } = progress
-    const nextCurrentProgress = words[randomTable[currentProgress + 1]] ? currentProgress + 1 : 0
-
     const [bias, setBias] = useState<number>(0)
-    const currentWord = (currentProgress + bias) % 2 === 0 ? words[randomTable[currentProgress]] : words[randomTable[nextCurrentProgress]]
-    const nextWord = (currentProgress + bias) % 2 === 1 ? words[randomTable[currentProgress]] : words[randomTable[nextCurrentProgress]]
 
-    const toNext = (b: number) => {
-        setCurrentProgress(currentProgress + b)
+    const CurrentIndex0 = (currentProgress + bias) % 2 === 0 ? randomTable[currentProgress] : (words[randomTable[currentProgress + 1]] ? randomTable[currentProgress + 1] : randomTable[0])
+    const CurrentIndex1 = (currentProgress + bias) % 2 === 1 ? randomTable[currentProgress] : (words[randomTable[currentProgress + 1]] ? randomTable[currentProgress + 1] : randomTable[0])
+
+    const currentWord0 = words[CurrentIndex0] ? words[CurrentIndex0] : { id: "ddddddddddddddd", chinese: "", english: "" }
+    const currentWord1 = words[CurrentIndex1] ? words[CurrentIndex1] : { id: "ddddddddddddddd", chinese: "", english: "" }
+
+    const toNext = () => {
+        setCurrentProgress(currentProgress + 1)
     }
-    console.log(currentProgress)
 
     useEffect(() => {
-        if (!currentWord) {
+        if (currentProgress > randomTable.length - 1) {
             setCurrentProgress(0)
         }
-    }, [currentWord])
+    }, [currentProgress, randomTable])
 
-    if (!currentWord) {
+    if (!currentWord0 || !currentWord1) {
         return null
     }
 
     return (
         <div className=" pointer-events-none pb-16 overflow-hidden card-area left-0 right-0 top-0 bottom-0 absolute flex flex-col items-center z-20 bg-slate-100 bg-opacity-5">
-            <Card state={state} chinese={nextWord.chinese} english={nextWord.english} done={!!nextWord.done} index={randomTable[nextCurrentProgress]} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias) % 2 === 0} addBias={() => setBias(bias + 1)} />
-            <Card state={state} chinese={currentWord.chinese} english={currentWord.english} done={!!currentWord.done} index={randomTable[currentProgress]} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias) % 2 === 1} addBias={() => setBias(bias + 1)} />
+            <Card state={state} chinese={currentWord0.chinese} english={currentWord0.english} done={!!currentWord0.done} index={CurrentIndex0} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias) % 2 === 1} addBias={() => setBias(bias + 1)} />
+            <Card state={state} chinese={currentWord1.chinese} english={currentWord1.english} done={!!currentWord1.done} index={CurrentIndex1} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias) % 2 === 0} addBias={() => setBias(bias + 1)} />
         </div>
     )
 }
