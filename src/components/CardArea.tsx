@@ -66,7 +66,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
                         setTimeout(() => {
                             addBias()
                             handleMove(0, 0)
-                        }, 5);
+                        }, 0);
 
                         return
                     }
