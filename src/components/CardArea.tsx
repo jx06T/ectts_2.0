@@ -60,24 +60,14 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
                     handleMove(0, 0)
 
                 } else if (done === false && newX > overX.current) {
-                    //handleDoneToggle(index, true)
-
+                    handleDoneToggle(index, true)
+                    handleMove(0, 0)
                     if (!state.editing) {
-                        setTimeout(() => {
-                            handleDoneToggle(index, true)
-
-                            handleMove(0, 0)
-                        }, 100);
                         addBias()
                         return
                     }
-                    handleDoneToggle(index, true)
-
-                    handleMove(0, 0)
                 }
-
-                toNext()
-                handleMove(0, 0)
+                toNext(）
 
             }, 200);
         }
