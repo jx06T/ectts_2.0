@@ -53,12 +53,12 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
             }
 
             setTimeout(() => {
+                setIsFlipped(false)
                 setIsMoving(true)
-
+                
                 if (newX < -overX.current && done === true) {
                     handleDoneToggle(index)
-                    handleMove(0, 0)
-
+                    
                 } else if (done === false && newX > overX.current) {
                     handleDoneToggle(index, true)
                     handleMove(0, 0)
@@ -67,7 +67,9 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
                         return
                     }
                 }
-                toNext(）
+                
+                handleMove(0, 0)
+                toNext()
 
             }, 200);
         }
@@ -226,8 +228,8 @@ function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { s
 
     return (
         <div className=" pointer-events-none pb-16 overflow-hidden card-area left-0 right-0 top-0 bottom-0 absolute flex flex-col items-center z-20 bg-slate-100 bg-opacity-5">
-            <Card state={state} chinese={currentWord0.chinese} english={currentWord0.english} done={!!currentWord0.done} index={CurrentIndex0} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias) % 2 === 1} addBias={() => bias.current += 1} />
-            <Card state={state} chinese={currentWord1.chinese} english={currentWord1.english} done={!!currentWord1.done} index={CurrentIndex1} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias) % 2 === 0} addBias={() => bias.current += 1} />
+            <Card state={state} chinese={currentWord0.chinese} english={currentWord0.english} done={!!currentWord0.done} index={CurrentIndex0} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias.current) % 2 === 1} addBias={() => bias.current += 1} />
+            <Card state={state} chinese={currentWord1.chinese} english={currentWord1.english} done={!!currentWord1.done} index={CurrentIndex1} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias.current) % 2 === 0} addBias={() => bias.current += 1} />
         </div>
     )
 }
