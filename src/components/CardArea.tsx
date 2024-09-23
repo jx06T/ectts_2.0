@@ -64,10 +64,10 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
 
                     if (!state.editing) {
                         setTimeout(() => {
-                            addBias()
+                            
                             handleMove(0, 0)
                         }, 0);
-
+                        addBias()
                         return
                     }
                     handleMove(0, 0)
