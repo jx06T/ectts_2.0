@@ -84,7 +84,8 @@ function MainBlock() {
     useEffect(() => {
         updataRandomTable()
 
-        if (setId === "") {
+        if (setId === "" || !setId) {
+            setWords([])
             return
         }
 
@@ -110,7 +111,7 @@ function MainBlock() {
     }, [setId])
 
     useEffect(() => {
-        console.log(setId,words)
+        console.log(setId, words)
         if (words.length == 0) {
             return
         }
@@ -395,7 +396,7 @@ function MainBlock() {
             </div>
 
             <div className=' relative flex justify-center h-full w-full overflow-y-auto'>
-                <div ref={scrollRef} className='jx-5 h-full max-w-[22rem] sm:max-w-[36rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
+                <div ref={scrollRef} className='jx-5 h-full max-w-[22rem] sm:max-w-[40rem] sm:min-w-[36rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
                     {setId ?
                         <>
                             {
@@ -508,7 +509,7 @@ function Home() {
                 localStorage.setItem(`all-set`, JSON.stringify(allSet));
                 navigate(`/${allSet[0]?.id}`)
                 popNotify("Imported successfully")
-                
+
             } catch (error) {
                 popNotify(`Error parsing JSON file`)
                 console.error('Error parsing JSON file:', error);
@@ -531,14 +532,14 @@ function Home() {
 
 
     return (
-        <div className='home bg-blue-100 flex flex-col items-center h-full w-[36rem] p-3 rounded-2xl'>
+        <div className='home bg-blue-100 flex flex-col items-center h-full max-w-[40rem] sm:w-[36rem] p-3 rounded-2xl'>
             <pre className=' text-wrap text-center text-xl leading-10'>
                 {`歡迎使用這個工具\n首先請在左側側邊欄建立一個單字集\n接下來就可以在中間框框輸入單字\n至於上面的按鈕以及其他詳細進階用法\n請到 `}
                 <a href="https://github.com/jx06T/ectts_2.0" target="_blank" className=' underline'>github</a>
                 {` 查看`}
             </pre>
 
-            <div className=' space-x-12 mt-10'>
+            <div className='flex flex-col sm:flex-row sm:space-x-12 sm:space-y-0 space-y-6 mt-10'>
                 <button onClick={handleExportAll} className=' w-40 h-10 bg-green-200 rounded-lg'>匯出全部單字</button>
                 <button onClick={handleImportBtnClick} className=' w-40 h-10 bg-green-200 rounded-lg'>匯入全部單字</button>
             </div>
