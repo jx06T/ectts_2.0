@@ -60,8 +60,10 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
                     handleDoneToggle(index)
 
                 } else if (done === false && newX > overX.current) {
-                    handleDoneToggle(index)
-                    handleMove(0, 0)
+                    setTimeout(() => {
+                        handleDoneToggle(index)
+                        handleMove(0, 0)
+                    }, 50);
                     if (!state.editing) {
                         addBias()
                         return
@@ -155,7 +157,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
     return (
         <div
             ref={cardRef}
-            className={` card pointer-events-auto absolute top-16 bottom-[70px] select-none w-[95%] mt-3 rounded-2xl max-w-[440px] min-w-80 ${back ? "bg-opacity-0  z-20" : "bg-opacity-0  z-30"} `}
+            className={` card pointer-events-auto absolute top-16 bottom-[70px] select-none w-[95%] mt-3 rounded-2xl max-w-[440px] min-w-80 ${back? "bg-opacity-0  z-20" : "bg-opacity-0  z-30"} `}
             style={{
                 transform: `translate(${position.x}px, ${position.y}px) rotate(${angle}deg)`,
                 transition: isDragging || isMoving ? 'none' : 'transform 0.2s ease-out',

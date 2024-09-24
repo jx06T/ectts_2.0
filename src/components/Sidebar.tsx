@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { MaterialFileRename, MaterialDeleteRounded, AkarIconsMoreVerticalFill, MaterialAddToPhotos, MdiGithub, SolarSiderbarBold } from '../utils/Icons'
 import { useNotify } from './NotifyContext'
 import createConfirmDialog from './ConfirmDialog';
+import { Params, useParams } from 'react-router-dom';
 
 function getRandId(length = 16) {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -56,6 +57,7 @@ function Aset({ title = "", index, onShowOption, selected, id }: { title: string
 }
 
 function Sidebar() {
+    const { setId } = useParams<Params>();
     const [allSet, setAllSet] = useState<Aset[]>([])
     const [optionY, setOptionY] = useState<number>(-99999)
     const [optionIndex, setOptionIndex] = useState<number>(-1)
@@ -81,7 +83,7 @@ function Sidebar() {
         } else {
             localStorage.setItem('all-set', JSON.stringify([]))
         }
-    }, [])
+    }, [setId])
 
     useEffect(() => {
         if (allSet.length === 0) {
