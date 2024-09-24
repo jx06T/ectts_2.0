@@ -82,6 +82,8 @@ function MainBlock() {
     const [randomTable, setRandomTable] = useState<number[]>([])
 
     useEffect(() => {
+        updataRandomTable()
+
         if (setId === "") {
             return
         }
@@ -96,7 +98,6 @@ function MainBlock() {
         const AllSet0 = localStorage.getItem("all-set");
         if (AllSet0) {
             const AllSet = JSON.parse(AllSet0)
-            console.log(AllSet)
             if (AllSet.length > 0 && AllSet.find((e: Aset) => e.id === setId)) {
                 setCurrentTitle(AllSet.find((e: Aset) => e.id === setId).title)
             } else {
@@ -105,15 +106,15 @@ function MainBlock() {
         } else {
             navigate('/');
         }
-        updataRandomTable()
 
     }, [setId])
 
     useEffect(() => {
+        console.log(setId,words)
         if (words.length == 0) {
             return
         }
-        localStorage.setItem(setId!, JSON.stringify(words))
+        localStorage.setItem(`set-${setId!}`, JSON.stringify(words))
     }, [words])
 
     useEffect(() => {
@@ -131,7 +132,6 @@ function MainBlock() {
 
 
     const getRandomTable = (words: Word[], r: boolean, state: State1): number[] => {
-
         const arr: number[] = r ? bigRandomTableRef.current!.filter(i => (state.editing ? words[i].selected : !words[i].done)) : words.map((word, i) => (state.editing ? word.selected : !word.done) ? i : -1).filter(e => e !== -1)
         if (arr.length === 0) {
             setState({ ...state, cards: false })
@@ -214,7 +214,7 @@ function MainBlock() {
         copyToClipboard(ExportText)
     };
 
-    const handleDoneToggle = (index: number, newValue: boolean | null = null) => {
+    const handleDoneToggle = (index: number) => {
         if (state.cards) {
 
             setWords(prev => {
@@ -272,7 +272,7 @@ function MainBlock() {
     }
 
     useEffect(() => {
-        if (bigRandomTableRef.current!.length === 0) {
+        if (bigRandomTableRef.current!.length === 0 || bigRandomTableRef.current!.length !== words.length) {
             updataRandomTable()
         }
 
@@ -293,7 +293,7 @@ function MainBlock() {
     return (
         <div className=' main bg-slate-25 w-full sm:h-full px-1  py-2 flex flex-col relative'>
             <div className='flex'>
-                <h1 className='ml-9 m-1 mt-[3px] min-w-[70px] -mr-6'>ECTTS 2.0</h1>
+                <h1 onClick={() => navigate('/')} className=' cursor-pointer ml-11 m-1 mt-[3px] min-w-[70px]'>ECTTS 2.0</h1>
                 <div className='flex flex-grow justify-center fixed right-[5%] mdlg:right-[12%] lg:right-[24%] z-40' >
                     <h1 className={` ${notify === "" ? " opacity-0" : " opacity-100"} bg-stone-700 rounded-full px-4 text-white max-w-80 w-full ml-9 m-1 mt-[3px] transition-opacity duration-300 z-10`}>{notify}</h1>
                 </div>
@@ -395,7 +395,7 @@ function MainBlock() {
             </div>
 
             <div className=' relative flex justify-center h-full w-full overflow-y-auto'>
-                <div ref={scrollRef} className='jx-5 h-full max-w-[22rem] sm:max-w-[120rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
+                <div ref={scrollRef} className='jx-5 h-full max-w-[22rem] sm:max-w-[36rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
                     {setId ?
                         <>
                             {
@@ -439,15 +439,116 @@ function MainBlock() {
 export default MainBlock
 
 function Home() {
-    return (
-        <div className='home bg-slate-400 h-full '>
-            {/* <div className=' text-wrap'>
-                歡迎使用這個工具
-                首先請在左側側邊欄建立一個單字集
-                接下來就可以在中間框框輸入單字
-                上面按鈕以及其他詳細用法請到github查看
-            </div> */}
+    const navigate = useNavigate();
+    const { notify, popNotify } = useNotify();
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const handleExportAll = () => {
+        let allSet: [Aset] | [] = []
+
+        const allSet0 = localStorage.getItem(`all-set`);
+        if (allSet0) {
+            allSet = JSON.parse(allSet0 as string);
+        } else {
+            popNotify("Word list is empty")
+            return
+        };
+
+        const dataOrigin: [any?] = []
+        allSet.forEach(aSet => {
+            const aSetData0 = localStorage.getItem(`set-${aSet.id}`);
+            let setData = {}
+
+            if (aSetData0) {
+                setData = { ...aSet, words: JSON.parse(aSetData0 as string) };
+            } else {
+                return
+            };
+
+            dataOrigin.push(setData)
+        })
+
+        const dataStr = JSON.stringify(dataOrigin, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
+        const exportFileDefaultName = 'ectts-all-words.json';
+
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+    }
+
+    const handleImportAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files![0];
+        if (!file) {
+            popNotify("error")
+            return
+        }
+
+        let allSet: [Aset?] = []
+
+        const allSet0 = localStorage.getItem(`all-set`);
+        if (allSet0) {
+            allSet = JSON.parse(allSet0 as string);
+        };
+
+        const reader = new FileReader();
+        reader.onload = (e: ProgressEvent<FileReader>) => {
+            try {
+                const jsonData = JSON.parse(e.target!.result as string);
+                jsonData.forEach((aSet: Aset & { words: Word[] }) => {
+                    if (!allSet.find((e): e is Aset => e !== undefined && e.id === aSet.id)) {
+                        allSet.push({ id: aSet.id, title: aSet.title } as Aset)
+                    }
+                    localStorage.setItem(`set-${aSet.id}`, JSON.stringify(aSet.words));
+
+                });
+
+                localStorage.setItem(`all-set`, JSON.stringify(allSet));
+                navigate(`/${allSet[0]?.id}`)
+                popNotify("Imported successfully")
+                
+            } catch (error) {
+                popNotify(`Error parsing JSON file`)
+                console.error('Error parsing JSON file:', error);
+            }
+        };
+
+        reader.onerror = (error) => {
+            popNotify(`Error reading file`)
+            console.error('Error reading file:', error);
+        };
+        reader.readAsText(file);
+
+
+    }
+
+    const handleImportBtnClick = () => {
+        fileInputRef.current!.value = '';
+        fileInputRef.current!.click();
+    };
+
+
+    return (
+        <div className='home bg-blue-100 flex flex-col items-center h-full w-[36rem] p-3 rounded-2xl'>
+            <pre className=' text-wrap text-center text-xl leading-10'>
+                {`歡迎使用這個工具\n首先請在左側側邊欄建立一個單字集\n接下來就可以在中間框框輸入單字\n至於上面的按鈕以及其他詳細進階用法\n請到 `}
+                <a href="https://github.com/jx06T/ectts_2.0" target="_blank" className=' underline'>github</a>
+                {` 查看`}
+            </pre>
+
+            <div className=' space-x-12 mt-10'>
+                <button onClick={handleExportAll} className=' w-40 h-10 bg-green-200 rounded-lg'>匯出全部單字</button>
+                <button onClick={handleImportBtnClick} className=' w-40 h-10 bg-green-200 rounded-lg'>匯入全部單字</button>
+            </div>
+
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImportAll}
+                className="hidden w-0"
+            />
         </div>
 
     )

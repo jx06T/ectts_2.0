@@ -6,7 +6,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
     const [isMoving, setIsMoving] = useState<boolean>(false);
     const [position, setPosition] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
     const [angle, setAngle] = useState<number>(0);
-    const [isFlipped, setIsFlipped] = useState<boolean>(false);
+    const [isFlipped, setIsFlipped] = useState<boolean>(!state.showC ? (!state.showE ? (Math.random() < 0.5) : true) : false);
     const [action, setAction] = useState<number>(0);
     const [alpha, setAlpha] = useState<number>(0);
 
@@ -49,25 +49,25 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
             if (newX < -overX.current) {
                 handleMove(-0.4 * window.screen.width - 400, 0)
             } else if (newX > overX.current) {
-                handleMove(0.4* window.screen.width + 400, 0)
+                handleMove(0.4 * window.screen.width + 400, 0)
             }
 
             setTimeout(() => {
-                setIsFlipped(false)
                 setIsMoving(true)
-                
+                setIsFlipped(!state.showC ? (!state.showE ? (Math.random() < 0.5) : true) : false)
+
                 if (newX < -overX.current && done === true) {
                     handleDoneToggle(index)
-                    
+
                 } else if (done === false && newX > overX.current) {
-                    handleDoneToggle(index, true)
+                    handleDoneToggle(index)
                     handleMove(0, 0)
                     if (!state.editing) {
                         addBias()
                         return
                     }
                 }
-                
+
                 handleMove(0, 0)
                 toNext()
 
@@ -159,7 +159,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
             style={{
                 transform: `translate(${position.x}px, ${position.y}px) rotate(${angle}deg)`,
                 transition: isDragging || isMoving ? 'none' : 'transform 0.2s ease-out',
-                perspective: '100rem'
+                perspective: isDragging || isMoving ? '9000rem' : '100rem'
             }}
 
             onTouchStart={handleTouchStart}
