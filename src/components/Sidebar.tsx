@@ -194,7 +194,7 @@ function Sidebar() {
                         <MdiGithub className=' text-3xl' />
                     </a>
                     {showSidebar && <span className='ml-2 text-xs text-slate-300'>
-                        2.1.1 - jx06T
+                        2.1.2 - jx06T
                     </span>}
                 </div>
 
