@@ -5,6 +5,8 @@ import PlayArea from './PlayArea'
 import { useNotify } from './NotifyContext'
 import createConfirmDialog from './ConfirmDialog';
 import CardArea from './CardArea'
+import { Params, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function getRandId(length = 16) {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -63,8 +65,8 @@ function fallbackCopyTextToClipboard(text: string): Promise<void> {
 }
 
 function MainBlock() {
-    const currentPath = window.location.pathname.slice(1);
-    const setId = "set-" + currentPath
+    const navigate = useNavigate();
+    const { setId } = useParams<Params>();
 
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [words, setWords] = useState<Word[]>([]);
@@ -80,55 +82,50 @@ function MainBlock() {
     const [randomTable, setRandomTable] = useState<number[]>([])
 
     useEffect(() => {
-        updataRandomTable()
-
-        const Words0 = localStorage.getItem(setId);
-        if (Words0) {
-            setWords(JSON.parse(Words0));
+        if (setId === "") {
+            return
         }
+
+        const Words0 = localStorage.getItem(`set-${setId}`);
+        if (Words0) {
+            setWords(JSON.parse(Words0 as string));
+        } else {
+            navigate('/');
+        };
 
         const AllSet0 = localStorage.getItem("all-set");
         if (AllSet0) {
             const AllSet = JSON.parse(AllSet0)
-            if (currentPath !== "") {
-                if (AllSet.length > 0) {
-                    if (!Words0) {
-                        window.location.href = "/" + AllSet[0].id
-                    } else {
-                        setCurrentTitle(AllSet.find((e: Aset) => e.id === currentPath).title)
-                    }
-                } else {
-                    window.location.href = "/"
-                }
+            console.log(AllSet)
+            if (AllSet.length > 0 && AllSet.find((e: Aset) => e.id === setId)) {
+                setCurrentTitle(AllSet.find((e: Aset) => e.id === setId).title)
+            } else {
+                navigate('/');
             }
         } else {
-            window.location.href = "/"
+            navigate('/');
         }
+        updataRandomTable()
 
-    }, [])
+    }, [setId])
 
     useEffect(() => {
         if (words.length == 0) {
             return
         }
-        localStorage.setItem(setId, JSON.stringify(words))
+        localStorage.setItem(setId!, JSON.stringify(words))
     }, [words])
 
-    console.log(99)
     useEffect(() => {
-        console.log("ss", state)
         if (state.init) {
             const state0 = localStorage.getItem("ectts-state");
             if (state0) {
                 setState({ ...JSON.parse(state0), deleting: false, init: false });
-                console.log(state0)
             } else {
-                console.log("state0")
                 setState({ ...state, init: false });
             }
             return
         }
-        console.log("DDDD", state)
         localStorage.setItem("ectts-state", JSON.stringify(state))
     }, [state])
 
@@ -266,18 +263,15 @@ function MainBlock() {
     };
 
     const handlePlayThisWord = (index: number) => {
-        console.log(index)
         setTimeout(() => {
             setRandomTable(prev => {
                 setPlayPosition(prev.indexOf(index))
-                console.log(prev, index)
                 return prev
             })
         }, 100);
     }
 
     useEffect(() => {
-        console.log(words)
         if (bigRandomTableRef.current!.length === 0) {
             updataRandomTable()
         }
@@ -392,41 +386,48 @@ function MainBlock() {
                         setState({ ...state, page0: !state.page0 })
                     }}><label className=' mr-3 select-none '>|</label>
                         {state.page0 ?
-                            <IcRoundMenuOpenL className={` text-3xl`} />
+                            <IcRoundMenuOpenL className={` -mt-[1px] text-3xl`} />
                             :
-                            <IcRoundMenuOpenR className={` text-3xl`} />
+                            <IcRoundMenuOpenR className={` -mt-[1px] text-3xl`} />
                         }
                     </a>
                 </div>
             </div>
 
             <div className=' relative flex justify-center h-full w-full overflow-y-auto'>
-                <div ref={scrollRef} className='jx-5 h-full max-w-[22rem] sm:max-w-[64rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
-                    {words.map((word, index) => (
-                        <WordItem
-                            key={word.id}
-                            word={word}
-                            index={index}
-                            state={state}
-                            isFocused={index === focusIndex}
-                            isPlaying={index === randomTable[playPosition]}
-                            onPlay={handlePlayThisWord}
-                            onChange={handleWordChange}
-                            onDoneToggle={handleDoneToggle}
-                            onNext={() => {
-                                if (index + 2 > words.length) {
-                                    addNewWord()
-                                }
-                                setFocusIndex(-1)
-                                setTimeout(() => {
-                                    setFocusIndex(index + 1)
-                                }, 10);
-                            }}
-                        />
-                    ))}
-                    <div className='h-[50%]'>
-                        <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-96 p-2 mt-8'></textarea>
-                    </div>
+                <div ref={scrollRef} className='jx-5 h-full max-w-[22rem] sm:max-w-[120rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
+                    {setId ?
+                        <>
+                            {
+                                words.map((word, index) => (
+                                    <WordItem
+                                        key={word.id}
+                                        word={word}
+                                        index={index}
+                                        state={state}
+                                        isFocused={index === focusIndex}
+                                        isPlaying={index === randomTable[playPosition]}
+                                        onPlay={handlePlayThisWord}
+                                        onChange={handleWordChange}
+                                        onDoneToggle={handleDoneToggle}
+                                        onNext={() => {
+                                            if (index + 2 > words.length) {
+                                                addNewWord()
+                                            }
+                                            setFocusIndex(-1)
+                                            setTimeout(() => {
+                                                setFocusIndex(index + 1)
+                                            }, 10);
+                                        }}
+                                    />
+                                ))
+                            }
+                            < div className='h-[50%]'>
+                                <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-96 p-2 mt-8'></textarea>
+                            </div>
+                        </> :
+                        <Home />
+                    }
                 </div>
             </div>
             {state.cards && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} words={words} />}
@@ -436,3 +437,18 @@ function MainBlock() {
 }
 
 export default MainBlock
+
+function Home() {
+    return (
+        <div className='home bg-slate-400 h-full '>
+            {/* <div className=' text-wrap'>
+                歡迎使用這個工具
+                首先請在左側側邊欄建立一個單字集
+                接下來就可以在中間框框輸入單字
+                上面按鈕以及其他詳細用法請到github查看
+            </div> */}
+
+        </div>
+
+    )
+}

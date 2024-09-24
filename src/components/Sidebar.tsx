@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom';
 import { MaterialFileRename, MaterialDeleteRounded, AkarIconsMoreVerticalFill, MaterialAddToPhotos, MdiGithub, SolarSiderbarBold } from '../utils/Icons'
 import { useNotify } from './NotifyContext'
 import createConfirmDialog from './ConfirmDialog';
@@ -45,7 +46,8 @@ function Aset({ title = "", index, onShowOption, selected, id }: { title: string
     const selected2 = selected || currentPath === id
     return (
         <div ref={setRef} className={` cursor-pointer rounded-md ${selected2 ? "bg-blue-100" : "bg-blue-50"} hover:bg-blue-100 relative h-10 text-base flex items-center gap-2 my-[2px] justify-between`}>
-            <a href={id} className='h-full p-2 overflow-x-hidden w-full'>{title}</a>
+            {/* <a href={id} className='h-full p-2 overflow-x-hidden w-full'>{title}</a> */}
+            <Link to={`/${id}`} className='h-full p-2 overflow-x-hidden w-full'>{title}</Link>
             <button className='option-button h-8 hover:bg-blue-150 rounded-md mr-[1px]' onClick={() => onShowOption(selected ? -1 : index, selected ? -99999 : setRef.current?.offsetTop)}>
                 <AkarIconsMoreVerticalFill className='option-button w-5 mr-0 flex-shrink-0' />
             </button>
