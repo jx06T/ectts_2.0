@@ -257,7 +257,7 @@ function MainBlock() {
     };
 
     const addNewWord = () => {
-        setWords(prev => [...prev, { id: getRandId(), chinese: "", english: "" }]);
+        setWords(prev => [...prev, { id: getRandId(), chinese: "", english: "", done: false, selected: false }]);
         setFocusIndex(words.length);
         scrollToCenter(words.length)
         updataRandomTable()
@@ -396,7 +396,8 @@ function MainBlock() {
             </div>
 
             <div className=' relative flex justify-center h-full w-full overflow-y-auto'>
-                <div ref={scrollRef} className='jx-5 h-full max-w-[22rem] sm:max-w-[32rem] sm:min-w-[28rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'>
+                {/* <div ref={scrollRef} className='jx-5 h-full max-w-[22rem] sm:max-w-[32rem] sm:min-w-[28rem] min-w-[20rem] space-y-2 overflow-x-hidden pl-1'> */}
+                <div ref={scrollRef} className='jx-5 h-full max-w-[22rem] min-w-[20rem] min-w-[20rem] sm:max-w-[28rem] sm:min-w-[22rem] space-y-2 overflow-x-hidden pl-1'>
                     {setId ?
                         <>
                             {
@@ -532,25 +533,29 @@ function Home() {
 
 
     return (
-        <div className='home bg-blue-100 flex flex-col items-center h-full max-w-[32rem] sm:w-[32rem] p-3 rounded-2xl'>
-            <pre className=' text-wrap text-center text-xl leading-10'>
-                {`歡迎使用這個工具\n首先請在左側側欄建立一個單字集\n接下來就可以在中間框框輸入單字\n上面的按鈕以及其他詳細進階用法\n請到 `}
-                <a href="https://github.com/jx06T/ectts_2.0" target="_blank" className=' underline'>github</a>
-                {` 查看`}
-            </pre>
+        <>
+            <div className='home bg-blue-100 flex flex-col items-center  max-w-[26rem] p-3 rounded-2xl'>
+                <pre className=' text-wrap text-center text-xl leading-10'>
+                    {`歡迎使用這個工具\n首先請在左側側欄建立一個單字集\n接下來就可以在中間框框輸入單字\n上面的按鈕以及其他詳細進階用法\n請到 `}
+                    <a href="https://github.com/jx06T/ectts_2.0" target="_blank" className=' underline'>github</a>
+                    {` 查看`}
+                </pre>
 
-            <div className='flex flex-col sm:flex-row sm:space-x-12 sm:space-y-0 space-y-6 mt-10'>
-                <button onClick={handleExportAll} className=' w-40 h-10 bg-green-200 rounded-lg'>匯出全部單字</button>
-                <button onClick={handleImportBtnClick} className=' w-40 h-10 bg-green-200 rounded-lg'>匯入全部單字</button>
+                <div className='flex flex-col sm:flex-row sm:space-x-6 sm:space-y-0 space-y-6 mt-6 mb-4'>
+                    <button onClick={handleExportAll} className=' w-40 h-10 bg-green-200 rounded-lg'>匯出全部單字</button>
+                    <button onClick={handleImportBtnClick} className=' w-40 h-10 bg-green-200 rounded-lg'>匯入全部單字</button>
+                </div>
+
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImportAll}
+                    className="hidden w-0"
+                />
             </div>
+            <div className=' h-20'>
 
-            <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleImportAll}
-                className="hidden w-0"
-            />
-        </div>
-
+            </div>
+        </>
     )
 }

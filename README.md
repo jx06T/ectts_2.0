@@ -54,12 +54,12 @@ harmful
         "id": "隨機 id",
         "chinese": "單字中文",
         "english": "單字英文",
-        "done" : false
-        "selected" : true
+        "done" : false,
+        "selected" : true,
         "//comment": "done 以及 selected 這兩個鍵在舊版本的單字集中不一定存在"
       },
     ]
-  }
+  },
 ]
 ```
 
