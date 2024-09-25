@@ -112,7 +112,7 @@ function MainBlock() {
 
     useEffect(() => {
         console.log(setId, words)
-        if (words.length == 0) {
+        if (words.length === 0) {
             return
         }
         localStorage.setItem(`set-${setId!}`, JSON.stringify(words))
@@ -294,7 +294,7 @@ function MainBlock() {
     return (
         <div className=' main bg-slate-25 w-full sm:h-full px-1  py-2 flex flex-col relative'>
             <div className='flex'>
-                <h1 onClick={() => navigate('/')} className=' cursor-pointer ml-11 m-1 mt-[3px] min-w-[70px]'>ECTTS 2.0</h1>
+                <a onClick={() => navigate('/')} className=' cursor-pointer ml-11 m-1 mt-[3px] min-w-[70px]'>ECTTS 2.0</a>
                 <div className='flex flex-grow justify-center fixed right-[5%] mdlg:right-[12%] lg:right-[24%] z-40' >
                     <h1 className={` ${notify === "" ? " opacity-0" : " opacity-100"} bg-stone-700 rounded-full px-4 text-white max-w-80 w-full ml-9 m-1 mt-[3px] transition-opacity duration-300 z-10`}>{notify}</h1>
                 </div>
@@ -307,7 +307,7 @@ function MainBlock() {
                         </a>
 
                         <a className='cursor-pointer w-10 h-10' onClick={handleSelectAll}>
-                            {state.selection == 1 ? <PhSelectionBold className='text-2xl' /> : <PhSelectionDuotone className='text-2xl' />}
+                            {state.selection === 1 ? <PhSelectionBold className='text-2xl' /> : <PhSelectionDuotone className='text-2xl' />}
                         </a>
 
                         <a className='cursor-pointer w-10 h-10' onClick={() => {
@@ -536,9 +536,9 @@ function Home() {
         <>
             <div className='home bg-blue-100 flex flex-col items-center  max-w-[26rem] p-3 rounded-2xl'>
                 <pre className=' text-wrap text-center text-xl leading-10'>
-                    {`歡迎使用這個工具\n首先請在左側側欄建立一個單字集\n接下來就可以在中間框框輸入單字\n上面的按鈕以及其他詳細進階用法\n請到 `}
+                    {`歡迎使用這個工具\n請先在左側側欄建立一個單字集\n接下來就可以在中間框框輸入單字\n上面的按鈕以及其他詳細進階用法\n請到`}
                     <a href="https://github.com/jx06T/ectts_2.0" target="_blank" className=' underline'>github</a>
-                    {` 查看`}
+                    {`查看`}
                 </pre>
 
                 <div className='flex flex-col sm:flex-row sm:space-x-6 sm:space-y-0 space-y-6 mt-6 mb-4'>
