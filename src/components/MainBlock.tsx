@@ -7,6 +7,8 @@ import createConfirmDialog from './ConfirmDialog';
 import CardArea from './CardArea'
 import { Params, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 
 function getRandId(length = 16) {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -294,7 +296,7 @@ function MainBlock() {
     return (
         <div className=' main bg-slate-25 w-full sm:h-full px-1  py-2 flex flex-col relative'>
             <div className='flex'>
-                <a onClick={() => navigate('/')} className=' cursor-pointer ml-11 m-1 mt-[3px] min-w-[70px]'>ECTTS 2.0</a>
+                <Link to={`/`} className=' cursor-pointer ml-11 m-1 mt-[3px] min-w-[70px]'>ECTTS 2.0</Link>
                 <div className='flex flex-grow justify-center fixed right-[5%] mdlg:right-[12%] lg:right-[24%] z-40' >
                     <h1 className={` ${notify === "" ? " opacity-0" : " opacity-100"} bg-stone-700 rounded-full px-4 text-white max-w-80 w-full ml-9 m-1 mt-[3px] transition-opacity duration-300 z-10`}>{notify}</h1>
                 </div>
