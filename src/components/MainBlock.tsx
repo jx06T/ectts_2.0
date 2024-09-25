@@ -534,7 +534,7 @@ function Home() {
     return (
         <div className='home bg-blue-100 flex flex-col items-center h-full max-w-[32rem] sm:w-[32rem] p-3 rounded-2xl'>
             <pre className=' text-wrap text-center text-xl leading-10'>
-                {`歡迎使用這個工具\n首先請在左側側邊欄建立一個單字集\n接下來就可以在中間框框輸入單字\n至於上面的按鈕以及其他詳細進階用法\n請到 `}
+                {`歡迎使用這個工具\n首先請在左側側欄建立一個單字集\n接下來就可以在中間框框輸入單字\n上面的按鈕以及其他詳細進階用法\n請到 `}
                 <a href="https://github.com/jx06T/ectts_2.0" target="_blank" className=' underline'>github</a>
                 {` 查看`}
             </pre>
