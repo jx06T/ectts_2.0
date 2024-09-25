@@ -217,8 +217,9 @@ function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { s
     console.log("卡片驅蟲渲染")
 
     useEffect(() => {
-        if (addBias) {
+        if (addBias.current) {
             bias.current += 1
+            addBias.current = false
         }
     }, [words])
 
