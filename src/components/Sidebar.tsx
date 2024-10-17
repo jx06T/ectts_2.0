@@ -1,22 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { MaterialFileRename, MaterialDeleteRounded, AkarIconsMoreVerticalFill, MaterialAddToPhotos, MdiGithub, SolarSiderbarBold } from '../utils/Icons'
-import { useNotify } from './NotifyContext'
+import { useNotify } from '../context/NotifyContext'
 import createConfirmDialog from './ConfirmDialog';
-import { Params, useParams } from 'react-router-dom';
+import { getRandId } from '../utils/tool';
 
-function getRandId(length = 16) {
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    const charactersLength = chars.length;
-    for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
-
-
-function Options({ show, y, index, callback }: { show: boolean, y: number, index: number, callback: Function }) {
+function PopupMenu({ isShow, y, index, callback }: { isShow: boolean, y: number, index: number, callback: Function }) {
     const optionRef = useRef<HTMLDivElement>(null)
     const spaceBelow = window.innerHeight;
     const yCss = `${y + (y > spaceBelow - 160 ? -70 : 20)}px`
@@ -25,16 +14,19 @@ function Options({ show, y, index, callback }: { show: boolean, y: number, index
         if (optionRef.current) {
             optionRef.current.style.top = yCss
         }
-    }, [y, show])
+    }, [y, isShow])
 
     return (
         <>
-            {show && <div ref={optionRef} className={` w-14 h-[5.4rem] shadow-md bg-purple-200 left-60 absolute z-10 rounded-lg p-2 space-y-2`}>
-                <button className='option-button2 h-8 items-center justify-center flex w-full cursor-pointer rounded-md hover:bg-purple-300' onClick={() => callback(index, "D")} >
-                    <MaterialDeleteRounded className='option-button2 text-3xl text-red-700 ' />
+            {isShow && <div ref={optionRef} className={`shadow-md bg-purple-200 left-60 absolute z-10 rounded-lg p-2 space-y-2`}>
+                <button className='option-button2 h-8 items-center justify-start flex w-full cursor-pointer rounded-md hover:bg-purple-300' onClick={() => callback(index, "D")} >
+                    <MaterialDeleteRounded className='option-button2 text-3xl text-red-700 mr-2 ' />
+                    <span>Delete</span>
                 </button>
-                <button className='option-button2 h-8 items-center justify-center flex w-full cursor-pointer rounded-md hover:bg-purple-300' onClick={() => callback(index, "R")} >
-                    <MaterialFileRename className='option-button2 text-3xl text-blue-700 ' />
+                <hr></hr>
+                <button className='option-button2 h-8 items-center justify-start flex w-full cursor-pointer rounded-md hover:bg-purple-300' onClick={() => callback(index, "R")} >
+                    <MaterialFileRename className='option-button2 text-3xl text-blue-700 mr-2 ' />
+                    <span>Rename</span>
                 </button>
             </div >}
         </>
@@ -45,9 +37,9 @@ function Aset({ title = "", index, onShowOption, selected, id }: { title: string
     const currentPath = window.location.pathname.slice(1);
     const setRef = useRef<HTMLDivElement>(null)
     const selected2 = selected || currentPath === id
+
     return (
         <div ref={setRef} className={` cursor-pointer rounded-md ${selected2 ? "bg-blue-100" : "bg-blue-50"} hover:bg-blue-100 relative h-10 text-base flex items-center gap-2 my-[2px] justify-between`}>
-            {/* <a href={id} className='h-full p-2 overflow-x-hidden w-full'>{title}</a> */}
             <Link to={`/${id}`} className='h-full p-2 overflow-x-hidden w-full'>{title}</Link>
             <button className='option-button h-8 hover:bg-blue-150 rounded-md mr-[1px]' onClick={() => onShowOption(selected ? -1 : index, selected ? -99999 : setRef.current?.offsetTop)}>
                 <AkarIconsMoreVerticalFill className='option-button w-5 mr-0 flex-shrink-0' />
@@ -56,8 +48,7 @@ function Aset({ title = "", index, onShowOption, selected, id }: { title: string
     )
 }
 
-function Sidebar() {
-    const { setId } = useParams<Params>();
+function Sidebar({ setId }: { setId: string }) {
     const [allSet, setAllSet] = useState<Aset[]>([])
     const [optionY, setOptionY] = useState<number>(-99999)
     const [optionIndex, setOptionIndex] = useState<number>(-1)
@@ -103,10 +94,12 @@ function Sidebar() {
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
+
             //@ts-ignore
             if (e.target.classList.contains('option-button') || e.target.parentNode.classList.contains('option-button')) {
                 return
             }
+
             //@ts-ignore
             if (!e.target.classList.contains('option-button2') && !e.target.parentNode.classList.contains('option-button2')) {
                 setOptionIndex(-1)
@@ -141,9 +134,6 @@ function Sidebar() {
         } else {
             popNotify(`Enter in the box on the upper left`)
             setShowReNamed(true)
-            // setTimeout(() => {
-            //     reNamedRef.current?.focus()
-            // }, 200);
         }
     }
 
@@ -162,9 +152,6 @@ function Sidebar() {
         setOptionIndex(0)
         setShowReNamed(true)
         isNew.current = id
-        // setTimeout(() => {
-        //     reNamedRef.current?.focus()
-        // }, 1000);
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -208,7 +195,7 @@ function Sidebar() {
                 </div>
             </div>
 
-            <Options callback={handleOptionClick} index={optionIndex} show={optionY !== -99999} y={optionY - scrollBarY} />
+            <PopupMenu callback={handleOptionClick} index={optionIndex} isShow={optionY !== -99999} y={optionY - scrollBarY} />
 
             {showReNamed && <div className={`option-button2 w-72 h-10 shadow-md bg-purple-200 left-2 top-16 absolute z-10 rounded-lg p-2 flex`}>
                 <input autoFocus onKeyDown={handleKeyDown} ref={reNamedRef} property='name' defaultValue={optionIndex >= 0 ? allSet[optionIndex].title : ""} type="text" className='option-button2 jx-0 border-b-2 border-stone-50 w-full rounded-none' />

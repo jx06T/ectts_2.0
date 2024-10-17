@@ -1,41 +1,42 @@
-import { useEffect, useRef, useState } from 'react';
 import './App.css';
-import MainBlock from "./components/MainBlock"
-import Sidebar from './components/Sidebar';
-import { SolarSiderbarBold } from './utils/Icons'
-import { NotifyProvider } from './components/NotifyContext';
+import { NotifyProvider } from './context/NotifyContext';
+import { useNotify } from './context/NotifyContext';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-function App() {
-  const rootRef = useRef<HTMLInputElement>(null)
+import WordLayout from './page/WordLayout';
+import Home from './page/Home';
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (rootRef.current) {
-        rootRef.current.style.height = `${window.innerHeight}px`;
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+function NotifyBlock() {
+  const { notify, aboutToDisappear } = useNotify();
+
+  if (notify === "") {
+    return null
+  }
+
+  return <div className=' z-40 fixed top-2 w-full flex flex-grow justify-center'>
+    <div className={` ${aboutToDisappear ? " opacity-0" : " opacity-100"} bg-stone-700 w-[min(96%,36rem)] rounded-full px-4 transition-opacity duration-200 text-center`} >
+      <h2 className=" text-white min-w-36 min-h-6">{notify}</h2>
+    </div>
+  </div>
+}
+
+
+function App() {
 
   return (
     <Router>
-    <NotifyProvider>
-      <Routes>
-        <Route path="/:setId?" element={
-      <div ref={rootRef} className={` App w-full h-full flex relative`}>
-        <Sidebar ></Sidebar>
-        <MainBlock></MainBlock>
-      </div>
-      } />
-      </Routes>
-
-    </NotifyProvider>
-  </Router>
+      <NotifyProvider>
+        <NotifyBlock />
+        <Routes>
+          <Route path="/:setId" element={
+            <WordLayout />
+          } />
+          <Route path="/" element={
+            <Home />
+          } />
+        </Routes>
+      </NotifyProvider>
+    </Router>
   );
 }
 

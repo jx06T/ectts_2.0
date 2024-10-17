@@ -22,11 +22,11 @@ function createConfirmDialog(message: string, onConfirm: Function, onCancel: Fun
 
         return (
             <div className="z-50 confirm-dialog-overlay flex justify-center fixed w-full top-20 left-1 right-1 px-4 pl-2">
-                <div className=" border-l-4 border-l-purple-700 confirm-dialog max-w-96 p-3 pb-2 bg-purple-200 rounded-md shadow-md">
+                <div className="confirm-dialog border-l-4 border-purple-600 max-w-[36rem] p-3 pb-2 bg-purple-200 rounded-r-2xl rounded-l-none shadow-sm shadow-purple-200">
                     <pre className=' text-wrap whitespace-pre-wrap'>{message}</pre>
-                    <div className=' w-full flex justify-end space-x-4 mt-4'>
-                        <button className=' cursor-pointer px-2 rounded-md bg-red-400 hover:bg-red-500' onClick={handleConfirm}>Confirm</button>
-                        <button className=' cursor-pointer px-2 rounded-md bg-purple-400 hover:bg-purple-500' onClick={handleCancel}>Cancel</button>
+                    <div className=' w-full flex justify-end space-x-4 mt-4 mb-1'>
+                        <button className=' cursor-pointer px-2 rounded-full border-2 border-red-500 hover:bg-red-300' onClick={handleConfirm}>Confirm</button>
+                        <button className=' cursor-pointer px-2 rounded-full border-2 border-purple-500 hover:bg-purple-300' onClick={handleCancel}>Cancel</button>
                     </div>
                 </div>
             </div>

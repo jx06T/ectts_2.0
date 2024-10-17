@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MingcuteSettings6Fill, FluentNextFrame24Filled, FluentPreviousFrame24Filled, FluentPause24Filled, FluentPlay24Filled } from "../utils/Icons";
-import { useNotify } from './NotifyContext'
+import { useNotify } from '../context/NotifyContext'
 
 const initialSettings: Settings = {
     timeWW: 1000,

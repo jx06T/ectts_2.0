@@ -158,3 +158,11 @@
 .got-it.small-card {
   background-color: hsl(94deg, 80%, var(--color-l), var(--color-a));
 }
+
+hr{
+  border-top: .1px solid  #feeeff;
+}
+
+.tool-icon-div > a{
+  @apply h-fit p-1 text-center
+}
