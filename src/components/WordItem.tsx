@@ -66,9 +66,9 @@ const AnimatedWord: React.FC<AnimatedWordProps> = ({ word, index, indexP, isTop,
       layout
       // transition={{ duration: 0.3 }}
       transition={{
-        layout: { duration: 0.7, type: "spring" },
-        height: { duration: 0.7, },
-        width: { duration: 0.7, }
+        layout: { duration: 0.3, type: "spring" },
+        height: { duration: 0.3, },
+        width: { duration: 0.3, }
       }}
       data-index={indexP}
       className={` overflow-hidden a-word ${isTop ? '-ml-1 -mr-1 sm:-mr-2 sm:-ml-2' : 'flex space-x-3'}`}
@@ -78,13 +78,13 @@ const AnimatedWord: React.FC<AnimatedWordProps> = ({ word, index, indexP, isTop,
         <div className="jx-6 flex w-full bg-blue-50 rounded-md p-2 space-x-3">
           <div className="flex-grow flex flex-col space-y-2">
             <motion.input
-              layout
+              layout= "position"
               ref={englishRef}
               {...commonInputProps('english')}
               className="jx-1 bg-transparent border-b-2 border-blue-900 rounded-none w-full"
             />
             <motion.input
-              layout
+              layout= "position"
               ref={chineseRef}
               {...commonInputProps('chinese')}
               className="jx-1 bg-transparent border-b-2 border-blue-900 rounded-none w-full"
@@ -102,13 +102,13 @@ const AnimatedWord: React.FC<AnimatedWordProps> = ({ word, index, indexP, isTop,
       ) : (
         <>
           <motion.input
-            layout
+            layout= "position"
             ref={englishRef}
             {...commonInputProps('english')}
             className="jx-1 rounded-md bg-blue-50 hover:bg-blue-100 flex-grow flex-shrink min-w-0"
           />
           <motion.input
-            layout
+            layout= "position"
             ref={chineseRef}
             {...commonInputProps('chinese')}
             className="jx-1 rounded-md bg-blue-50 hover:bg-blue-100 flex-grow flex-shrink min-w-0"
