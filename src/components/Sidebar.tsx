@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useParams, Params } from 'react-router-dom';
 import { MaterialFileRename, MaterialDeleteRounded, AkarIconsMoreVerticalFill, MaterialAddToPhotos, MdiGithub, SolarSiderbarBold } from '../utils/Icons'
 import { useNotify } from '../context/NotifyContext'
 import createConfirmDialog from './ConfirmDialog';
@@ -34,9 +34,9 @@ function PopupMenu({ isShow, y, index, callback }: { isShow: boolean, y: number,
 }
 
 function Aset({ title = "", index, onShowOption, selected, id }: { title: string, index: number, onShowOption: Function, selected: boolean, id: string }) {
-    const currentPath = window.location.pathname.slice(1);
+    const setId = window.location.pathname.slice(1);
     const setRef = useRef<HTMLDivElement>(null)
-    const selected2 = selected || currentPath === id
+    const selected2 = selected || setId === id
 
     return (
         <div ref={setRef} className={` cursor-pointer rounded-md ${selected2 ? "bg-blue-100" : "bg-blue-50"} hover:bg-blue-100 relative h-10 text-base flex items-center gap-2 my-[2px] justify-between`}>
@@ -48,28 +48,32 @@ function Aset({ title = "", index, onShowOption, selected, id }: { title: string
     )
 }
 
-function Sidebar({ setId }: { setId: string }) {
+function Sidebar() {
+    const { setId } = useParams<Params>();
     const [allSet, setAllSet] = useState<Aset[]>([])
+    
     const [optionY, setOptionY] = useState<number>(-99999)
     const [optionIndex, setOptionIndex] = useState<number>(-1)
     const [scrollBarY, setScrollBarYY] = useState<number>(0)
+    
     const [showSidebar, setshowSidebar] = useState<boolean>(false)
     const [showReNamed, setShowReNamed] = useState<boolean>(false)
+
     const scrollBarRef = useRef<HTMLDivElement>(null)
     const reNamedRef = useRef<HTMLInputElement>(null)
-    const { notify, popNotify } = useNotify();
     const isNew = useRef<string | null>(null)
 
-    const currentPath = window.location.pathname.slice(1);
+    const { notify, popNotify } = useNotify();
+
 
     useEffect(() => {
         const initialAllSet = localStorage.getItem('all-set');
         if (initialAllSet) {
             setAllSet(JSON.parse(initialAllSet));
-            const setLocation = JSON.parse(initialAllSet).findIndex((e: Aset) => e.id === currentPath)
+            const setLocation = JSON.parse(initialAllSet).findIndex((e: Aset) => e.id === setId)
             if (setLocation !== -1 && setLocation !== 0) {
-                const thisSet = JSON.parse(initialAllSet).find((e: Aset) => e.id === currentPath)
-                setAllSet([thisSet, ...JSON.parse(initialAllSet).filter((e: Aset) => e.id !== currentPath)]);
+                const thisSet = JSON.parse(initialAllSet).find((e: Aset) => e.id === setId)
+                setAllSet([thisSet, ...JSON.parse(initialAllSet).filter((e: Aset) => e.id !== setId)]);
             }
         } else {
             localStorage.setItem('all-set', JSON.stringify([]))
@@ -199,7 +203,7 @@ function Sidebar({ setId }: { setId: string }) {
 
             {showReNamed && <div className={`option-button2 w-72 h-10 shadow-md bg-purple-200 left-2 top-16 absolute z-10 rounded-lg p-2 flex`}>
                 <input autoFocus onKeyDown={handleKeyDown} ref={reNamedRef} property='name' defaultValue={optionIndex >= 0 ? allSet[optionIndex].title : ""} type="text" className='option-button2 jx-0 border-b-2 border-stone-50 w-full rounded-none' />
-                <button onClick={handleReNamed} className=' ml-2 w-6 rounded-lg flex-shrink-0 bg-purple-400 option-button2'>▶</button>
+                <button onClick={handleReNamed} className=' ml-2 w-6 rounded-lg flex-shrink-0 bg-purple-400 option-button2'>✓</button>
             </div >}
         </div>
     )

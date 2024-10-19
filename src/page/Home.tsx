@@ -99,7 +99,7 @@ function Home() {
     };
 
     return (
-        <Sidebar setId=''></Sidebar>
+        <Sidebar></Sidebar>
         // <h1>待修改</h1>
     )
     return (

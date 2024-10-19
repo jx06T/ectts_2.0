@@ -27,6 +27,9 @@ module.exports = {
       border: {
         '3': '3px',
       },
+      zIndex: {
+        60: '60',
+      },
     },
   },
   plugins: [],

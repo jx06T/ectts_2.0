@@ -1,7 +1,7 @@
+
 import React, { useEffect, useRef, useState } from "react";
 
-
-function Card({ english, state, chinese, done, index = 0, toNext, back, handleDoneToggle, addBias }: { addBias: Function, state: State1, done: boolean, handleDoneToggle: Function, back: boolean, toNext: Function, english: string, chinese: string, index: number }) {
+function SmallCard({ english, state, chinese, done, index = 0, toNext, back, handleDoneToggle, addBias }: { addBias: Function, state: State1, done: boolean, handleDoneToggle: Function, back: boolean, toNext: Function, english: string, chinese: string, index: number }) {
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [isMoving, setIsMoving] = useState<boolean>(false);
     const [position, setPosition] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
@@ -154,6 +154,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
         cardRef.current!.addEventListener('touchmove', handleTouchMove);
         cardRef.current!.addEventListener('touchend', handleTouchEnd);
     };
+    console.log("卡片重渲染")
 
     return (
         <div
@@ -205,47 +206,5 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
     )
 }
 
-function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { state: State1, handleDoneToggle: Function, progress: { currentProgress: number, setCurrentProgress: Function }, randomTable: number[], words: Word[] }) {
-    const { currentProgress, setCurrentProgress } = progress
-    const bias = useRef<number>(0)
-    const addBias = useRef<boolean>(false)
 
-    const CurrentIndex0 = (currentProgress + bias.current) % 2 === 0 ? randomTable[currentProgress] : (words[randomTable[currentProgress + 1]] ? randomTable[currentProgress + 1] : randomTable[0])
-    const CurrentIndex1 = (currentProgress + bias.current) % 2 === 1 ? randomTable[currentProgress] : (words[randomTable[currentProgress + 1]] ? randomTable[currentProgress + 1] : randomTable[0])
-
-    const currentWord0 = words[CurrentIndex0] ? words[CurrentIndex0] : { id: "ddddddddddddddd", chinese: "", english: "" }
-    const currentWord1 = words[CurrentIndex1] ? words[CurrentIndex1] : { id: "ddddddddddddddd", chinese: "", english: "" }
-    console.log("卡片驅蟲渲染")
-
-    useEffect(() => {
-        if (addBias.current) {
-            bias.current += 1
-            addBias.current = false
-        }
-    }, [words])
-
-    const toNext = () => {
-        setCurrentProgress(currentProgress + 1)
-    }
-
-    useEffect(() => {
-        if (currentProgress > randomTable.length - 1) {
-            setCurrentProgress(0)
-        }
-    }, [currentProgress, randomTable])
-
-    if (!currentWord0 || !currentWord1) {
-        return null
-    }
-
-    return (
-        <div className=" pointer-events-none pb-16 overflow-hidden card-area left-0 right-0 top-0 bottom-0 absolute flex flex-col items-center z-20 bg-slate-100 bg-opacity-5">
-            {/* <Card state={state} chinese={currentWord0.chinese} english={currentWord0.english} done={!!currentWord0.done} index={CurrentIndex0} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias.current) % 2 === 1} addBias={() => bias.current += 1} /> */}
-            {/* <Card state={state} chinese={currentWord1.chinese} english={currentWord1.english} done={!!currentWord1.done} index={CurrentIndex1} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias.current) % 2 === 0} addBias={() => bias.current += 1} /> */}
-            <Card state={state} chinese={currentWord0.chinese} english={currentWord0.english} done={!!currentWord0.done} index={CurrentIndex0} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias.current) % 2 === 1} addBias={() => addBias.current = true} />
-            <Card state={state} chinese={currentWord1.chinese} english={currentWord1.english} done={!!currentWord1.done} index={CurrentIndex1} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias.current) % 2 === 0} addBias={() => addBias.current = true} />
-        </div>
-    )
-}
-
-export default CardArea;
+export default SmallCard

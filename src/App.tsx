@@ -9,12 +9,12 @@ import Home from './page/Home';
 function NotifyBlock() {
   const { notify, aboutToDisappear } = useNotify();
 
-  if (notify === "") {
-    return null
-  }
-
-  return <div className=' z-40 fixed top-2 w-full flex flex-grow justify-center'>
-    <div className={` ${aboutToDisappear ? " opacity-0" : " opacity-100"} bg-stone-700 w-[min(96%,36rem)] rounded-full px-4 transition-opacity duration-200 text-center`} >
+  return <div className=' z-60 fixed w-full flex flex-grow justify-center top-3'>
+    <div className={`
+          absolute transition-all duration-300 cubic-bezier(0.68, -0.55, 0.27, 1.55) 
+          bg-stone-700 w-[min(96%,36rem)] rounded-full px-4 text-center
+          ${notify === "" ? "-translate-y-9" : "translate-y-0"}
+        `}>
       <h2 className=" text-white min-w-36 min-h-6">{notify}</h2>
     </div>
   </div>
@@ -28,7 +28,7 @@ function App() {
       <NotifyProvider>
         <NotifyBlock />
         <Routes>
-          <Route path="/:setId" element={
+          <Route path="/:setId/:mode?" element={
             <WordLayout />
           } />
           <Route path="/" element={

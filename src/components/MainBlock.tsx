@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Params, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { IcRoundAccountCircle, IcRoundMenuOpenL, IcRoundMenuOpenR, MdiCardsOutline, MaterialChecklistRtl, CarbonSelectWindow, MdiDice5, Fa6SolidFileImport, MaterialDeleteRounded, MaterialLock, MaterialLockOpen, MaterialFileMove, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, PhSelectionInverseDuotone, BxBxsHide, BxBxsShow, MaterialSymbolsEditRounded } from '../utils/Icons'
+import { TablerCircleArrowUpFilled, TablerEyeClosed, IcRoundAccountCircle, IcRoundMenuOpenL, IcRoundMenuOpenR, MdiCardsOutline, MaterialChecklistRtl, CarbonSelectWindow, MdiDice5, Fa6SolidFileImport, MaterialDeleteRounded, MaterialLock, MaterialLockOpen, MaterialFileMove, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, PhSelectionInverseDuotone, BxBxsHide, BxBxsShow, MaterialSymbolsEditRounded } from '../utils/Icons'
 import { getRandId, copyToClipboard } from '../utils/tool';
 
 import { useNotify } from '../context/NotifyContext'
@@ -13,7 +13,9 @@ import createConfirmDialog from './ConfirmDialog';
 import WordItem from './WordItem'
 import PlayArea from './PlayArea'
 import CardArea from './CardArea'
+// import SmallCard from './SmallCard';
 
+/*
 function FunctionMenu() {
     const { state, setState } = useStateContext()
     const { notify, popNotify } = useNotify();
@@ -26,7 +28,7 @@ function FunctionMenu() {
                 // if (randomTable.length === 0) {
                 //     return
                 // }
-                // setPlayPosition(0)
+                // setplayIndex(0)
                 // setState({ ...state, cards: !state.cards })
             }}>
                 <MdiCardsOutline className={` text-2xl ${state.cards ? " text-purple-700" : ""}`} />
@@ -44,26 +46,104 @@ function FunctionMenu() {
             <a className='w-10 h-10 pt-[2px]' onClick={handleExport}>
                 <Fa6SolidFileExport className='text-xl' />
             </a>
+
+            <a className='cursor-pointer w-10' onClick={() => {
+                    popNotify(state.editing ? "Select mode" : "Normal mode")
+                    setState((pre: State1) => {
+                        const newState = { ...pre, editing: !pre.editing }
+                        return newState
+                    })
+                }}>
+                    {state.editing ? <MaterialChecklistRtl className='text-2xl' /> : <CarbonSelectWindow className='text-2xl' />}
+                </a>
         </div>
 
     )
 }
+*/
 
 function MainBlock() {
+    const { setId, mode } = useParams<Params>();
+    const [cardsMode, setCardsMode] = useState<boolean>(mode === "cards")
+
     const navigate = useNavigate();
-    const { setId } = useParams<Params>();
     const { state, setState } = useStateContext()
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [words, setWords] = useState<Word[]>([]);
+
     const [focusIndex, setFocusIndex] = useState<number>(0);
-    const [playPosition, setPlayPosition] = useState<number>(0);
+    const [playIndex, setPlayIndex] = useState<number>(0);
+    const [topIndex, setTopIndex] = useState<number>(0);
+    const [randomTable, setRandomTable] = useState<number[]>([])
+
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputBoxRef = useRef<HTMLTextAreaElement>(null);
     const { notify, popNotify } = useNotify();
 
+    const observerRef = useRef<IntersectionObserver | null>(null);
 
-    const bigRandomTableRef = useRef<number[] | null>([]);
-    const [randomTable, setRandomTable] = useState<number[]>([])
+    const onIdle = (cb: IdleRequestCallback) =>
+        (window.requestIdleCallback || ((cb) => setTimeout(cb, 1)))(cb);
+
+
+    const init = () => {
+        if (!scrollRef.current) {
+            return
+        }
+        const setCurrentLink = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+            for (const { isIntersecting, target } of entries) {
+                // @ts-ignore
+                if (!isIntersecting || !target.dataset.index) {
+                    return
+                }
+                // @ts-ignore
+                console.log(parseInt(target.dataset.index))
+                // @ts-ignore
+                setTopIndex(parseInt(target.dataset.index))
+            }
+        }
+
+        const toObserve = scrollRef.current.querySelectorAll('.a-word');
+        observerRef.current = new IntersectionObserver(setCurrentLink, { rootMargin: getRootMargin() });
+
+        if (!observerRef.current) {
+            return
+        }
+
+        if (toObserve.length === 0) {
+            setTimeout(() => {
+                init()
+            }, 500);
+        }
+        toObserve.forEach((h) => observerRef.current!.observe(h));
+
+        return () => {
+            observerRef.current!.disconnect();
+            observerRef.current = null
+        };
+    };
+
+    const getRootMargin = () => {
+        const top = 115;
+        const bottom = top + 60;
+        const height = document.documentElement.clientHeight;
+        return `-${top}px 0% ${bottom - height}px`;
+    };
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+                setTimeout(() => {
+                    onIdle(init);
+                }, 500);
+            }
+        };
+
+        init();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         updataRandomTable()
@@ -95,39 +175,23 @@ function MainBlock() {
     }, [setId])
 
     useEffect(() => {
+        init()
+    }, [randomTable])
+
+    useEffect(() => {
         console.log(setId, words)
         if (words.length === 0) {
             return
         }
+        updataRandomTable()
         localStorage.setItem(`set-${setId!}`, JSON.stringify(words))
     }, [words])
 
-    useEffect(() => {
-        if (state.init) {
-            const state0 = localStorage.getItem("ectts-state");
-            if (state0) {
-                setState({ ...JSON.parse(state0), deleting: false, init: false });
-            } else {
-                setState({ ...state, init: false });
-            }
-            return
-        }
-        localStorage.setItem("ectts-state", JSON.stringify(state))
-    }, [state])
-
-
-    const getRandomTable = (words: Word[], r: boolean, state: State1): number[] => {
-        const arr: number[] = r ? bigRandomTableRef.current!.filter(i => (state.editing ? words[i].selected : !words[i].done)) : words.map((word, i) => (state.editing ? word.selected : !word.done) ? i : -1).filter(e => e !== -1)
-        if (arr.length === 0) {
-            setState({ ...state, cards: false })
-        }
-        return arr
-    }
-
-    const scrollToCenter = (index: number): void => {
+    const scrollToTop = (index: number): void => {
         setTimeout(() => {
             scrollRef.current?.scrollTo({
-                top: index * 52 - 300 + (0.5 * (900 - window.innerHeight)),
+                // top: index * 52 - 300 + (0.5 * (900 - window.innerHeight)),
+                top: index * 52 - (0.5 * (900 - window.innerHeight)) + 90,
                 behavior: 'smooth'
             });
         }, 100);
@@ -196,76 +260,85 @@ function MainBlock() {
     };
 
     const handleDoneToggle = (index: number) => {
-        if (state.cards) {
+        // if (state.cards) {
 
-            setWords(prev => {
-                const newWords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
-                popNotify(`${newWords.filter(word => word.done).length}／${words.length} words selected`)
-                return newWords
-            });
+        //     setWords(prev => {
+        //         const newWords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
+        //         popNotify(`${newWords.filter(word => word.done).length}／${words.length} words selected`)
+        //         return newWords
+        //     });
 
-            return
-        }
+        //     return
+        // }
 
-        if (state.deleting) {
-            setWords(prev => prev.filter((e, i) => i !== index))
-            updataRandomTable()
-            return
-        }
+        // if (state.deleting) {
+        //     setWords(prev => prev.filter((e, i) => i !== index))
+        //     updataRandomTable()
+        //     return
+        // }
 
-        setState({ ...state, selection: 0 })
+        // setState({ ...state, selection: 0 })
 
-        if (!state.editing) {
-            const newWords = words.map((word, i) => i === index ? { ...word, done: !word.done } : word)
-            setWords(newWords)
-            popNotify(`${newWords.filter(word => word.done).length}／${newWords.length} words done`)
-            if (randomTable[playPosition] > index) {
-                setPlayPosition(playPosition + (newWords[index].done ? -1 : 1))
-            }
+        // if (!state.editing) {
+        //     const newWords = words.map((word, i) => i === index ? { ...word, done: !word.done } : word)
+        //     setWords(newWords)
+        //     popNotify(`${newWords.filter(word => word.done).length}／${newWords.length} words done`)
+        //     if (randomTable[playIndex] > index) {
+        //         setPlayIndex(playIndex + (newWords[index].done ? -1 : 1))
+        //     }
 
-        } else {
-            const newWords = words.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
-            setWords(newWords)
-            popNotify(`${newWords.filter(word => word.selected).length}／${newWords.length} words selected`)
-            if (randomTable[playPosition] > index) {
-                setPlayPosition(playPosition + (newWords[index].selected ? 1 : -1))
-            }
-        }
+        // } else {
+        //     const newWords = words.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
+        //     setWords(newWords)
+        //     popNotify(`${newWords.filter(word => word.selected).length}／${newWords.length} words selected`)
+        //     if (randomTable[playIndex] > index) {
+        //         setPlayIndex(playIndex + (newWords[index].selected ? 1 : -1))
+        //     }
+        // }
     };
 
     const addNewWord = () => {
         setWords(prev => [...prev, { id: getRandId(16), chinese: "", english: "", done: false, selected: false }]);
         setFocusIndex(words.length);
-        scrollToCenter(words.length)
+        scrollToTop(words.length)
         updataRandomTable()
     };
 
     const handlePlayThisWord = (index: number) => {
         setTimeout(() => {
-            setRandomTable(prev => {
-                setPlayPosition(prev.indexOf(index))
-                return prev
-            })
+            console.log("怎麼撥放")
         }, 100);
     }
-
-    useEffect(() => {
-        if (bigRandomTableRef.current!.length === 0 || bigRandomTableRef.current!.length !== words.length) {
-            updataRandomTable()
-        }
-
-        setRandomTable(getRandomTable(words, state.rand, state))
-    }, [words])
-
-    const updataRandomTable = () => {
-        const arr: number[] = words.map((word, i) => i)
-        for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
+    const getRandomTable = (len: number): number[] => {
+        const arr: number[] = new Array(len).fill(0).map((i, index) => index)
+        for (let _ = 0; _ < len; _++) {
+            const i = Math.floor(Math.random() * len);
+            const j = Math.floor(Math.random() * len);
             [arr[i], arr[j]] = [arr[j], arr[i]];
         }
-        bigRandomTableRef.current = arr
+        return arr
+    }
 
-        setRandomTable(getRandomTable(words, state.rand, state))
+    const updataRandomTable = () => {
+        if (!state.rand) {
+            resetRandomTable()
+            return
+        }
+        if (randomTable.length === words.length) {
+            return
+        }
+        if (randomTable.length === words.length - 1) {
+            setRandomTable([...randomTable, words.length - 1])
+            return
+        }
+        const arr: number[] = getRandomTable(words.length)
+        setRandomTable(arr)
+    }
+
+    const resetRandomTable = () => {
+        const arr: number[] = new Array(words.length).fill(0).map((i, index) => index)
+        console.log(arr)
+        setRandomTable(arr)
     }
 
     return (
@@ -278,20 +351,20 @@ function MainBlock() {
                 </div>
             </div>
 
-            <div className='tool-icon-div flex justify-center space-x-4'>
+            <div className='tool-icon-div flex justify-start xs:justify-center space-x-4 ml-3'>
 
                 <a className='cursor-pointer w-[39px] h-10 pt-[1px]' onClick={() => {
                     popNotify(state.showE ? "Hide English" : "Show English")
                     setState({ ...state, showE: !state.showE })
                 }}>
-                    {!state.showE ? <BxBxsHide className='text-2xl' /> : <BxBxsShow className='text-2xl' />}
+                    {!state.showE ? <TablerEyeClosed className='text-2xl' /> : <BxBxsShow className='text-2xl' />}
                 </a>
 
                 <a className='cursor-pointer w-10 pt-[1px]' onClick={() => {
                     popNotify(state.showC ? "Hide Chinese" : "Show Chinese")
                     setState({ ...state, showC: !state.showC })
                 }}>
-                    {!state.showC ? <BxBxsHide className='text-2xl' /> : <BxBxsShow className='text-2xl' />}
+                    {!state.showC ? <TablerEyeClosed className='text-2xl' /> : <BxBxsShow className='text-2xl' />}
                 </a>
 
                 <a className='cursor-pointer w-10' onClick={() => {
@@ -306,64 +379,56 @@ function MainBlock() {
                 </a>
 
                 <a className='cursor-pointer w-10' onClick={() => {
-                    popNotify(state.editing ? "Select mode" : "Normal mode")
-                    setState((pre: State1) => {
-                        const newState = { ...pre, editing: !pre.editing }
-                        return newState
-                    })
-                }}>
-                    {state.editing ? <MaterialChecklistRtl className='text-2xl' /> : <CarbonSelectWindow className='text-2xl' />}
-                </a>
-
-                <a className='cursor-pointer w-10' onClick={() => {
                     popNotify(!state.rand ? "Random mode" : "Normal mode")
-                    setState((pre: State1) => {
-                        const newState = { ...pre, rand: !pre.rand }
-                        setRandomTable(getRandomTable(words, newState.rand, newState))
-                        updataRandomTable()
-                        return newState
-                    })
+                    setState({ ...state, rand: !state.rand })
+                    console.log("隨機?")
                 }}>
                     <MdiDice5 className={` text-2xl ${state.rand ? " text-green-700" : ""}`} />
                 </a>
 
             </div>
 
-            <div className=' relative flex justify-center h-full w-full overflow-y-auto'>
-                <div ref={scrollRef} className='jx-5 h-full max-w-[22rem] min-w-[20rem] sm:max-w-[28rem] sm:min-w-[22rem] space-y-2 overflow-x-hidden pl-1'>
-                    {words.map((word, index) => (
-                        <WordItem
+            <div className=' relative flex justify-center h-full w-full overflow-y-auto px-1'>
+
+                <div ref={scrollRef}
+                    style={{
+                        scrollSnapType: 'y mandatory',
+                        scrollPadding: '0px 0px',
+                    }}
+                    className='jx-5 h-full px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 overflow-x-hidden '>
+                    {randomTable.map((index, i) => {
+                        const word = words[index]
+                        return (<WordItem
                             key={word.id}
                             word={word}
                             index={index}
+                            indexP={i}
                             state={state}
-                            isFocused={index === focusIndex}
-                            isPlaying={index === randomTable[playPosition]}
+                            isFocused={i === focusIndex}
+                            isTop={i === topIndex}
+                            isPlaying={index === randomTable[playIndex]}
                             onPlay={handlePlayThisWord}
                             onChange={handleWordChange}
                             onDoneToggle={handleDoneToggle}
                             onNext={() => {
-                                if (index + 2 > words.length) {
+                                if (i + 2 > words.length) {
+                                    setFocusIndex(i + 1)
                                     addNewWord()
                                 }
-                                setFocusIndex(-1)
-                                setTimeout(() => {
-                                    setFocusIndex(index + 1)
-                                }, 10);
                             }}
-                        />
-                    ))
+                        />)
+                    })
                     }
-                    < div className='h-[30%]'>
-                        {/* <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-96 p-2 mt-8'></textarea> */}
-                    </div>
 
+                    < div className='h-[90%] relative'>
+                        <button className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-4xl' /></button>
+                    </div>
                 </div>
             </div>
 
-            {state.cards && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} words={words} />}
+            {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playIndex, setCurrentProgress: setPlayIndex }} words={words} />}
 
-            <PlayArea state={state} randomTable={randomTable} scrollToCenter={scrollToCenter} progress={{ currentProgress: playPosition, setCurrentProgress: setPlayPosition }} currentTitle={currentTitle} words={words} />
+            <PlayArea randomTable={randomTable} progress={{ currentProgress: playIndex, setCurrentProgress: setPlayIndex }} currentTitle={currentTitle} words={words} />
         </div >
     )
 }

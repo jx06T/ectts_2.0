@@ -7,7 +7,7 @@
 }
 
 .jx-1 {
-  @apply rounded-md h-10 text-base p-1 flex items-center gap-2 my-[2px];
+  @apply h-10 text-base p-1 flex items-center gap-2 my-[2px];
 }
 
 .js-2 {
@@ -159,10 +159,14 @@
   background-color: hsl(94deg, 80%, var(--color-l), var(--color-a));
 }
 
-hr{
-  border-top: .1px solid  #feeeff;
+hr {
+  border-top: 0.1px solid #feeeff;
 }
 
-.tool-icon-div > a{
-  @apply h-fit p-1 text-center
+.tool-icon-div > a {
+  @apply h-fit p-1 text-center;
+}
+
+input {
+  text-rendering: optimizeLegibility; /* 或者 use geometricPrecision */
 }

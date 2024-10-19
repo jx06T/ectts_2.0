@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MingcuteSettings6Fill, FluentNextFrame24Filled, FluentPreviousFrame24Filled, FluentPause24Filled, FluentPlay24Filled } from "../utils/Icons";
 import { useNotify } from '../context/NotifyContext'
+import { Params, useParams } from 'react-router-dom';
 
 const initialSettings: Settings = {
     timeWW: 1000,
@@ -34,7 +35,10 @@ const SettingsUI: Record<string, UI> = {
 }
 
 
-function PlayArea({ state, randomTable, progress, words, currentTitle, scrollToCenter }: { state: State1, randomTable: number[], scrollToCenter: Function, progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable: number[], progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+    const { setId, mode } = useParams<Params>();
+    const [cardsMode, setCardsMode] = useState<boolean>(mode === "cards")
+
     const [showSetting, setShowSetting] = useState<boolean>(false)
     const { notify, popNotify } = useNotify();
 
@@ -119,7 +123,7 @@ function PlayArea({ state, randomTable, progress, words, currentTitle, scrollToC
         // Letter spelling
         if (settings.letter) {
             utterances.push(settings.timeEL);
-            const letterUtterance = createUtterance('"' + word.english.split("").join('","').replaceAll('," "'," ") + '"', 1, speakerERef.current);
+            const letterUtterance = createUtterance('"' + word.english.split("").join('","').replaceAll('," "', " ") + '"', 1, speakerERef.current);
             utterances.push(letterUtterance);
         }
 
@@ -179,14 +183,14 @@ function PlayArea({ state, randomTable, progress, words, currentTitle, scrollToC
 
         if (!words[randomTableRef.current![newIndex]]) {
             setCurrentProgress(0)
-            scrollToCenter(0)
+            // scrollToTop(0)
             setIsPlaying(false);
             return
         }
 
         setCurrentProgress(newIndex)
         currentProgressRef.current = newIndex
-        scrollToCenter(randomTableRef.current![newIndex])
+        // scrollToTop(randomTableRef.current![newIndex])
         const utterances = createUtterances(settingsRef.current, words[randomTableRef.current![newIndex]]);
         playUtterances(utterances, newIndex);
 
@@ -335,9 +339,9 @@ function PlayArea({ state, randomTable, progress, words, currentTitle, scrollToC
                     </div>
 
                     <div className=" w-[28%] xs:w-[30%] pr-2 text-sm xs:text-lg  ">
-                        {state.cards ? "✓ " + words.filter(word => word.done).length : (words[randomTableRef.current![currentProgress]] ? words[randomTableRef.current![currentProgress]].english : "")}
+                        {cardsMode ? "✓ " + words.filter(word => word.done).length : (words[randomTableRef.current![currentProgress]] ? words[randomTableRef.current![currentProgress]].english : "")}
                         <br></br>
-                        {state.cards ? "✕ " + words.filter(word => !word.done).length : (words[randomTableRef.current![currentProgress]] ? words[randomTableRef.current![currentProgress]].chinese : "")}
+                        {cardsMode ? "✕ " + words.filter(word => !word.done).length : (words[randomTableRef.current![currentProgress]] ? words[randomTableRef.current![currentProgress]].chinese : "")}
                     </div>
                 </div >
             </div>

@@ -1,90 +1,149 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 
-interface WordItemProps {
+interface Word {
+  english: string;
+  chinese: string;
+  selected?: boolean;
+  done?: boolean;
+}
+
+interface AnimatedWordProps {
   word: Word;
   index: number;
-  isPlaying: boolean
+  indexP: number;
+  isTop: boolean;
   isFocused: boolean;
-  onPlay: Function;
+  onNext: Function;
+  state: State1;
   onChange: (index: number, field: 'english' | 'chinese', value: string) => void;
   onDoneToggle: (index: number) => void;
-  onNext: () => void;
-  state: State1
+  onPlay: (index: number) => void;
+  isPlaying: boolean;
 }
 
+interface ActionButtonProps {
+  state: State1;
+  word: Word;
+  isPlaying: boolean;
+  onPlay: () => void;
+  onDoneToggle: () => void;
+  handleMouseLeave: () => void;
+}
 
-function WordItem({ onPlay, isPlaying, state, word, index, isFocused, onChange, onDoneToggle, onNext }: WordItemProps) {
+const AnimatedWord: React.FC<AnimatedWordProps> = ({ word, index, indexP, isTop, state, onChange, onDoneToggle, onPlay, isPlaying }) => {
+  const [showEnglish, setShowEnglish] = useState(false);
+  const [showChinese, setShowChinese] = useState(false);
   const englishRef = useRef<HTMLInputElement>(null);
   const chineseRef = useRef<HTMLInputElement>(null);
-  const [showEnglish, setShowEnglish] = useState<boolean>(false);
-  const [showChinese, setShowChinese] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (isFocused) {
-      englishRef.current?.focus();
-    }
-  }, [isFocused]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: 'english' | 'chinese') => {
-    if (e.key === 'Enter' || e.key === 'Tab') {
-      e.preventDefault();
-      if (field === 'english') chineseRef.current?.focus();
-      else onNext();
+    if (e.key === 'Enter') {
+      if (field === 'english') {
+        chineseRef.current?.focus();
+      } else {
+        englishRef.current?.focus();
+      }
     }
   };
 
-  // const handleFocus = (field: 'english' | 'chinese') => {
-  //   if (field === 'english') setShowEnglish(true);
-  //   else setShowChinese(true);
-  // };
-
-
-  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.buttons === 1) {
-      onDoneToggle(index);
-      //@ts-ignore
-      window.getSelection().removeAllRanges()
-    }
+  const handleMouseLeave = () => {
+    setShowEnglish(false);
+    setShowChinese(false);
   };
+
+  const commonInputProps = (field: 'english' | 'chinese') => ({
+    value: state[`show${field.charAt(0).toUpperCase() as 'E' | 'C'}`] || (field === 'english' ? showEnglish : showChinese) ? word[field] : "· · · · ·",
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange(index, field, e.target.value),
+    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => handleKeyDown(e, field),
+    readOnly: state.lock,
+    onFocus: () => field === 'english' ? setShowEnglish(true || !state.lock) : setShowChinese(true || !state.lock),
+    onBlur: () => field === 'english' ? setShowEnglish(false) : setShowChinese(false),
+  });
 
   return (
-    <div className="flex space-x-3 my-1">
-      <input
-        ref={englishRef}
-        value={state.showE || showEnglish ? word.english : "· · · · ·"}
-        onChange={(e) => onChange(index, 'english', e.target.value)}
-        onKeyDown={(e) => handleKeyDown(e, 'english')}
-        className="jx-1 bg-blue-50 hover:bg-blue-100 w-[42%]"
-        readOnly={state.lock}
-        onFocus={() => setShowEnglish(true || !state.lock)}
-        onBlur={() => setShowEnglish(false)}
-      />
-
-      <input
-        ref={chineseRef}
-        value={state.showC || showChinese ? word.chinese : "· · · · ·"}
-        onChange={(e) => onChange(index, 'chinese', e.target.value)}
-        onKeyDown={(e) => handleKeyDown(e, 'chinese')}
-        className="jx-1 bg-blue-50 hover:bg-blue-100 w-[42%]"
-        readOnly={state.lock}
-        onFocus={() => setShowChinese(true || !state.lock)}
-        onBlur={() => setShowChinese(false)}
-      />
-
-      <div
-        onDoubleClick={() => {
-          onPlay(index)
-          console.log(33)
-          //@ts-ignore
-          window.getSelection().removeAllRanges()
-        }}
-        onMouseEnter={handleMouseLeave}
-        onClick={() => onDoneToggle(index)}
-        // title={state.deleting ? "delete it" : state.editing ? "select it" : "Marked as done"}
-        className={`jx-1 ${state.deleting ? "bg-red-400 hover:bg-red-500" : state.editing ? (word.selected ? "bg-purple-400 hover:bg-purple-500" : "bg-purple-100 hover:bg-purple-200") : (word.done ? "bg-green-400 hover:bg-green-500" : "bg-green-100 hover:bg-green-200")} w-8 cursor-pointer ${isPlaying ? " border-2 border-blue-400" : ""} `}
-      ></div>
-    </div>
+    <motion.div
+      layout
+      // transition={{ duration: 0.3 }}
+      transition={{
+        layout: { duration: 0.7, type: "spring" },
+        height: { duration: 0.7, },
+        width: { duration: 0.7, }
+      }}
+      data-index={indexP}
+      className={` overflow-hidden a-word ${isTop ? '-ml-1 -mr-1 sm:-mr-2 sm:-ml-2' : 'flex space-x-3'}`}
+      style={{ scrollSnapAlign: 'start' }}
+    >
+      {isTop ? (
+        <div className="jx-6 flex w-full bg-blue-50 rounded-md p-2 space-x-3">
+          <div className="flex-grow flex flex-col space-y-2">
+            <motion.input
+              layout
+              ref={englishRef}
+              {...commonInputProps('english')}
+              className="jx-1 bg-transparent border-b-2 border-blue-900 rounded-none w-full"
+            />
+            <motion.input
+              layout
+              ref={chineseRef}
+              {...commonInputProps('chinese')}
+              className="jx-1 bg-transparent border-b-2 border-blue-900 rounded-none w-full"
+            />
+          </div>
+          <ActionButton
+            state={state}
+            word={word}
+            isPlaying={isPlaying}
+            onPlay={() => onPlay(index)}
+            onDoneToggle={() => onDoneToggle(index)}
+            handleMouseLeave={handleMouseLeave}
+          />
+        </div>
+      ) : (
+        <>
+          <motion.input
+            layout
+            ref={englishRef}
+            {...commonInputProps('english')}
+            className="jx-1 rounded-md bg-blue-50 hover:bg-blue-100 flex-grow flex-shrink min-w-0"
+          />
+          <motion.input
+            layout
+            ref={chineseRef}
+            {...commonInputProps('chinese')}
+            className="jx-1 rounded-md bg-blue-50 hover:bg-blue-100 flex-grow flex-shrink min-w-0"
+          />
+          <ActionButton
+            state={state}
+            word={word}
+            isPlaying={isPlaying}
+            onPlay={() => onPlay(index)}
+            onDoneToggle={() => onDoneToggle(index)}
+            handleMouseLeave={handleMouseLeave}
+          />
+        </>
+      )}
+    </motion.div>
   );
-}
+};
 
-export default WordItem
+const ActionButton: React.FC<ActionButtonProps> = ({ state, word, isPlaying, onPlay, onDoneToggle, handleMouseLeave }) => (
+  <motion.div
+    onDoubleClick={() => {
+      onPlay();
+      window.getSelection()?.removeAllRanges();
+    }}
+    onMouseEnter={handleMouseLeave}
+    onClick={onDoneToggle}
+    className={`rounded-md flex-shrink-0 jx-1 ${state.editing
+      ? word.selected
+        ? "bg-purple-400 hover:bg-purple-500"
+        : "bg-purple-100 hover:bg-purple-200"
+      : word.done
+        ? "bg-green-400 hover:bg-green-500"
+        : "bg-green-100 hover:bg-green-200"
+      } w-7 cursor-pointer ${isPlaying ? "border-2 border-blue-400" : ""}`}
+  />
+);
+
+export default AnimatedWord;
