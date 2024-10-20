@@ -35,7 +35,7 @@ const SettingsUI: Record<string, UI> = {
 }
 
 
-function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable: number[], progress: { currentProgress: number, setCurrentProgress: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable: number[], progress: { PlayIndex: number, setPlayIndex: Function }, callback?: Function, words: Word[], currentTitle: string }) {
     const { setId, mode } = useParams<Params>();
     const [cardsMode, setCardsMode] = useState<boolean>(mode === "cards")
 
@@ -48,7 +48,7 @@ function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable:
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const isPlayingRef = useRef<boolean>(false)
 
-    const { currentProgress, setCurrentProgress } = progress
+    const { setPlayIndex, PlayIndex } = progress
     const currentProgressRef = useRef<number>(0)
 
     const limitCountRef = useRef<number>(0)

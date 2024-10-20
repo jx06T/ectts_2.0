@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import { Params, useParams } from 'react-router-dom';
+import { Link, Params, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { TablerCircleArrowUpFilled, TablerEyeClosed, IcRoundAccountCircle, IcRoundMenuOpenL, IcRoundMenuOpenR, MdiCardsOutline, MaterialChecklistRtl, CarbonSelectWindow, MdiDice5, Fa6SolidFileImport, MaterialDeleteRounded, MaterialLock, MaterialLockOpen, MaterialFileMove, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, PhSelectionInverseDuotone, BxBxsHide, BxBxsShow, MaterialSymbolsEditRounded } from '../utils/Icons'
+import { AntDesignSettingFilled, TablerCircleArrowUpFilled, TablerEyeClosed, IcRoundAccountCircle, IcRoundMenuOpenL, IcRoundMenuOpenR, MdiCardsOutline, MaterialChecklistRtl, CarbonSelectWindow, MdiDice5, Fa6SolidFileImport, MaterialDeleteRounded, MaterialLock, MaterialLockOpen, MaterialFileMove, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, PhSelectionInverseDuotone, BxBxsHide, BxBxsShow, MaterialSymbolsEditRounded } from '../utils/Icons'
 import { getRandId, copyToClipboard } from '../utils/tool';
 
 import { useNotify } from '../context/NotifyContext'
@@ -15,56 +14,75 @@ import PlayArea from './PlayArea'
 import CardArea from './CardArea'
 // import SmallCard from './SmallCard';
 
-/*
-function FunctionMenu() {
+function FunctionMenu({ handleImport, handleExport }: { handleExport: React.MouseEventHandler, handleImport: React.MouseEventHandler }) {
     const { state, setState } = useStateContext()
     const { notify, popNotify } = useNotify();
+    const { setId, mode } = useParams<Params>();
+    const [cardsMode, setCardsMode] = useState<boolean>(mode === "cards")
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        setCardsMode(mode === "cards")
+    }, [mode])
 
     return (
-        <div>
-            <a className='cursor-pointer w-10 h-10' onClick={() => {
-                // popNotify(!state.cards ? "Cards mode" : "Normal mode")
-                // setRandomTable(getRandomTable(words, state.rand, state))
-                // if (randomTable.length === 0) {
-                //     return
-                // }
-                // setplayIndex(0)
-                // setState({ ...state, cards: !state.cards })
+        <div className=' flex flex-col w-full space-y-4 p-3 '>
+            <Link to={"/" + setId! + "/settings"} className='cursor-pointer' onClick={() => {
+                popNotify("Coming soon")
             }}>
-                <MdiCardsOutline className={` text-2xl ${state.cards ? " text-purple-700" : ""}`} />
-            </a>
-            <a className='cursor-pointer w-10 h-10' onClick={() => {
-                popNotify('Click the right box to delete')
-                setState({ ...state, deleting: !state.deleting })
+                <div className=' flex overflow-hidden'>
+                    <AntDesignSettingFilled className={` text-2xl`} />
+                    <span className=' whitespace-nowrap ml-2'>Settings</span>
+                </div>
+            </Link>
+
+            <Link to={"/" + setId! + (cardsMode ? "/" : "/cards")} className='cursor-pointer' onClick={() => {
+                popNotify(!cardsMode ? "Cards mode" : "Normal mode")
             }}>
-                <MaterialSymbolsEditRounded className={` text-2xl ${state.deleting ? "text-red-800" : ""}`} />
-            </a>
-            <a className='cursor-pointer w-10 h-10' onClick={handleImport}>
-                <Fa6SolidFileImport className=' text-xl mt-[2px]  text-red-800' />
+                <div className=' flex overflow-hidden'>
+                    <MdiCardsOutline className={` text-2xl ${cardsMode ? " text-green-700" : ""}`} />
+                    <span className=' whitespace-nowrap ml-2'>Card Mode</span>
+                </div>
+            </Link>
+
+            <a className='cursor-pointer' onClick={handleImport}>
+                <div className=' flex overflow-hidden'>
+                    <Fa6SolidFileImport className=' text-xl mr-[0.2rem] mt-[0.1rem]  text-red-800' />
+                    <span className=' whitespace-nowrap ml-[0.6rem]'>Import</span>
+                </div>
             </a>
 
-            <a className='w-10 h-10 pt-[2px]' onClick={handleExport}>
-                <Fa6SolidFileExport className='text-xl' />
+            <a className='cursor-pointer pt-[2px]' onClick={handleExport}>
+                <div className=' flex overflow-hidden'>
+                    <Fa6SolidFileExport className='text-xl ml-[0.2rem]' />
+                    <span className=' whitespace-nowrap ml-2'>Export</span>
+                </div>
             </a>
 
-            <a className='cursor-pointer w-10' onClick={() => {
-                    popNotify(state.editing ? "Select mode" : "Normal mode")
-                    setState((pre: State1) => {
-                        const newState = { ...pre, editing: !pre.editing }
-                        return newState
-                    })
-                }}>
+            {/* <a className='cursor-pointer' onClick={() => {
+                popNotify(state.editing ? "Select mode" : "Normal mode")
+                setState((pre: State1) => {
+                    const newState = { ...pre, editing: !pre.editing }
+                    return newState
+                })
+            }}>
+                <div className=' flex justify-between'>
                     {state.editing ? <MaterialChecklistRtl className='text-2xl' /> : <CarbonSelectWindow className='text-2xl' />}
-                </a>
+                    <span className=' ml-2'>card</span>
+                </div>
+            </a> */}
         </div>
 
     )
 }
-*/
 
 function MainBlock() {
     const { setId, mode } = useParams<Params>();
     const [cardsMode, setCardsMode] = useState<boolean>(mode === "cards")
+
+    useEffect(() => {
+        setCardsMode(mode === "cards")
+    }, [mode])
 
     const navigate = useNavigate();
     const { state, setState } = useStateContext()
@@ -79,6 +97,8 @@ function MainBlock() {
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputBoxRef = useRef<HTMLTextAreaElement>(null);
     const { notify, popNotify } = useNotify();
+
+    const [showFunctionMenu, setShowFunctionMenu] = useState<boolean>(false)
 
     const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -114,7 +134,10 @@ function MainBlock() {
             setTimeout(() => {
                 init()
             }, 500);
+            return
         }
+
+        console.log(toObserve)
         toObserve.forEach((h) => observerRef.current!.observe(h));
 
         return () => {
@@ -124,7 +147,7 @@ function MainBlock() {
     };
 
     const getRootMargin = () => {
-        const top = 115;
+        const top = 110;
         const bottom = top + 60;
         const height = document.documentElement.clientHeight;
         return `-${top}px 0% ${bottom - height}px`;
@@ -344,10 +367,20 @@ function MainBlock() {
     return (
         <div className=' main bg-slate-25 w-full sm:h-full px-1  py-2 flex flex-col relative'>
 
-            <div className='flex justify-between'>
+            <div className='flex justify-between relative'>
                 <Link to="/" className=' cursor-pointer ml-11 m-1 mt-[3px] min-w-[70px]'>ECTTS 2.0</Link>
-                <div className='  hover:bg-slate-200 w-[2.15rem] h-[2.15rem] rounded-full p-[2px]'>
-                    <IcRoundAccountCircle className=' w-full h-full text-center text-3xl' />
+                <div
+                    style={{
+                        width: showFunctionMenu ? "140px" : "40px",
+                        transition: 'width 0.3s ease-in-out',
+                    }}
+                    className={`z-50 flex items-end flex-col absolute right-2 top-0 rounded-md pt-2 pr-2 ${showFunctionMenu ? " bg-purple-200" : " bg-transparent"}`}>
+                    <div onClick={() => setShowFunctionMenu(!showFunctionMenu)} className='  hover:bg-purple-300 w-[2.15rem] h-[2.15rem] rounded-full p-[2px]'>
+                        <IcRoundAccountCircle className=' w-full h-full text-center text-3xl' />
+                    </div>
+                    {showFunctionMenu &&
+                        <FunctionMenu handleExport={handleExport} handleImport={handleImport} />
+                    }
                 </div>
             </div>
 
@@ -392,8 +425,8 @@ function MainBlock() {
 
                 <div ref={scrollRef}
                     style={{
-                        scrollSnapType: 'y mandatory',
-                        scrollPadding: '0px 0px',
+                        // scrollSnapType: 'y mandatory',
+                        // scrollPadding: '0px 0px',
                     }}
                     className='jx-5 h-full px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 overflow-x-hidden '>
                     {randomTable.map((index, i) => {
@@ -412,23 +445,24 @@ function MainBlock() {
                             onDoneToggle={handleDoneToggle}
                             onNext={() => {
                                 if (i + 2 > words.length) {
-                                    setFocusIndex(i + 1)
                                     addNewWord()
                                 }
+                                setFocusIndex(i + 1)
                             }}
                         />)
                     })
                     }
 
                     < div className='h-[90%] relative'>
-                        <button className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-4xl' /></button>
+                        <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8'></textarea>
+                        <button onClick={() => scrollToTop(0)} className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
                     </div>
                 </div>
             </div>
 
             {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playIndex, setCurrentProgress: setPlayIndex }} words={words} />}
 
-            <PlayArea randomTable={randomTable} progress={{ currentProgress: playIndex, setCurrentProgress: setPlayIndex }} currentTitle={currentTitle} words={words} />
+            <PlayArea randomTable={randomTable} progress={{ PlayIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />
         </div >
     )
 }

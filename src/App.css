@@ -7,7 +7,7 @@
 }
 
 .jx-1 {
-  @apply h-10 text-base p-1 flex items-center gap-2 my-[2px];
+  @apply h-10 text-base p-1 flex items-center gap-2 my-[2px] outline-none;
 }
 
 .js-2 {
@@ -167,6 +167,18 @@ hr {
   @apply h-fit p-1 text-center;
 }
 
-input {
-  text-rendering: optimizeLegibility; /* 或者 use geometricPrecision */
+.a-word.top input {
+  width: 100%;
+  background-color: transparent;
+  text-align: center;
+  border-bottom: 1px solid #7777bb;
+  border-radius: 0%;
+  outline: none;
+}
+.a-word.top {
+  @apply bg-blue-50 p-2 -ml-1 -mr-1 rounded-md;
+}
+
+.a-word:not(.top) * {
+  @apply rounded-md;
 }
