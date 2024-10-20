@@ -1,14 +1,14 @@
 import React, { createContext, useState, useContext, useCallback, ReactNode, useRef, useEffect } from 'react';
 
 interface StateContextType {
-  state: State1,
+  state: StateFormat,
   setState: Function
 }
 
 const StateContext = createContext<StateContextType | undefined>(undefined);
 
 export const StateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, setState] = useState<State1>({ showE: true, showC: true, editing: false, selection: 0, lock: false, rand: false, init: true });
+  const [state, setState] = useState<StateFormat>({ showE: true, showC: true, onlyPlayUnDone: false, selection: 0, lock: false, rand: false, init: true });
 
   useEffect(() => {
     if (state.init) {

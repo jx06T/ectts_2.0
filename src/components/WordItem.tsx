@@ -14,7 +14,7 @@ interface WordItemProps {
   onDoneToggle: (index: number) => void;
   onDelete: (index: number) => void;
   onNext: () => void;
-  state: State1
+  state: StateFormat
 }
 
 
@@ -73,6 +73,9 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
       }}
       className={` a-word flex my-1 ${isTopDelay ? "top" : ""}`}>
 
+      <div className={`w-1 h-[90%]  ${word.done ? " bg-green-300" : " bg-red-300"}`}>
+
+      </div>
       {isTopDelay &&
         <div className=" w-8 flex-grow-0 flex-shrink-0 flex flex-col justify-center space-y-4 mr-3">
           <button onClick={() => onDelete(index)}><MaterialDeleteRounded className="  text-3xl" /></button>
@@ -100,28 +103,28 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
           onBlur={() => setShowChinese(false)}
         />
       </div>
-      {!isTopDelay ?
+      <div>
+        {isTopDelay &&
+          <div className=" mb-3 w-8 flex-grow-0 flex-shrink-0 flex flex-col justify-center space-y-4 ml-3">
+            <button onClick={() => {
+              speakE(word.english)
+            }}><MingcuteVolumeLine className="  text-3xl" /></button>
+          </div>
+        }
         <div
           onDoubleClick={() => {
-            onPlay(index)
+            onPlay(indexP)
             //@ts-ignore
             window.getSelection().removeAllRanges()
           }}
           onMouseEnter={handleMouseLeave}
           onClick={() => onDoneToggle(index)}
-          className={`jx-1 
-          ${state.editing
-              ? (word.selected ? "bg-purple-400 hover:bg-purple-500" : "bg-purple-100 hover:bg-purple-200")
-              : (word.done ? "bg-green-400 hover:bg-green-500" : "bg-green-100 hover:bg-green-200")
-            }
-            w-8 flex-grow-0 flex-shrink-0 cursor-pointer ml-3 ${isPlaying ? " border-2 border-blue-400" : ""} `}
-        ></div> :
-        <div className=" w-8 flex-grow-0 flex-shrink-0 flex flex-col justify-center space-y-4 ml-3">
-          <button onClick={() => {
-            speakE(word.english)
-          }}><MingcuteVolumeLine className="  text-3xl" /></button>
-        </div>
-      }
+          className={` rounded-md jx-1 
+          ${word.selected ? "bg-purple-400 hover:bg-purple-500" : "bg-purple-100 hover:bg-purple-200"}
+          ${isPlaying ? " border-2 border-blue-400" : ""} 
+            w-8 flex-grow-0 flex-shrink-0 cursor-pointer ml-3 `}
+        ></div>
+      </div>
 
     </div>
   );

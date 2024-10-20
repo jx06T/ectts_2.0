@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { Link, Params, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { AntDesignSettingFilled, TablerCircleArrowUpFilled, TablerEyeClosed, IcRoundAccountCircle, IcRoundMenuOpenL, IcRoundMenuOpenR, MdiCardsOutline, MaterialChecklistRtl, CarbonSelectWindow, MdiDice5, Fa6SolidFileImport, MaterialDeleteRounded, MaterialLock, MaterialLockOpen, MaterialFileMove, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, PhSelectionInverseDuotone, BxBxsHide, BxBxsShow, MaterialSymbolsEditRounded } from '../utils/Icons'
+import { AntDesignSettingFilled, TablerCircleArrowUpFilled, TablerEyeClosed, IcRoundAccountCircle, MdiCardsOutline, MaterialChecklistRtl, MdiDice5, Fa6SolidFileImport, MaterialLock, MaterialLockOpen, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, BxBxsShow } from '../utils/Icons'
 import { getRandId, copyToClipboard } from '../utils/tool';
 
 import { useNotify } from '../context/NotifyContext'
@@ -15,11 +15,9 @@ import CardArea from './CardArea'
 // import SmallCard from './SmallCard';
 
 function FunctionMenu({ handleImport, handleExport }: { handleExport: React.MouseEventHandler, handleImport: React.MouseEventHandler }) {
-    const { state, setState } = useStateContext()
-    const { notify, popNotify } = useNotify();
+    const { popNotify } = useNotify();
     const { setId, mode } = useParams<Params>();
     const [cardsMode, setCardsMode] = useState<boolean>(mode === "cards")
-    const navigate = useNavigate();
 
     useEffect(() => {
         setCardsMode(mode === "cards")
@@ -59,18 +57,6 @@ function FunctionMenu({ handleImport, handleExport }: { handleExport: React.Mous
                 </div>
             </a>
 
-            {/* <a className='cursor-pointer' onClick={() => {
-                popNotify(state.editing ? "Select mode" : "Normal mode")
-                setState((pre: State1) => {
-                    const newState = { ...pre, editing: !pre.editing }
-                    return newState
-                })
-            }}>
-                <div className=' flex justify-between'>
-                    {state.editing ? <MaterialChecklistRtl className='text-2xl' /> : <CarbonSelectWindow className='text-2xl' />}
-                    <span className=' ml-2'>card</span>
-                </div>
-            </a> */}
         </div>
 
     )
@@ -82,6 +68,7 @@ function MainBlock() {
 
     useEffect(() => {
         setCardsMode(mode === "cards")
+        setShowFunctionMenu(false)
     }, [mode])
 
     const navigate = useNavigate();
@@ -96,12 +83,12 @@ function MainBlock() {
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputBoxRef = useRef<HTMLTextAreaElement>(null);
-    const { notify, popNotify } = useNotify();
+    const { popNotify } = useNotify();
 
     const [showFunctionMenu, setShowFunctionMenu] = useState<boolean>(false)
 
     const observerRef = useRef<IntersectionObserver | null>(null);
-
+    
     const onIdle = (cb: IdleRequestCallback) =>
         (window.requestIdleCallback || ((cb) => setTimeout(cb, 1)))(cb);
 
@@ -116,8 +103,6 @@ function MainBlock() {
                 if (!isIntersecting || !target.dataset.index) {
                     return
                 }
-                // @ts-ignore
-                console.log(parseInt(target.dataset.index))
                 // @ts-ignore
                 setTopIndex(parseInt(target.dataset.index))
             }
@@ -137,7 +122,6 @@ function MainBlock() {
             return
         }
 
-        console.log(toObserve)
         toObserve.forEach((h) => observerRef.current!.observe(h));
 
         return () => {
@@ -202,7 +186,6 @@ function MainBlock() {
     }, [randomTable])
 
     useEffect(() => {
-        console.log(setId, words)
         if (words.length === 0) {
             return
         }
@@ -226,17 +209,11 @@ function MainBlock() {
         ));
     };
 
-    const handleReverseSelection = () => {
-        popNotify('Inverse selected')
-        setState({ ...state, selection: 0 })
-        setWords(prev => prev.map((word, i) => ({ ...word, selected: state.editing ? !word.selected : word.selected, done: state.editing ? word.done : !word.done })));
-    };
-
     const handleSelectAll = () => {
         const t = state.selection !== 1
         popNotify(t ? 'All selected' : 'None selected')
         setState({ ...state, selection: state.selection === 1 ? -1 : 1 })
-        setWords(prev => prev.map((word, i) => ({ ...word, selected: state.editing ? t : word.selected, done: state.editing ? word.done : t })));
+        setWords(prev => prev.map((word, i) => ({ ...word, selected: t })));
     };
 
     const handleImport = () => {
@@ -272,7 +249,7 @@ function MainBlock() {
     };
 
     const handleExport = () => {
-        const WordsToExport = words.map(e => state.editing && !e.selected ? "$^#*&" : (e.english + "\n" + e.chinese)).filter(e => e !== "$^#*&")
+        const WordsToExport = words.map(e => !e.selected ? "$^#*&" : (e.english + "\n" + e.chinese)).filter(e => e !== "$^#*&")
         const ExportText = WordsToExport.join("\n")
 
         if (inputBoxRef.current) {
@@ -293,7 +270,7 @@ function MainBlock() {
         if (cardsMode) {
             setWords(prev => {
                 const newWords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
-                popNotify(`${newWords.filter(word => word.done).length}／${words.length} words selected`)
+                popNotify(`${newWords.filter(word => word.done).length}／${words.length} words done`)
                 return newWords
             });
 
@@ -302,22 +279,9 @@ function MainBlock() {
 
         setState({ ...state, selection: 0 })
 
-        if (!state.editing) {
-            const newWords = words.map((word, i) => i === index ? { ...word, done: !word.done } : word)
-            setWords(newWords)
-            popNotify(`${newWords.filter(word => word.done).length}／${newWords.length} words done`)
-            if (randomTable[playIndex] > index) {
-                setPlayIndex(playIndex + (newWords[index].done ? -1 : 1))
-            }
-
-        } else {
-            const newWords = words.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
-            setWords(newWords)
-            popNotify(`${newWords.filter(word => word.selected).length}／${newWords.length} words selected`)
-            if (randomTable[playIndex] > index) {
-                setPlayIndex(playIndex + (newWords[index].selected ? 1 : -1))
-            }
-        }
+        const newWords = words.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
+        setWords(newWords)
+        popNotify(`${newWords.filter(word => word.selected).length}／${newWords.length} words selected`)
     };
 
     const addNewWord = () => {
@@ -329,7 +293,7 @@ function MainBlock() {
 
     const handlePlayThisWord = (index: number) => {
         setTimeout(() => {
-            console.log("怎麼撥放")
+            setPlayIndex(index)
         }, 100);
     }
     const getRandomTable = (len: number): number[] => {
@@ -360,7 +324,6 @@ function MainBlock() {
 
     const resetRandomTable = () => {
         const arr: number[] = new Array(words.length).fill(0).map((i, index) => index)
-        console.log(arr)
         setRandomTable(arr)
     }
 
@@ -384,7 +347,7 @@ function MainBlock() {
                 </div>
             </div>
 
-            <div className='tool-icon-div flex justify-start xs:justify-center space-x-4 ml-3'>
+            <div className='tool-icon-div flex justify-start xs:justify-center space-x-3 ml-2'>
 
                 <a className='cursor-pointer w-[39px] h-10 pt-[1px]' onClick={() => {
                     popNotify(state.showE ? "Hide English" : "Show English")
@@ -415,7 +378,7 @@ function MainBlock() {
                     popNotify(!state.rand ? "Random mode" : "Normal mode")
                     if (state.rand) {
                         resetRandomTable()
-                    }else{
+                    } else {
                         const arr: number[] = getRandomTable(words.length)
                         setRandomTable(arr)
                     }
@@ -423,6 +386,13 @@ function MainBlock() {
                     setState({ ...state, rand: !state.rand })
                 }}>
                     <MdiDice5 className={` text-2xl ${state.rand ? " text-green-700" : ""}`} />
+                </a>
+
+                <a className='cursor-pointer w-10' onClick={() => {
+                    popNotify(!state.onlyPlayUnDone ? "Only play undone" : "Normal mode")
+                    setState({ ...state, onlyPlayUnDone: !state.onlyPlayUnDone })
+                }}>
+                    <MaterialChecklistRtl className={` text-2xl ${state.onlyPlayUnDone ? " text-green-700" : ""}`} />
                 </a>
 
             </div>
@@ -445,7 +415,7 @@ function MainBlock() {
                                 state={state}
                                 isFocused={i === focusIndex}
                                 isTop={i === topIndex}
-                                isPlaying={index === randomTable[playIndex]}
+                                isPlaying={i === playIndex}
                                 onDelete={handleDelete}
                                 onPlay={handlePlayThisWord}
                                 onChange={handleWordChange}
@@ -471,7 +441,7 @@ function MainBlock() {
 
             {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playIndex, setCurrentProgress: setPlayIndex }} words={words} />}
 
-            <PlayArea randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />
+            <PlayArea onlyPlayUnDone={state.onlyPlayUnDone} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />
         </div >
     )
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 
-function Card({ english, state, chinese, done, index = 0, toNext, back, handleDoneToggle, addBias }: { addBias: Function, state: State1, done: boolean, handleDoneToggle: Function, back: boolean, toNext: Function, english: string, chinese: string, index: number }) {
+function Card({ english, state, chinese, done, index = 0, toNext, back, handleDoneToggle, addBias }: { addBias: Function, state: StateFormat, done: boolean, handleDoneToggle: Function, back: boolean, toNext: Function, english: string, chinese: string, index: number }) {
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [isMoving, setIsMoving] = useState<boolean>(false);
     const [position, setPosition] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
@@ -58,17 +58,8 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
 
                 if (newX < -overX.current && done === true) {
                     handleDoneToggle(index)
-
                 } else if (done === false && newX > overX.current) {
                     handleDoneToggle(index)
-                    setTimeout(()=>{
-                        handleMove(0, 0)
-                    },100)
-            
-                    if (!state.editing) {
-                        addBias()
-                        return
-                    }
                 }
 
                 handleMove(0, 0)
@@ -184,6 +175,8 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
                 >
                     <h1 className=" select-text leading-none text-center text-4xl">{chinese}</h1>
                 </div>
+                <div className={` opacity-70 absolute right-2 top-2 rounded-lg w-8 h-8 ${done ? " bg-green-300" : " bg-red-300"}`}>
+                </div>
             </div>
             <div
                 className={`bg-blue-200 small-card ${back ? "back" : ""}`}
@@ -200,12 +193,14 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
                 >
                     <h1 className=" select-text leading-none text-center text-4xl">{english}</h1>
                 </div>
+                <div className={` opacity-70 absolute right-2 top-2 rounded-lg w-8 h-8 ${done ? " bg-green-300" : " bg-red-300"}`}>
+                </div>
             </div>
         </div >
     )
 }
 
-function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { state: State1, handleDoneToggle: Function, progress: { currentProgress: number, setCurrentProgress: Function }, randomTable: number[], words: Word[] }) {
+function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { state: StateFormat, handleDoneToggle: Function, progress: { currentProgress: number, setCurrentProgress: Function }, randomTable: number[], words: Word[] }) {
     const { currentProgress, setCurrentProgress } = progress
     const bias = useRef<number>(0)
     const addBias = useRef<boolean>(false)
@@ -215,7 +210,6 @@ function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { s
 
     const currentWord0 = words[CurrentIndex0] ? words[CurrentIndex0] : { id: "ddddddddddddddd", chinese: "", english: "" }
     const currentWord1 = words[CurrentIndex1] ? words[CurrentIndex1] : { id: "ddddddddddddddd", chinese: "", english: "" }
-    console.log("卡片驅蟲渲染")
 
     useEffect(() => {
         if (addBias.current) {
@@ -240,8 +234,6 @@ function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { s
 
     return (
         <div className=" pointer-events-none pb-16 overflow-hidden card-area left-0 right-0 top-0 bottom-0 absolute flex flex-col items-center z-20 bg-slate-100 bg-opacity-5">
-            {/* <Card state={state} chinese={currentWord0.chinese} english={currentWord0.english} done={!!currentWord0.done} index={CurrentIndex0} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias.current) % 2 === 1} addBias={() => bias.current += 1} /> */}
-            {/* <Card state={state} chinese={currentWord1.chinese} english={currentWord1.english} done={!!currentWord1.done} index={CurrentIndex1} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias.current) % 2 === 0} addBias={() => bias.current += 1} /> */}
             <Card state={state} chinese={currentWord0.chinese} english={currentWord0.english} done={!!currentWord0.done} index={CurrentIndex0} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias.current) % 2 === 1} addBias={() => addBias.current = true} />
             <Card state={state} chinese={currentWord1.chinese} english={currentWord1.english} done={!!currentWord1.done} index={CurrentIndex1} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias.current) % 2 === 0} addBias={() => addBias.current = true} />
         </div>

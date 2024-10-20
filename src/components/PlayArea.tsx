@@ -36,7 +36,7 @@ const SettingsUI: Record<string, UI> = {
     chinese: { span: "chinese", type: "checkbox", hint: "Say chinese ?" },
 }
 
-function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable: number[], progress: { playIndex: number, setPlayIndex: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone }: { onlyPlayUnDone: boolean, randomTable: number[], progress: { playIndex: number, setPlayIndex: Function }, callback?: Function, words: Word[], currentTitle: string }) {
     const { setId, mode } = useParams<Params>();
     const [cardsMode, setCardsMode] = useState<boolean>(mode === "cards")
 
@@ -57,6 +57,8 @@ function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable:
 
     const randomTableRef = useRef<number[] | null>(randomTable);
     const audioRef = useRef<HTMLAudioElement>(null)
+    const wordsRef = useRef<Word[]>(words)
+    const onlyPlayUnDoneRef = useRef<boolean>(onlyPlayUnDone)
 
     useEffect(() => {
         setCardsMode(mode === "cards")
@@ -110,7 +112,7 @@ function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable:
 
         utterances.push(settings.timeWW);
         return utterances;
-    }, [words, settings, createUtterance, speakerC, speakerE]);
+    }, [wordsRef, settings, createUtterance, speakerC, speakerE]);
 
     const playUtterances = useCallback((utterances: (number | SpeechSynthesisUtterance)[], thisIndex: number, playbackId: number) => {
         let index = 0;
@@ -139,23 +141,54 @@ function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable:
         };
 
         playNext();
-    }, [words, settings, speakerC, speakerE]);
+    }, [wordsRef, settings, speakerC, speakerE]);
+
+    const findNextWordToPlay = (words: Word[], randomTable: number[], currentIndex: number, onlyPlayUnDone: boolean): number => {
+        const isWordPlayable = (word: Word) => word.selected && (!onlyPlayUnDone || !word.done);
+
+        if (isWordPlayable(words[randomTable[currentIndex]])) {
+            return currentIndex;
+        }
+
+        for (let i = currentIndex + 1; i < randomTable.length; i++) {
+            if (isWordPlayable(words[randomTable[i]])) {
+                return i;
+            }
+        }
+
+        for (let i = 0; i < currentIndex; i++) {
+            if (isWordPlayable(words[randomTable[i]])) {
+                return i;
+            }
+        }
+
+        return -1;
+    };
 
     const playWord = useCallback((index: number) => {
         if (index === -10) {
             index = playIndexRef.current
         }
-        if (index === words.length) {
+        if (index === wordsRef.current.length) {
             index = 0
         }
 
+        
+        const nextIndex = findNextWordToPlay(wordsRef.current, randomTableRef.current!, playIndexRef.current, onlyPlayUnDoneRef.current!);
+        if (nextIndex === -1) {
+            popNotify("No more words to play")
+            stop()
+            return
+        }
+        index = nextIndex
         const randIndex = randomTableRef.current![index]
-        playIndexRef.current = randIndex
-        setPlayIndex(randIndex)
-        const utterances = createUtterances(settingsRef.current, words[randIndex]);
+
+        playIndexRef.current = index
+        setPlayIndex(index)
+        const utterances = createUtterances(settingsRef.current, wordsRef.current[randIndex]);
         playbackIdRef.current += 1
-        playUtterances(utterances, randIndex, playbackIdRef.current);
-    }, [words, createUtterances, playUtterances, settings, playIndex, speakerC, speakerE]);
+        playUtterances(utterances, index, playbackIdRef.current);
+    }, [wordsRef.current, createUtterances, playUtterances, settings, playIndex, speakerC, speakerE]);
 
 
     const stop = () => {
@@ -207,11 +240,13 @@ function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable:
         settingsRef.current = settings
         randomTableRef.current = randomTable
         isPlayingRef.current = isPlaying
-    }, [playIndex, settings, randomTable, isPlaying])
+        wordsRef.current = words
+        onlyPlayUnDoneRef.current = onlyPlayUnDone
+    }, [playIndex, settings, words, randomTable, isPlaying, onlyPlayUnDone])
 
     return (
         <div className="bottom-2 left-0 right-0 px-2 xs:right-0 fixed flex flex-col items-center z-40">
-            <audio onPause={handleAudioPause} onPlay={handleAudioPlay} onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="test.wav"></audio>
+            <audio onPause={handleAudioPause} onPlay={handleAudioPlay} onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="/test.wav"></audio>
             <div className={`${showSetting ? "" : "h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 transition-all duration-300 ease-in-out flex flex-col justify-end`}>
                 {showSetting && <>
                     <div

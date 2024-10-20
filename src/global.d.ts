@@ -12,16 +12,13 @@ interface Aset {
     title: string
 }
 
-interface State1 {
+interface StateFormat {
     showE: boolean,
     showC: boolean,
-    editing: boolean,
+    onlyPlayUnDone: boolean,
     lock: boolean,
     selection: number,
     rand: boolean,
-    // cards: boolean,
-    // deleting: boolean,
-    // playPosition?: number,
     init?: boolean,
 }
 
