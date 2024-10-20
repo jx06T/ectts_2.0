@@ -34,13 +34,15 @@ function PopupMenu({ isShow, y, index, callback }: { isShow: boolean, y: number,
 }
 
 function Aset({ title = "", index, onShowOption, selected, id }: { title: string, index: number, onShowOption: Function, selected: boolean, id: string }) {
+    const {  popNotify } = useNotify();
+
     const setId = window.location.pathname.slice(1);
     const setRef = useRef<HTMLDivElement>(null)
     const selected2 = selected || setId === id
 
     return (
         <div ref={setRef} className={` cursor-pointer rounded-md ${selected2 ? "bg-blue-100" : "bg-blue-50"} hover:bg-blue-100 relative h-10 text-base flex items-center gap-2 my-[2px] justify-between`}>
-            <Link to={`/${id}`} className='h-full p-2 overflow-x-hidden w-full'>{title}</Link>
+            <Link onClick={()=>popNotify('Switch word set')} to={`/${id}`} className='h-full p-2 overflow-x-hidden w-full'>{title}</Link>
             <button className='option-button h-8 hover:bg-blue-150 rounded-md mr-[1px]' onClick={() => onShowOption(selected ? -1 : index, selected ? -99999 : setRef.current?.offsetTop)}>
                 <AkarIconsMoreVerticalFill className='option-button w-5 mr-0 flex-shrink-0' />
             </button>
@@ -63,7 +65,7 @@ function Sidebar() {
     const reNamedRef = useRef<HTMLInputElement>(null)
     const isNew = useRef<string | null>(null)
 
-    const { notify, popNotify } = useNotify();
+    const {  popNotify } = useNotify();
 
 
     useEffect(() => {

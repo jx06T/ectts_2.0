@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 import { MingcuteVolumeLine, MaterialDeleteRounded } from "../utils/Icons";
-import App from "../App";
+import useSpeech from "../utils/Speech";
 
 interface WordItemProps {
   word: Word;
@@ -12,18 +12,20 @@ interface WordItemProps {
   onPlay: Function;
   onChange: (index: number, field: 'english' | 'chinese', value: string) => void;
   onDoneToggle: (index: number) => void;
+  onDelete: (index: number) => void;
   onNext: () => void;
   state: State1
 }
 
 
-function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocused, onChange, onDoneToggle, onNext }: WordItemProps) {
+function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocused, onDelete, onChange, onDoneToggle, onNext }: WordItemProps) {
   const englishRef = useRef<HTMLInputElement>(null);
   const chineseRef = useRef<HTMLInputElement>(null);
   const [showEnglish, setShowEnglish] = useState<boolean>(false);
   const [showChinese, setShowChinese] = useState<boolean>(false);
   const [height, setHeight] = useState(isTop ? "100px" : "48px");
   const [isTopDelay, setIsTopDelay] = useState<boolean>(false);
+  const { speakE } = useSpeech()
 
   useEffect(() => {
     if (isFocused) {
@@ -73,7 +75,7 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
 
       {isTopDelay &&
         <div className=" w-8 flex-grow-0 flex-shrink-0 flex flex-col justify-center space-y-4 mr-3">
-          <button><MaterialDeleteRounded className="  text-3xl" /></button>
+          <button onClick={() => onDelete(index)}><MaterialDeleteRounded className="  text-3xl" /></button>
         </div>}
       <div className={` overflow-hidden  flex-grow flex-shrink min-w-0 ${isTopDelay ? " flex flex-col space-y-3" : "flex space-x-3"}`}>
         <input
@@ -115,7 +117,9 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
             w-8 flex-grow-0 flex-shrink-0 cursor-pointer ml-3 ${isPlaying ? " border-2 border-blue-400" : ""} `}
         ></div> :
         <div className=" w-8 flex-grow-0 flex-shrink-0 flex flex-col justify-center space-y-4 ml-3">
-          <button><MingcuteVolumeLine className="  text-3xl" /></button>
+          <button onClick={() => {
+            speakE(word.english)
+          }}><MingcuteVolumeLine className="  text-3xl" /></button>
         </div>
       }
 

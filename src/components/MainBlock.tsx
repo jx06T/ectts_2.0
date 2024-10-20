@@ -282,42 +282,42 @@ function MainBlock() {
         copyToClipboard(ExportText)
     };
 
+    const handleDelete = (index: number) => {
+        const newWords = words.filter((word, i) => i !== index)
+        setWords(newWords)
+        updataRandomTable()
+    }
+
+
     const handleDoneToggle = (index: number) => {
-        // if (state.cards) {
+        if (cardsMode) {
+            setWords(prev => {
+                const newWords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
+                popNotify(`${newWords.filter(word => word.done).length}／${words.length} words selected`)
+                return newWords
+            });
 
-        //     setWords(prev => {
-        //         const newWords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
-        //         popNotify(`${newWords.filter(word => word.done).length}／${words.length} words selected`)
-        //         return newWords
-        //     });
+            return
+        }
 
-        //     return
-        // }
+        setState({ ...state, selection: 0 })
 
-        // if (state.deleting) {
-        //     setWords(prev => prev.filter((e, i) => i !== index))
-        //     updataRandomTable()
-        //     return
-        // }
+        if (!state.editing) {
+            const newWords = words.map((word, i) => i === index ? { ...word, done: !word.done } : word)
+            setWords(newWords)
+            popNotify(`${newWords.filter(word => word.done).length}／${newWords.length} words done`)
+            if (randomTable[playIndex] > index) {
+                setPlayIndex(playIndex + (newWords[index].done ? -1 : 1))
+            }
 
-        // setState({ ...state, selection: 0 })
-
-        // if (!state.editing) {
-        //     const newWords = words.map((word, i) => i === index ? { ...word, done: !word.done } : word)
-        //     setWords(newWords)
-        //     popNotify(`${newWords.filter(word => word.done).length}／${newWords.length} words done`)
-        //     if (randomTable[playIndex] > index) {
-        //         setPlayIndex(playIndex + (newWords[index].done ? -1 : 1))
-        //     }
-
-        // } else {
-        //     const newWords = words.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
-        //     setWords(newWords)
-        //     popNotify(`${newWords.filter(word => word.selected).length}／${newWords.length} words selected`)
-        //     if (randomTable[playIndex] > index) {
-        //         setPlayIndex(playIndex + (newWords[index].selected ? 1 : -1))
-        //     }
-        // }
+        } else {
+            const newWords = words.map((word, i) => i === index ? { ...word, selected: !word.selected } : word)
+            setWords(newWords)
+            popNotify(`${newWords.filter(word => word.selected).length}／${newWords.length} words selected`)
+            if (randomTable[playIndex] > index) {
+                setPlayIndex(playIndex + (newWords[index].selected ? 1 : -1))
+            }
+        }
     };
 
     const addNewWord = () => {
@@ -413,8 +413,14 @@ function MainBlock() {
 
                 <a className='cursor-pointer w-10' onClick={() => {
                     popNotify(!state.rand ? "Random mode" : "Normal mode")
+                    if (state.rand) {
+                        resetRandomTable()
+                    }else{
+                        const arr: number[] = getRandomTable(words.length)
+                        setRandomTable(arr)
+                    }
+
                     setState({ ...state, rand: !state.rand })
-                    console.log("隨機?")
                 }}>
                     <MdiDice5 className={` text-2xl ${state.rand ? " text-green-700" : ""}`} />
                 </a>
@@ -422,47 +428,50 @@ function MainBlock() {
             </div>
 
             <div className=' relative flex justify-center h-full w-full overflow-y-auto px-1'>
+                {randomTable.length === words.length ?
+                    <div ref={scrollRef}
+                        style={{
+                            // scrollSnapType: 'y mandatory',
+                            // scrollPadding: '0px 0px',
+                        }}
+                        className='jx-5 h-full px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 overflow-x-hidden '>
+                        {randomTable.map((index, i) => {
+                            const word = words[index]
+                            return (<WordItem
+                                key={word.id}
+                                word={word}
+                                index={index}
+                                indexP={i}
+                                state={state}
+                                isFocused={i === focusIndex}
+                                isTop={i === topIndex}
+                                isPlaying={index === randomTable[playIndex]}
+                                onDelete={handleDelete}
+                                onPlay={handlePlayThisWord}
+                                onChange={handleWordChange}
+                                onDoneToggle={handleDoneToggle}
+                                onNext={() => {
+                                    if (i + 2 > words.length) {
+                                        addNewWord()
+                                    }
+                                    setFocusIndex(i + 1)
+                                }}
+                            />)
+                        })
+                        }
 
-                <div ref={scrollRef}
-                    style={{
-                        // scrollSnapType: 'y mandatory',
-                        // scrollPadding: '0px 0px',
-                    }}
-                    className='jx-5 h-full px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 overflow-x-hidden '>
-                    {randomTable.map((index, i) => {
-                        const word = words[index]
-                        return (<WordItem
-                            key={word.id}
-                            word={word}
-                            index={index}
-                            indexP={i}
-                            state={state}
-                            isFocused={i === focusIndex}
-                            isTop={i === topIndex}
-                            isPlaying={index === randomTable[playIndex]}
-                            onPlay={handlePlayThisWord}
-                            onChange={handleWordChange}
-                            onDoneToggle={handleDoneToggle}
-                            onNext={() => {
-                                if (i + 2 > words.length) {
-                                    addNewWord()
-                                }
-                                setFocusIndex(i + 1)
-                            }}
-                        />)
-                    })
-                    }
-
-                    < div className='h-[90%] relative'>
-                        <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8'></textarea>
-                        <button onClick={() => scrollToTop(0)} className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
-                    </div>
-                </div>
+                        < div className='h-[90%] relative'>
+                            <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8'></textarea>
+                            <button onClick={() => scrollToTop(0)} className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
+                        </div>
+                    </div> :
+                    null
+                }
             </div>
 
             {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playIndex, setCurrentProgress: setPlayIndex }} words={words} />}
 
-            <PlayArea randomTable={randomTable} progress={{ PlayIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />
+            <PlayArea randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />
         </div >
     )
 }

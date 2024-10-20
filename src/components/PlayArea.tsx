@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useReducer, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MingcuteSettings6Fill, FluentNextFrame24Filled, FluentPreviousFrame24Filled, FluentPause24Filled, FluentPlay24Filled } from "../utils/Icons";
 import { useNotify } from '../context/NotifyContext'
 import { Params, useParams } from 'react-router-dom';
+import useSpeech from "../utils/Speech";
 
 const initialSettings: Settings = {
     timeWW: 1000,
@@ -21,44 +22,45 @@ interface UI {
     max?: number,
     step?: number,
     hint?: string,
+    span?: string,
 }
 
 const SettingsUI: Record<string, UI> = {
-    timeWW: { type: "range", min: 0, max: 7000, step: 10, hint: "The interval between different words" },
-    timeEE: { type: "range", min: 0, max: 7000, step: 10, hint: "The interval between repeated words" },
-    timeEL: { type: "range", min: 0, max: 7000, step: 10, hint: "The interval between words and letters" },
-    timeLC: { type: "range", min: 0, max: 7000, step: 10, hint: "The interval letters words and Chinese" },
-    speed: { type: "range", min: 0.1, max: 3, step: 0.1, hint: "The speed of English words" },
-    repeat: { type: "range", min: 1, max: 13, hint: "number of repetitions" },
-    letter: { type: "checkbox", hint: "Say the letters ?" },
-    chinese: { type: "checkbox", hint: "Say chinese ?" },
+    timeWW: { span: "WtW", type: "range", min: 0, max: 7000, step: 10, hint: "The interval between different words" },
+    timeEE: { span: "EtE", type: "range", min: 0, max: 7000, step: 10, hint: "The interval between repeated words" },
+    timeEL: { span: "EtL", type: "range", min: 0, max: 7000, step: 10, hint: "The interval between words and letters" },
+    timeLC: { span: "LtC", type: "range", min: 0, max: 7000, step: 10, hint: "The interval letters words and Chinese" },
+    speed: { span: "speed", type: "range", min: 0.1, max: 3, step: 0.1, hint: "The speed of English words" },
+    repeat: { span: "repeat", type: "range", min: 1, max: 13, hint: "number of repetitions" },
+    letter: { span: "letter", type: "checkbox", hint: "Say the letters ?" },
+    chinese: { span: "chinese", type: "checkbox", hint: "Say chinese ?" },
 }
 
-
-function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable: number[], progress: { PlayIndex: number, setPlayIndex: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable: number[], progress: { playIndex: number, setPlayIndex: Function }, callback?: Function, words: Word[], currentTitle: string }) {
     const { setId, mode } = useParams<Params>();
     const [cardsMode, setCardsMode] = useState<boolean>(mode === "cards")
 
     const [showSetting, setShowSetting] = useState<boolean>(false)
-    const { notify, popNotify } = useNotify();
+    const { popNotify } = useNotify();
 
     const [settings, setSettings] = useState<Settings>(initialSettings);
     const settingsRef = useRef<Settings>(settings)
 
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const isPlayingRef = useRef<boolean>(false)
+    const playbackIdRef = useRef<number>(0)
 
-    const { setPlayIndex, PlayIndex } = progress
-    const currentProgressRef = useRef<number>(0)
+    const { setPlayIndex, playIndex } = progress
+    const playIndexRef = useRef<number>(0)
 
-    const limitCountRef = useRef<number>(0)
-    const synth = window.speechSynthesis;
-    const speakerCRef = useRef<string>("");
-    const speakerERef = useRef<string>("");
-    const voices = useRef<SpeechSynthesisVoice[]>([])
+    const { synth, speakerC, speakerE, voices } = useSpeech()
 
     const randomTableRef = useRef<number[] | null>(randomTable);
     const audioRef = useRef<HTMLAudioElement>(null)
+
+    useEffect(() => {
+        setCardsMode(mode === "cards")
+    }, [mode])
 
     useEffect(() => {
         const initialSettingsL = localStorage.getItem('ectts-settings');
@@ -75,46 +77,18 @@ function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable:
         }
     }, [settings])
 
-    useEffect(() => {
-        setTimeout(() => {
-            voices.current = synth.getVoices();
-            for (let i = 0; i < voices.current.length; i++) {
-
-                if (voices.current[i].name == "Microsoft Emma Online (Natural) - English (United States)" || voices.current[i].name == "Fred") {
-                    speakerERef.current = voices.current[i].name
-                }
-
-                if (voices.current[i].name == "Microsoft Hanhan - Chinese (Traditional, Taiwan)" || voices.current[i].name == "美嘉" || voices.current[i].name == "Mei-Jia") {
-                    speakerCRef.current = voices.current[i].name
-                }
-            }
-
-        }, 1000);
-
-        window.addEventListener('beforeunload', (event) => {
-            window.speechSynthesis.cancel();
-        });
-    }, [])
-
     const createUtterance = useCallback((text: string, rate: number, voiceName: string) => {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = rate;
-        utterance.voice = voices.current.find(v => v.name === voiceName) || voices.current[0];
+        utterance.voice = voices.find(v => v.name === voiceName) || voices[0];
         return utterance;
     }, [voices, settings]);
-
-    useEffect(() => {
-        currentProgressRef.current = currentProgress
-        settingsRef.current = settings
-        randomTableRef.current = randomTable
-        isPlayingRef.current = isPlaying
-    }, [currentProgress, settings, randomTable, isPlaying])
 
     const createUtterances = useCallback((settings: Settings, word: Word) => {
         const utterances = [];
 
         // English utterances
-        const englishUtterance = createUtterance(word.english, settings.speed, speakerERef.current);
+        const englishUtterance = createUtterance(word.english, settings.speed, speakerE);
         for (let i = 0; i < settings.repeat; i++) {
             utterances.push(englishUtterance);
             if (i < settings.repeat - 1) utterances.push(settings.timeEE);
@@ -123,33 +97,34 @@ function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable:
         // Letter spelling
         if (settings.letter) {
             utterances.push(settings.timeEL);
-            const letterUtterance = createUtterance('"' + word.english.split("").join('","').replaceAll('," "', " ") + '"', 1, speakerERef.current);
+            const letterUtterance = createUtterance('"' + word.english.split("").join('","').replaceAll('," "', " ") + '"', 1, speakerE);
             utterances.push(letterUtterance);
         }
 
         // Chinese translation
         if (settings.chinese) {
             utterances.push(settings.timeLC);
-            const chineseUtterance = createUtterance(word.chinese, 0.9, speakerCRef.current);
+            const chineseUtterance = createUtterance(word.chinese, 0.9, speakerC);
             utterances.push(chineseUtterance);
         }
 
         utterances.push(settings.timeWW);
         return utterances;
-    }, [words, settings]);
+    }, [words, settings, createUtterance, speakerC, speakerE]);
 
-    const playUtterances = useCallback((utterances: (number | SpeechSynthesisUtterance)[], ProgressIndex: number) => {
+    const playUtterances = useCallback((utterances: (number | SpeechSynthesisUtterance)[], thisIndex: number, playbackId: number) => {
         let index = 0;
         const playNext = () => {
-            if (!isPlayingRef.current) {
+
+            if (!isPlayingRef.current || playbackIdRef.current !== playbackId) {
                 return
             }
-            if (currentProgressRef.current !== ProgressIndex) {
+            if (playIndexRef.current !== thisIndex) {
                 playWord(-10);
                 return
             }
             if (index >= utterances.length) {
-                playWord(ProgressIndex + 1);
+                playWord(thisIndex + 1);
                 return;
             }
 
@@ -157,54 +132,35 @@ function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable:
             if (typeof item === 'number') {
                 setTimeout(playNext, item);
             } else {
-                window.speechSynthesis.speak(item);
+                synth.speak(item);
                 item.onend = playNext;
-                // item.onerror = function (event) {
-                // };
             }
             index++;
         };
 
         playNext();
-    }, [words, settings, currentProgress]);
+    }, [words, settings, speakerC, speakerE]);
 
     const playWord = useCallback((index: number) => {
-        let newIndex = index
-
-        if (randomTableRef.current![index] != randomTableRef.current![currentProgressRef.current + 1]) {
-            if (limitCountRef.current < 2000) {
-                limitCountRef.current++
-                newIndex = currentProgressRef.current
-            } else {
-                setIsPlaying(false);
-                return
-            }
+        if (index === -10) {
+            index = playIndexRef.current
+        }
+        if (index === words.length) {
+            index = 0
         }
 
-        if (!words[randomTableRef.current![newIndex]]) {
-            setCurrentProgress(0)
-            // scrollToTop(0)
-            setIsPlaying(false);
-            return
-        }
+        const randIndex = randomTableRef.current![index]
+        playIndexRef.current = randIndex
+        setPlayIndex(randIndex)
+        const utterances = createUtterances(settingsRef.current, words[randIndex]);
+        playbackIdRef.current += 1
+        playUtterances(utterances, randIndex, playbackIdRef.current);
+    }, [words, createUtterances, playUtterances, settings, playIndex, speakerC, speakerE]);
 
-        setCurrentProgress(newIndex)
-        currentProgressRef.current = newIndex
-        // scrollToTop(randomTableRef.current![newIndex])
-        const utterances = createUtterances(settingsRef.current, words[randomTableRef.current![newIndex]]);
-        playUtterances(utterances, newIndex);
-
-    }, [words, createUtterances, playUtterances, settings, currentProgress]);
 
     const stop = () => {
-        limitCountRef.current = 0
         setIsPlaying(false);
-        for (let _ = 0; _ < 3; _++) {
-            setTimeout(() => {
-                window.speechSynthesis.cancel();
-            }, 100 * _ + 100);
-        }
-        window.speechSynthesis.cancel();
+        synth.cancel();
     }
 
     const handlePlay = () => {
@@ -212,102 +168,80 @@ function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable:
             isPlayingRef.current = true
             setIsPlaying(true);
             popNotify("Start playing")
-            playWord(currentProgress);
+            playWord(playIndex);
 
             if (audioRef.current) {
                 audioRef.current.volume = 1
                 audioRef.current.play();
             }
 
-
-            setTimeout(() => {
-                createSilentAudio();
-
-            }, 1000);
         } else {
+            isPlayingRef.current = false
             popNotify("Stop playing")
+            setIsPlaying(false);
             stop()
 
             if (audioRef.current) {
                 audioRef.current.pause();
-
             }
 
-            if (audioContext) {
-                audioContext.close();
-            }
         }
-    }
-
-    const handlePlay0 = () => {
-        // console.log(audioRef.current!.ended ,audioRef.current!.paused,isPlaying)
-        // alert(audioRef.current!.ended+  "" + audioRef.current!.paused + isPlaying)
-        if (audioRef.current!.ended || !audioRef.current!.paused === isPlaying) {
-            return
-        }
-
-        if (!audioRef.current!.paused) {
-            isPlayingRef.current = true
-            setIsPlaying(true);
-            popNotify("Start playing")
-            playWord(currentProgress);
-
-        } else {
-            // alert("SSS")
-            popNotify("Stop playing")
-            stop()
-
-        }
-    }
-
-    let audioContext: AudioContext;
-    let silentAudio;
-
-    function createSilentAudio() {
-        audioContext = new (window.AudioContext)();
-        silentAudio = audioContext.createBuffer(1, 1, 22050);
-        const source = audioContext.createBufferSource();
-        source.buffer = silentAudio;
-        source.loop = true;
-        source.connect(audioContext.destination);
-        source.start();
-    }
-
-    function simulateClick(element: HTMLElement) {
-        // 创建一个鼠标事件对象
-        const clickEvent = new MouseEvent('click', {
-            view: window,
-            bubbles: true,
-            cancelable: true,
-            // 其他需要的事件属性，如 clientX, clientY 等
-        });
-
-        // 分发事件到指定的元素
-        element.dispatchEvent(clickEvent);
     }
 
     const handleEnded = () => {
         if (audioRef.current) {
             audioRef.current.play();
-            simulateClick(audioRef.current);
-            simulateClick(document.body);
         }
     }
 
+    const handleAudioPause = () => {
+
+    }
+
+    const handleAudioPlay = () => {
+
+    }
+
+    useEffect(() => {
+        playIndexRef.current = playIndex
+        settingsRef.current = settings
+        randomTableRef.current = randomTable
+        isPlayingRef.current = isPlaying
+    }, [playIndex, settings, randomTable, isPlaying])
+
     return (
         <div className="bottom-2 left-0 right-0 px-2 xs:right-0 fixed flex flex-col items-center z-40">
-            <audio onPause={handlePlay0} onPlay={handlePlay0} onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="test.wav"></audio>
-            <div className={`${showSetting ? "h-[25rem] xs:h-[15rem] s940:h-[13rem]  s1200:h-[10rem]" : "h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 transition-all duration-300 ease-in-out flex flex-col justify-end`}>
+            <audio onPause={handleAudioPause} onPlay={handleAudioPlay} onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="test.wav"></audio>
+            <div className={`${showSetting ? "" : "h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 transition-all duration-300 ease-in-out flex flex-col justify-end`}>
                 {showSetting && <>
-                    <div className='w-full flex flex-wrap justify-center'>{
-                        Object.entries(settings).filter(([key, value]) => key !== "init").map(([key, value], i) => (
-                            <div key={i} className=" my-2 flex min-w-[18.5rem] xs:min-w-[18rem] s940:min-w-[17.5rem]  s1200:min-w-[17rem] space-x-3 mx-3">
-                                <span onClick={() => { popNotify(SettingsUI[key].hint || "") }} className="w-16 cursor-help">{key}</span>
-                                <input checked={value} onChange={(e) => setSettings(prev => ({ ...prev, [key]: isNaN(parseFloat(e.target.value)) ? e.target.value.toString() !== "true" : parseFloat(e.target.value) }))} type={SettingsUI[key].type} className={" accent-purple-700 " + (SettingsUI[key].type === "range" ? "jx-3 w-36" : "w-5 jx-4")} step={SettingsUI[key].step} max={SettingsUI[key].max} min={SettingsUI[key].min} value={value} />
-                                {SettingsUI[key].type === "range" && <span> {value}</span>}
-                            </div>
-                        ))
-                    }</div>
+                    <div
+                        style={{
+                            gridTemplateColumns: "repeat(auto-fit, 300px)"
+                        }}
+                        className=' w-full grid gap-2 mx-4 justify-center'>{
+                            Object.entries(settings).filter(([key, value]) => key !== "init").map(([key, value], i) => (
+                                <div key={i} className=" my-2 space-x-3">
+                                    <span onClick={() => { popNotify(SettingsUI[key].hint || "") }} className="w-16 cursor-help">{SettingsUI[key].span}</span>
+                                    <input
+                                        checked={value}
+                                        onChange={(e) =>
+                                            setSettings(prev =>
+                                            ({
+                                                ...prev, [key]: isNaN(parseFloat(e.target.value)) ?
+                                                    e.target.value.toString() !== "true" :
+                                                    parseFloat(e.target.value)
+                                            }))}
+                                        type={SettingsUI[key].type}
+                                        className={" accent-purple-700 " + (SettingsUI[key].type === "range" ? "jx-3 w-36" : "w-5 jx-4")}
+                                        step={SettingsUI[key].step}
+                                        max={SettingsUI[key].max}
+                                        min={SettingsUI[key].min}
+                                        value={value} />
+
+                                    {SettingsUI[key].type === "range" && <span> {value}</span>}
+                                </div>
+                            ))
+                        }</div>
                     <hr />
                 </>}
 
@@ -316,8 +250,10 @@ function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable:
 
                     <div className="flex flex-shrink-0 justify-center space-x-[-1px] mt-1">
                         <button className="js-2" onClick={() => {
-                            if (currentProgress > 0) {
-                                setCurrentProgress((prev: number) => prev - 1)
+                            if (playIndex > 0) {
+                                setPlayIndex((prev: number) => prev - 1)
+                            } else {
+                                setPlayIndex(words.length - 1)
                             }
                         }}>
                             <FluentPreviousFrame24Filled className=" text-3xl" />
@@ -326,12 +262,13 @@ function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable:
                             <MingcuteSettings6Fill className=" text-3xl" onClick={() => setShowSetting(!showSetting)} />
                         </button>
                         <button className="js-2" onClick={handlePlay}>
-                            {/* <button className="js-2" onClick={handlePlay0}> */}
                             {isPlaying ? <FluentPause24Filled className=" text-3xl" /> : <FluentPlay24Filled className=" text-3xl" />}
                         </button>
                         <button className="js-2" onClick={() => {
-                            if (currentProgress < words.length - 1) {
-                                setCurrentProgress((prev: number) => prev + 1)
+                            if (playIndex < words.length - 1) {
+                                setPlayIndex((prev: number) => prev + 1)
+                            } else {
+                                setPlayIndex(0)
                             }
                         }}>
                             <FluentNextFrame24Filled className=" text-3xl" />
@@ -339,9 +276,9 @@ function PlayArea({ randomTable, progress, words, currentTitle }: { randomTable:
                     </div>
 
                     <div className=" w-[28%] xs:w-[30%] pr-2 text-sm xs:text-lg  ">
-                        {cardsMode ? "✓ " + words.filter(word => word.done).length : (words[randomTableRef.current![currentProgress]] ? words[randomTableRef.current![currentProgress]].english : "")}
+                        {cardsMode ? "✓ " + words.filter(word => word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].english : "")}
                         <br></br>
-                        {cardsMode ? "✕ " + words.filter(word => !word.done).length : (words[randomTableRef.current![currentProgress]] ? words[randomTableRef.current![currentProgress]].chinese : "")}
+                        {cardsMode ? "✕ " + words.filter(word => !word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].chinese : "")}
                     </div>
                 </div >
             </div>
