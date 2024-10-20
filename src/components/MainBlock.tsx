@@ -197,7 +197,7 @@ function MainBlock() {
         setTimeout(() => {
             scrollRef.current?.scrollTo({
                 // top: index * 52 - 300 + (0.5 * (900 - window.innerHeight)),
-                top: index * 52 - (0.5 * (900 - window.innerHeight)) + 90,
+                top: index * 52 - (0.5 * (900 - window.innerHeight)) + 120,
                 behavior: 'smooth'
             });
         }, 100);
@@ -439,9 +439,9 @@ function MainBlock() {
                 }
             </div>
 
-            {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ currentProgress: playIndex, setCurrentProgress: setPlayIndex }} words={words} />}
+            {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} words={words} />}
 
-            <PlayArea onlyPlayUnDone={state.onlyPlayUnDone} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />
+            <PlayArea scrollToTop={scrollToTop} onlyPlayUnDone={state.onlyPlayUnDone} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />
         </div >
     )
 }

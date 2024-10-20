@@ -36,7 +36,7 @@ const SettingsUI: Record<string, UI> = {
     chinese: { span: "chinese", type: "checkbox", hint: "Say chinese ?" },
 }
 
-function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone }: { onlyPlayUnDone: boolean, randomTable: number[], progress: { playIndex: number, setPlayIndex: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+function PlayArea({ scrollToTop, randomTable, progress, words, currentTitle, onlyPlayUnDone }: { scrollToTop: Function, onlyPlayUnDone: boolean, randomTable: number[], progress: { playIndex: number, setPlayIndex: Function }, callback?: Function, words: Word[], currentTitle: string }) {
     const { setId, mode } = useParams<Params>();
     const [cardsMode, setCardsMode] = useState<boolean>(mode === "cards")
 
@@ -90,7 +90,7 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone }
         const utterances = [];
 
         // English utterances
-        const englishUtterance = createUtterance(word.english, settings.speed, speakerE);
+        const englishUtterance = createUtterance(word.english.replaceAll("sth","something").replaceAll("sb","somebody"), settings.speed, speakerE);
         for (let i = 0; i < settings.repeat; i++) {
             utterances.push(englishUtterance);
             if (i < settings.repeat - 1) utterances.push(settings.timeEE);
@@ -143,21 +143,43 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone }
         playNext();
     }, [wordsRef, settings, speakerC, speakerE]);
 
-    const findNextWordToPlay = (words: Word[], randomTable: number[], currentIndex: number, onlyPlayUnDone: boolean): number => {
+    const findNextWordToPlay = (currentIndex: number): number => {
         const isWordPlayable = (word: Word) => word.selected && (!onlyPlayUnDone || !word.done);
 
-        if (isWordPlayable(words[randomTable[currentIndex]])) {
+        if (isWordPlayable(wordsRef.current[randomTableRef.current![currentIndex]])) {
             return currentIndex;
         }
 
-        for (let i = currentIndex + 1; i < randomTable.length; i++) {
-            if (isWordPlayable(words[randomTable[i]])) {
+        for (let i = currentIndex + 1; i < randomTableRef.current!.length; i++) {
+            if (isWordPlayable(wordsRef.current[randomTableRef.current![i]])) {
                 return i;
             }
         }
 
         for (let i = 0; i < currentIndex; i++) {
-            if (isWordPlayable(words[randomTable[i]])) {
+            if (isWordPlayable(wordsRef.current[randomTableRef.current![i]])) {
+                return i;
+            }
+        }
+
+        return -1;
+    };
+
+    const findPreviousWordToPlay = (currentIndex: number): number => {
+        const isWordPlayable = (word: Word) => word.selected && (!onlyPlayUnDone || !word.done);
+
+        if (isWordPlayable(wordsRef.current[randomTableRef.current![currentIndex]])) {
+            return currentIndex;
+        }
+
+        for (let i = currentIndex - 1; i > -1; i--) {
+            if (isWordPlayable(wordsRef.current[randomTableRef.current![i]])) {
+                return i;
+            }
+        }
+
+        for (let i = randomTableRef.current!.length - 1; i > currentIndex; i--) {
+            if (isWordPlayable(wordsRef.current[randomTableRef.current![i]])) {
                 return i;
             }
         }
@@ -173,8 +195,8 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone }
             index = 0
         }
 
-        
-        const nextIndex = findNextWordToPlay(wordsRef.current, randomTableRef.current!, playIndexRef.current, onlyPlayUnDoneRef.current!);
+
+        const nextIndex = findNextWordToPlay(index);
         if (nextIndex === -1) {
             popNotify("No more words to play")
             stop()
@@ -247,7 +269,12 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone }
     return (
         <div className="bottom-2 left-0 right-0 px-2 xs:right-0 fixed flex flex-col items-center z-40">
             <audio onPause={handleAudioPause} onPlay={handleAudioPlay} onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="/test.wav"></audio>
-            <div className={`${showSetting ? "" : "h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 transition-all duration-300 ease-in-out flex flex-col justify-end`}>
+            <div onClick={() => {
+                scrollToTop(playIndex)
+                setTimeout(() => {
+                    scrollToTop(playIndexRef.current)
+                }, 400)
+            }} className={`${showSetting ? "" : "h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 transition-all duration-300 ease-in-out flex flex-col justify-end`}>
                 {showSetting && <>
                     <div
                         style={{
@@ -286,9 +313,9 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone }
                     <div className="flex flex-shrink-0 justify-center space-x-[-1px] mt-1">
                         <button className="js-2" onClick={() => {
                             if (playIndex > 0) {
-                                setPlayIndex((prev: number) => prev - 1)
+                                setPlayIndex((prev: number) => findPreviousWordToPlay(prev - 1))
                             } else {
-                                setPlayIndex(words.length - 1)
+                                setPlayIndex(findPreviousWordToPlay(words.length - 1))
                             }
                         }}>
                             <FluentPreviousFrame24Filled className=" text-3xl" />
@@ -301,9 +328,9 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone }
                         </button>
                         <button className="js-2" onClick={() => {
                             if (playIndex < words.length - 1) {
-                                setPlayIndex((prev: number) => prev + 1)
+                                setPlayIndex((prev: number) => findNextWordToPlay(prev + 1))
                             } else {
-                                setPlayIndex(0)
+                                setPlayIndex(findNextWordToPlay(0))
                             }
                         }}>
                             <FluentNextFrame24Filled className=" text-3xl" />

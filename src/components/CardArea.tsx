@@ -200,13 +200,35 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
     )
 }
 
-function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { state: StateFormat, handleDoneToggle: Function, progress: { currentProgress: number, setCurrentProgress: Function }, randomTable: number[], words: Word[] }) {
-    const { currentProgress, setCurrentProgress } = progress
+function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { state: StateFormat, handleDoneToggle: Function, progress: { playIndex: number, setPlayIndex: Function }, randomTable: number[], words: Word[] }) {
+    const findNextWordToPlay = (words: Word[], randomTable: number[], currentIndex: number, onlyPlayUnDone: boolean): number => {
+        const isWordPlayable = (word: Word) => word.selected && (!onlyPlayUnDone || !word.done);
+
+        if (isWordPlayable(words[randomTable[currentIndex]])) {
+            return currentIndex;
+        }
+
+        for (let i = currentIndex + 1; i < randomTable.length; i++) {
+            if (isWordPlayable(words[randomTable[i]])) {
+                return i;
+            }
+        }
+
+        for (let i = 0; i < currentIndex; i++) {
+            if (isWordPlayable(words[randomTable[i]])) {
+                return i;
+            }
+        }
+
+        return -1;
+    };
+
+    const { playIndex, setPlayIndex } = progress
     const bias = useRef<number>(0)
     const addBias = useRef<boolean>(false)
 
-    const CurrentIndex0 = (currentProgress + bias.current) % 2 === 0 ? randomTable[currentProgress] : (words[randomTable[currentProgress + 1]] ? randomTable[currentProgress + 1] : randomTable[0])
-    const CurrentIndex1 = (currentProgress + bias.current) % 2 === 1 ? randomTable[currentProgress] : (words[randomTable[currentProgress + 1]] ? randomTable[currentProgress + 1] : randomTable[0])
+    const CurrentIndex0 = (playIndex + bias.current) % 2 === 0 ? randomTable[playIndex] : (words[randomTable[playIndex + 1]] ? randomTable[playIndex + 1] : randomTable[0])
+    const CurrentIndex1 = (playIndex + bias.current) % 2 === 1 ? randomTable[playIndex] : (words[randomTable[playIndex + 1]] ? randomTable[playIndex + 1] : randomTable[0])
 
     const currentWord0 = words[CurrentIndex0] ? words[CurrentIndex0] : { id: "ddddddddddddddd", chinese: "", english: "" }
     const currentWord1 = words[CurrentIndex1] ? words[CurrentIndex1] : { id: "ddddddddddddddd", chinese: "", english: "" }
@@ -219,14 +241,14 @@ function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { s
     }, [words])
 
     const toNext = () => {
-        setCurrentProgress(currentProgress + 1)
+        setPlayIndex(findNextWordToPlay(words, randomTable, playIndex, state.onlyPlayUnDone))
     }
 
     useEffect(() => {
-        if (currentProgress > randomTable.length - 1) {
-            setCurrentProgress(0)
+        if (playIndex > randomTable.length - 1) {
+            setPlayIndex(0)
         }
-    }, [currentProgress, randomTable])
+    }, [playIndex, randomTable])
 
     if (!currentWord0 || !currentWord1) {
         return null
@@ -234,8 +256,8 @@ function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { s
 
     return (
         <div className=" pointer-events-none pb-16 overflow-hidden card-area left-0 right-0 top-0 bottom-0 absolute flex flex-col items-center z-20 bg-slate-100 bg-opacity-5">
-            <Card state={state} chinese={currentWord0.chinese} english={currentWord0.english} done={!!currentWord0.done} index={CurrentIndex0} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias.current) % 2 === 1} addBias={() => addBias.current = true} />
-            <Card state={state} chinese={currentWord1.chinese} english={currentWord1.english} done={!!currentWord1.done} index={CurrentIndex1} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(currentProgress + bias.current) % 2 === 0} addBias={() => addBias.current = true} />
+            <Card state={state} chinese={currentWord0.chinese} english={currentWord0.english} done={!!currentWord0.done} index={CurrentIndex0} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(playIndex + bias.current) % 2 === 1} addBias={() => addBias.current = true} />
+            <Card state={state} chinese={currentWord1.chinese} english={currentWord1.english} done={!!currentWord1.done} index={CurrentIndex1} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(playIndex + bias.current) % 2 === 0} addBias={() => addBias.current = true} />
         </div>
     )
 }
