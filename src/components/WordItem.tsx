@@ -41,7 +41,6 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
   }, [isTop]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: 'english' | 'chinese') => {
-    console.log(e.key, field)
     if (e.key === 'Enter' || e.key === 'Tab') {
       e.preventDefault();
       if (field === 'english') chineseRef.current?.focus();

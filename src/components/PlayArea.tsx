@@ -99,7 +99,7 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
         // Letter spelling
         if (settings.letter) {
             utterances.push(settings.timeEL);
-            const letterUtterance = createUtterance('"' + word.english.split("").join('","').replaceAll('," "', " ") + '"', 1, speakerE);
+            const letterUtterance = createUtterance('"' + word.english.replace(/[^a-zA-Z0-9 ]/g, '').split("").join('","') + '"', 1, speakerE);
             utterances.push(letterUtterance);
         }
 
@@ -243,24 +243,28 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
         }
     }
 
-    const handleEnded = () => {
-        if (audioRef.current) {
-            audioRef.current.play();
+    const handleAudioChange = () => {
+        if (audioRef.current!.ended) {
+            if (audioRef.current) {
+                audioRef.current.play();
+            }
+            return
         }
-    }
+        if (!audioRef.current!.paused === isPlaying) {
+            return
+        }
 
-    const handleAudioPause = () => {
-        isPlayingRef.current = false
-        popNotify("Stop playing")
-        setIsPlaying(false);
-        stop()
-    }
-    
-    const handleAudioPlay = () => {
-        isPlayingRef.current = true
-        setIsPlaying(true);
-        popNotify("Start playing")
-        playWord(playIndex);
+        if (isPlayingRef.current) {
+            isPlayingRef.current = false
+            popNotify("Stop playing")
+            setIsPlaying(false);
+            stop()
+        } else {
+            isPlayingRef.current = true
+            setIsPlaying(true);
+            popNotify("!Start playing")
+            playWord(playIndex);
+        }
     }
 
     useEffect(() => {
@@ -274,7 +278,7 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
 
     return (
         <div className="bottom-2 left-0 right-0 px-2 xs:right-0 fixed flex flex-col items-center z-40">
-            <audio onPause={handleAudioPause} onPlay={handleAudioPlay} onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="/test.wav"></audio>
+            <audio onPause={handleAudioChange} onPlay={handleAudioChange} onEnded={handleAudioChange} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="/test.wav"></audio>
             <div onClick={() => {
                 scrollTo(playIndexRef.current)
                 setTimeout(() => {
