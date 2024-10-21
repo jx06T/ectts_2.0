@@ -250,17 +250,17 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
     }
 
     const handleAudioPause = () => {
-        isPlayingRef.current = true
-        setIsPlaying(true);
-        popNotify("Start playing")
-        playWord(playIndex);
-    }
-
-    const handleAudioPlay = () => {
         isPlayingRef.current = false
         popNotify("Stop playing")
         setIsPlaying(false);
         stop()
+    }
+    
+    const handleAudioPlay = () => {
+        isPlayingRef.current = true
+        setIsPlaying(true);
+        popNotify("Start playing")
+        playWord(playIndex);
     }
 
     useEffect(() => {
