@@ -284,7 +284,8 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
                 setTimeout(() => {
                     scrollTo(playIndexRef.current)
                 }, 200);
-            }} className={`${showSetting ? "" : "h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 transition-all duration-300 ease-in-out flex flex-col justify-end`}>
+            }}
+                className={`${showSetting ? "max-h-[500px]" : "max-h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 overflow-hidden transition-all duration-500 ease-in-out flex flex-col justify-end`}>
                 {showSetting && <>
                     <div
                         style={{
@@ -292,7 +293,7 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
                         }}
                         className=' w-full grid gap-2 mx-4 justify-center'>{
                             Object.entries(settings).filter(([key, value]) => key !== "init").map(([key, value], i) => (
-                                <div key={i} className=" my-2 space-x-3">
+                                <div key={i} className=" my-1 space-x-3">
                                     <span onClick={() => { popNotify(SettingsUI[key].hint || "") }} className="w-16 cursor-help">{SettingsUI[key].span}</span>
                                     <input
                                         checked={value}
