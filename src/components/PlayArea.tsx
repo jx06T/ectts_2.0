@@ -90,7 +90,7 @@ function PlayArea({ scrollToTop, randomTable, progress, words, currentTitle, onl
         const utterances = [];
 
         // English utterances
-        const englishUtterance = createUtterance(word.english.replaceAll("sth","something").replaceAll("sb","somebody"), settings.speed, speakerE);
+        const englishUtterance = createUtterance(word.english.replaceAll("sth", "something").replaceAll("sb", "somebody"), settings.speed, speakerE);
         for (let i = 0; i < settings.repeat; i++) {
             utterances.push(englishUtterance);
             if (i < settings.repeat - 1) utterances.push(settings.timeEE);
@@ -250,11 +250,17 @@ function PlayArea({ scrollToTop, randomTable, progress, words, currentTitle, onl
     }
 
     const handleAudioPause = () => {
-
+        isPlayingRef.current = true
+        setIsPlaying(true);
+        popNotify("Start playing")
+        playWord(playIndex);
     }
 
     const handleAudioPlay = () => {
-
+        isPlayingRef.current = false
+        popNotify("Stop playing")
+        setIsPlaying(false);
+        stop()
     }
 
     useEffect(() => {
