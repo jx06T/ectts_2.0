@@ -197,7 +197,7 @@ function MainBlock() {
         setTimeout(() => {
             scrollRef.current?.scrollTo({
                 // top: index * 52 - 300 + (0.5 * (900 - window.innerHeight)),
-                top: index * 52 - (0.5 * (900 - window.innerHeight)) + 120,
+                top: index * 60 - (0.5 * (900 - window.innerHeight)) + 120,
                 behavior: 'smooth'
             });
         }, 100);
