@@ -36,7 +36,7 @@ const SettingsUI: Record<string, UI> = {
     chinese: { span: "chinese", type: "checkbox", hint: "Say chinese ?" },
 }
 
-function PlayArea({ scrollToTop, randomTable, progress, words, currentTitle, onlyPlayUnDone }: { scrollToTop: Function, onlyPlayUnDone: boolean, randomTable: number[], progress: { playIndex: number, setPlayIndex: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, scrollTo }: { scrollTo: Function, onlyPlayUnDone: boolean, randomTable: number[], progress: { playIndex: number, setPlayIndex: Function }, callback?: Function, words: Word[], currentTitle: string }) {
     const { setId, mode } = useParams<Params>();
     const [cardsMode, setCardsMode] = useState<boolean>(mode === "cards")
 
@@ -276,10 +276,10 @@ function PlayArea({ scrollToTop, randomTable, progress, words, currentTitle, onl
         <div className="bottom-2 left-0 right-0 px-2 xs:right-0 fixed flex flex-col items-center z-40">
             <audio onPause={handleAudioPause} onPlay={handleAudioPlay} onEnded={handleEnded} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="/test.wav"></audio>
             <div onClick={() => {
-                scrollToTop(playIndex)
+                scrollTo(playIndexRef.current)
                 setTimeout(() => {
-                    scrollToTop(playIndexRef.current)
-                }, 400)
+                    scrollTo(playIndexRef.current)
+                }, 200);
             }} className={`${showSetting ? "" : "h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 transition-all duration-300 ease-in-out flex flex-col justify-end`}>
                 {showSetting && <>
                     <div

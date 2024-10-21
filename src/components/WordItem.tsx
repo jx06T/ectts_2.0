@@ -11,9 +11,9 @@ interface WordItemProps {
   isFocused: boolean;
   onPlay: Function;
   onChange: (index: number, field: 'english' | 'chinese', value: string) => void;
-  onDoneToggle: (index: number) => void;
+  onDoneToggle: (index: number, type?: string) => void;
   onDelete: (index: number) => void;
-  onNext: () => void;
+  onNext: (indexP: number) => void;
   state: StateFormat
 }
 
@@ -41,10 +41,11 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
   }, [isTop]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: 'english' | 'chinese') => {
+    console.log(e.key, field)
     if (e.key === 'Enter' || e.key === 'Tab') {
       e.preventDefault();
       if (field === 'english') chineseRef.current?.focus();
-      else onNext();
+      else onNext(indexP);
     }
   };
 
@@ -73,13 +74,20 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
       }}
       className={` a-word flex my-1 ${isTopDelay ? "top" : ""}`}>
 
-      <div className={`w-1 h-[90%]  ${word.done ? " bg-green-300" : " bg-red-300"}`}>
+      <div className={`w-1 ${!isTop ? " h-[88%] rounded-md" : " h-full"} ${word.done ? " bg-green-300" : " bg-red-300"}`}>
 
       </div>
       {isTopDelay &&
-        <div className=" w-8 flex-grow-0 flex-shrink-0 flex flex-col justify-center space-y-4 mr-3">
-          <button onClick={() => onDelete(index)}><MaterialDeleteRounded className="  text-3xl" /></button>
+        <div className=" w-8 flex-grow-0 flex-shrink-0 flex flex-col items-center justify-center space-y-4 mr-2 ml-1">
+          <button onClick={() => onDelete(index)}><MaterialDeleteRounded className="  text-3xl text-red-900" /></button>
+          <div
+            onClick={() => onDoneToggle(index, "done")}
+            className={` rounded-md
+          ${word.done ? "bg-green-200 hover:bg-green-300" : "bg-red-200 hover:bg-red-300"}
+            w-6 h-6 `}
+          ></div>
         </div>}
+
       <div className={` overflow-hidden  flex-grow flex-shrink min-w-0 ${isTopDelay ? " flex flex-col space-y-3" : "flex space-x-3"}`}>
         <input
           ref={englishRef}
@@ -120,8 +128,8 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
           onMouseEnter={handleMouseLeave}
           onClick={() => onDoneToggle(index)}
           className={` rounded-md jx-1 
-          ${word.selected ? "bg-purple-400 hover:bg-purple-500" : "bg-purple-100 hover:bg-purple-200"}
-          ${isPlaying ? " border-2 border-blue-400" : ""} 
+          ${word.selected ? "bg-purple-300 hover:bg-purple-400" : "bg-purple-100 hover:bg-purple-200"}
+          ${isPlaying ? " border-3 border-purple-400" : ""} 
             w-8 flex-grow-0 flex-shrink-0 cursor-pointer ml-3 `}
         ></div>
       </div>

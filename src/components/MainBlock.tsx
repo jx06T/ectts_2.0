@@ -88,7 +88,7 @@ function MainBlock() {
     const [showFunctionMenu, setShowFunctionMenu] = useState<boolean>(false)
 
     const observerRef = useRef<IntersectionObserver | null>(null);
-    
+
     const onIdle = (cb: IdleRequestCallback) =>
         (window.requestIdleCallback || ((cb) => setTimeout(cb, 1)))(cb);
 
@@ -193,14 +193,25 @@ function MainBlock() {
         localStorage.setItem(`set-${setId!}`, JSON.stringify(words))
     }, [words])
 
-    const scrollToTop = (index: number): void => {
-        setTimeout(() => {
-            scrollRef.current?.scrollTo({
-                // top: index * 52 - 300 + (0.5 * (900 - window.innerHeight)),
-                top: index * 60 - (0.5 * (900 - window.innerHeight)) + 120,
-                behavior: 'smooth'
-            });
-        }, 100);
+    const scrollTo = (index: number): void => {
+        scrollRef.current?.scrollTo({
+            top: index * 60,
+            behavior: 'smooth'
+        });
+    }
+
+    const scrollToTop = (): void => {
+        scrollRef.current?.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    const scrollToEnd = (): void => {
+        inputBoxRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+        })
     }
 
     const handleWordChange = (index: number, field: 'english' | 'chinese', value: string) => {
@@ -250,6 +261,10 @@ function MainBlock() {
 
     const handleExport = () => {
         const WordsToExport = words.map(e => !e.selected ? "$^#*&" : (e.english + "\n" + e.chinese)).filter(e => e !== "$^#*&")
+        if (WordsToExport.length === 0) {
+            popNotify("Select words first")
+            return
+        }
         const ExportText = WordsToExport.join("\n")
 
         if (inputBoxRef.current) {
@@ -260,14 +275,25 @@ function MainBlock() {
     };
 
     const handleDelete = (index: number) => {
-        const newWords = words.filter((word, i) => i !== index)
-        setWords(newWords)
-        updataRandomTable()
+        createConfirmDialog(
+            `delete ${words.find((word, i) => i === index)?.english} ?`,
+            () => {
+                const newWords = words.filter((word, i) => i !== index)
+                setWords(newWords)
+                updataRandomTable()
+                popNotify("Words deleted");
+            },
+            () => {
+                popNotify("delete canceled.");
+            }
+        );
+
+
     }
 
 
-    const handleDoneToggle = (index: number) => {
-        if (cardsMode) {
+    const handleDoneToggle = (index: number, type: string = "") => {
+        if (cardsMode || type == "done") {
             setWords(prev => {
                 const newWords = prev.map((word, i) => i === index ? { ...word, done: !word.done } : word)
                 popNotify(`${newWords.filter(word => word.done).length}／${words.length} words done`)
@@ -284,11 +310,13 @@ function MainBlock() {
         popNotify(`${newWords.filter(word => word.selected).length}／${newWords.length} words selected`)
     };
 
-    const addNewWord = () => {
+    const addNewWord = (i: number) => {
         setWords(prev => [...prev, { id: getRandId(16), chinese: "", english: "", done: false, selected: false }]);
-        setFocusIndex(words.length);
-        scrollToTop(words.length)
         updataRandomTable()
+        setTimeout(() => {
+            scrollTo(i + 1)
+            setFocusIndex(i + 1)
+        }, 100);
     };
 
     const handlePlayThisWord = (index: number) => {
@@ -420,11 +448,15 @@ function MainBlock() {
                                 onPlay={handlePlayThisWord}
                                 onChange={handleWordChange}
                                 onDoneToggle={handleDoneToggle}
-                                onNext={() => {
-                                    if (i + 2 > words.length) {
-                                        addNewWord()
+                                onNext={(indexP: number) => {
+                                    if (indexP + 2 > words.length) {
+                                        addNewWord(indexP)
+                                    } else {
+                                        setFocusIndex(-1)
+                                        setTimeout(() => {
+                                            setFocusIndex((indexP + 1))
+                                        }, 20);
                                     }
-                                    setFocusIndex(i + 1)
                                 }}
                             />)
                         })
@@ -432,7 +464,7 @@ function MainBlock() {
 
                         < div className='h-[90%] relative'>
                             <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8'></textarea>
-                            <button onClick={() => scrollToTop(0)} className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
+                            <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
                         </div>
                     </div> :
                     null
@@ -441,7 +473,7 @@ function MainBlock() {
 
             {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} words={words} />}
 
-            <PlayArea scrollToTop={scrollToTop} onlyPlayUnDone={state.onlyPlayUnDone} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />
+            <PlayArea scrollTo={scrollTo} onlyPlayUnDone={state.onlyPlayUnDone} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />
         </div >
     )
 }
