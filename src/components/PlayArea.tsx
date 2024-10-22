@@ -26,10 +26,10 @@ interface UI {
 }
 
 const SettingsUI: Record<string, UI> = {
-    timeWW: { span: "WtW", type: "range", min: 0, max: 7000, step: 10, hint: "The interval between different words" },
-    timeEE: { span: "EtE", type: "range", min: 0, max: 7000, step: 10, hint: "The interval between repeated words" },
-    timeEL: { span: "EtL", type: "range", min: 0, max: 7000, step: 10, hint: "The interval between words and letters" },
-    timeLC: { span: "LtC", type: "range", min: 0, max: 7000, step: 10, hint: "The interval letters words and Chinese" },
+    timeWW: { span: "WtW", type: "range", min: 0, max: 7, step: 0.1, hint: "The interval between different words" },
+    timeEE: { span: "EtE", type: "range", min: 0, max: 7, step: 0.1, hint: "The interval between repeated words" },
+    timeEL: { span: "EtL", type: "range", min: 0, max: 7, step: 0.1, hint: "The interval between words and letters" },
+    timeLC: { span: "LtC", type: "range", min: 0, max: 7, step: 0.1, hint: "The interval letters words and Chinese" },
     speed: { span: "speed", type: "range", min: 0.1, max: 3, step: 0.1, hint: "The speed of English words" },
     repeat: { span: "repeat", type: "range", min: 1, max: 13, hint: "number of repetitions" },
     letter: { span: "letter", type: "checkbox", hint: "Say the letters ?" },
@@ -90,7 +90,7 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
         const utterances = [];
 
         // English utterances
-        const englishUtterance = createUtterance(word.english.replaceAll("sth", "something").replaceAll("sb", "somebody"), settings.speed, speakerE);
+        const englishUtterance = createUtterance(word.english.replaceAll("sth", "something").replaceAll("sb", "somebody").replaceAll("/", ".\n"), settings.speed, speakerE);
         for (let i = 0; i < settings.repeat; i++) {
             utterances.push(englishUtterance);
             if (i < settings.repeat - 1) utterances.push(settings.timeEE);
@@ -99,8 +99,12 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
         // Letter spelling
         if (settings.letter) {
             utterances.push(settings.timeEL);
-            const letterUtterance = createUtterance('"' + word.english.replace(/[^a-zA-Z0-9 ]/g, '').split("").join('","') + '"', 1, speakerE);
-            utterances.push(letterUtterance);
+            const wordSplit = word.english.split(" ")
+            for (let j = 0; j < wordSplit.length; j++) {
+                const text = wordSplit[j];
+                const letterUtterance = createUtterance('"' + text.replace(/[^a-zA-Z]/g, '').split("").join('","') + '"', 1, speakerE);
+                utterances.push(letterUtterance);
+            }
         }
 
         // Chinese translation
@@ -116,6 +120,29 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
 
     const playUtterances = useCallback((utterances: (number | SpeechSynthesisUtterance)[], thisIndex: number, playbackId: number) => {
         let index = 0;
+
+        const checkIndexAndPlay = (startTime: number, delay: number) => {
+            // 檢查是否還在播放且 playbackId 沒變
+            if (!isPlayingRef.current || playbackIdRef.current !== playbackId) {
+                return;
+            }
+
+            // 檢查 index 是否改變
+            if (playIndexRef.current !== thisIndex) {
+                playWord(-10);
+                return;
+            }
+
+            const currentTime = performance.now();
+            const elapsed = currentTime - startTime;
+
+            if (elapsed >= delay) {
+                playNext();
+            } else {
+                requestAnimationFrame(() => checkIndexAndPlay(startTime, delay));
+            }
+        };
+
         const playNext = () => {
 
             if (!isPlayingRef.current || playbackIdRef.current !== playbackId) {
@@ -132,7 +159,9 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
 
             const item = utterances[index];
             if (typeof item === 'number') {
-                setTimeout(playNext, item);
+                const startTime = performance.now();
+                requestAnimationFrame(() => checkIndexAndPlay(startTime, item * 1000));
+                // setTimeout(playNext, item);
             } else {
                 synth.speak(item);
                 item.onend = playNext;

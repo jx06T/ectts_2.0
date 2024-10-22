@@ -365,8 +365,8 @@ function MainBlock() {
                         width: showFunctionMenu ? "140px" : "40px",
                         transition: 'width 0.3s ease-in-out',
                     }}
-                    className={`z-50 flex items-end flex-col absolute right-2 top-0 rounded-md pt-2 pr-2 ${showFunctionMenu ? " bg-purple-200" : " bg-transparent"}`}>
-                    <div onClick={() => setShowFunctionMenu(!showFunctionMenu)} className='  hover:bg-purple-300 w-[2.15rem] h-[2.15rem] rounded-full p-[2px]'>
+                    className={`z-50 flex items-end flex-col absolute right-2 top-0 rounded-md pt-2 pr-2 ${showFunctionMenu ? " bg-blue-100" : " bg-transparent"}`}>
+                    <div onClick={() => setShowFunctionMenu(!showFunctionMenu)} className='  hover:bg-blue-50 w-[2.15rem] h-[2.15rem] rounded-full p-[2px]'>
                         <IcRoundAccountCircle className=' w-full h-full text-center text-3xl' />
                     </div>
                     {showFunctionMenu &&

@@ -127,8 +127,8 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
           onMouseEnter={handleMouseLeave}
           onClick={() => onDoneToggle(index)}
           className={` rounded-md jx-1 
-          ${word.selected ? "bg-purple-300 hover:bg-purple-400" : "bg-purple-100 hover:bg-purple-200"}
-          ${isPlaying ? " border-3 border-purple-400" : ""} 
+          ${word.selected ? "bg-purple-300 hover:bg-purple-400" : "bg-purple-50 hover:bg-purple-100"}
+          ${isPlaying ? " border-3 border-purple-500" : ""} 
             w-8 flex-grow-0 flex-shrink-0 cursor-pointer ml-3 `}
         ></div>
       </div>
