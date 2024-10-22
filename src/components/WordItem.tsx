@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { MingcuteVolumeLine, MaterialDeleteRounded } from "../utils/Icons";
 import useSpeech from "../utils/Speech";
+import { useNotify } from "../context/NotifyContext";
 
 interface WordItemProps {
   word: Word;
@@ -26,9 +27,11 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
   const [height, setHeight] = useState(isTop ? "100px" : "48px");
   const [isTopDelay, setIsTopDelay] = useState<boolean>(false);
   const { speakE } = useSpeech()
+  const { popNotify } = useNotify();
+
 
   useEffect(() => {
-    if (isFocused) {
+    if (isFocused && englishRef.current) {
       englishRef.current?.focus();
     }
   }, [isFocused]);
@@ -48,11 +51,10 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
     }
   };
 
-  const handleFocus = (field: 'english' | 'chinese') => {
-    if (field === 'english') setShowEnglish(true);
-    else setShowChinese(true);
-  };
-
+  // const handleFocus = (field: 'english' | 'chinese') => {
+  //   if (field === 'english') setShowEnglish(true);
+  //   else setShowChinese(true);
+  // };
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.buttons === 1) {

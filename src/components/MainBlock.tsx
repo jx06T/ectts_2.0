@@ -75,6 +75,7 @@ function MainBlock() {
     const { state, setState } = useStateContext()
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [words, setWords] = useState<Word[]>([]);
+    const [newWord, setNewWords] = useState<Word>({ id: "amvjrsuiof", chinese: "", english: "", done: false, selected: false });
 
     const [focusIndex, setFocusIndex] = useState<number>(0);
     const [playIndex, setPlayIndex] = useState<number>(0);
@@ -276,7 +277,7 @@ function MainBlock() {
 
     const handleDelete = (index: number) => {
         createConfirmDialog(
-            `delete ${words.find((word, i) => i === index)?.english} ?`,
+            `delete "${words.find((word, i) => i === index)?.english}" ?`,
             () => {
                 const newWords = words.filter((word, i) => i !== index)
                 setWords(newWords)
@@ -310,13 +311,9 @@ function MainBlock() {
         popNotify(`${newWords.filter(word => word.selected).length}／${newWords.length} words selected`)
     };
 
-    const addNewWord = (i: number) => {
-        setWords(prev => [...prev, { id: getRandId(16), chinese: "", english: "", done: false, selected: false }]);
-        updataRandomTable()
-        setTimeout(() => {
-            scrollTo(i + 1)
-            setFocusIndex(i + 1)
-        }, 100);
+    const addNewWord = (c: string, e: string) => {
+        setWords(prev => [...prev, { id: getRandId(16), chinese: c, english: e, done: false, selected: false }]);
+        scrollTo(words.length)
     };
 
     const handlePlayThisWord = (index: number) => {
@@ -354,6 +351,18 @@ function MainBlock() {
         const arr: number[] = new Array(words.length).fill(0).map((i, index) => index)
         setRandomTable(arr)
     }
+
+    const getRandomTableToPlay = () => {
+        if (randomTable.length === 0 || words.length === 0 || words.length !== randomTable.length) {
+            return []
+        }
+        return randomTable.map((e, i) => (words[e].selected && (!words[e].done || !state.onlyPlayUnDone)) ? i : -1).filter(e => e !== -1)
+    }
+
+
+    setInterval(() => {
+        // setFocusIndex((focusIndex + 1)%words.length)
+    }, 1000);
 
     return (
         <div className=' main bg-slate-25 w-full sm:h-full px-1  py-2 flex flex-col relative'>
@@ -425,6 +434,7 @@ function MainBlock() {
 
             </div>
 
+
             <div className=' relative flex justify-center h-full w-full overflow-y-auto px-1'>
                 {randomTable.length === words.length ?
                     <div ref={scrollRef}
@@ -441,7 +451,7 @@ function MainBlock() {
                                 index={index}
                                 indexP={i}
                                 state={state}
-                                isFocused={i === focusIndex}
+                                isFocused={false&&index === focusIndex}
                                 isTop={i === topIndex}
                                 isPlaying={i === playIndex}
                                 onDelete={handleDelete}
@@ -450,18 +460,41 @@ function MainBlock() {
                                 onDoneToggle={handleDoneToggle}
                                 onNext={(indexP: number) => {
                                     if (indexP + 2 > words.length) {
-                                        addNewWord(indexP)
+                                        setFocusIndex(words.length)
+                                        // addNewWord(indexP)
                                     } else {
                                         setFocusIndex(-1)
                                         setTimeout(() => {
                                             setFocusIndex((indexP + 1))
-                                        }, 20);
+                                        }, 10);
                                     }
                                 }}
                             />)
                         })
                         }
-
+                        <WordItem
+                            key={"ddd"}
+                            word={newWord}
+                            index={-1}
+                            indexP={-1}
+                            state={state}
+                            isFocused={focusIndex >= words.length}
+                            isTop={false}
+                            isPlaying={false}
+                            onDelete={() => { }}
+                            onPlay={() => { }}
+                            onChange={(index: number, field: string, value) => {
+                                setNewWords({ ...newWord, [field]: value });
+                            }}
+                            onDoneToggle={handleDoneToggle}
+                            onNext={(i: number) => {
+                                setFocusIndex(focusIndex + 1)
+                                addNewWord(newWord.chinese, newWord.english)
+                                setNewWords({
+                                    ...newWord, chinese: "", english: ""
+                                })
+                            }}
+                        />
                         < div className='h-[90%] relative'>
                             <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8'></textarea>
                             <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
@@ -473,7 +506,7 @@ function MainBlock() {
 
             {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} words={words} />}
 
-            <PlayArea scrollTo={scrollTo} onlyPlayUnDone={state.onlyPlayUnDone} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />
+            <PlayArea scrollTo={scrollTo} randomTableToPlay={getRandomTableToPlay()} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />
         </div >
     )
 }

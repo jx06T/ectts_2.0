@@ -36,7 +36,7 @@ const SettingsUI: Record<string, UI> = {
     chinese: { span: "chinese", type: "checkbox", hint: "Say chinese ?" },
 }
 
-function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, scrollTo }: { scrollTo: Function, onlyPlayUnDone: boolean, randomTable: number[], progress: { playIndex: number, setPlayIndex: Function }, callback?: Function, words: Word[], currentTitle: string }) {
+function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitle, scrollTo }: { scrollTo: Function, randomTableToPlay: number[], randomTable: number[], progress: { playIndex: number, setPlayIndex: Function }, callback?: Function, words: Word[], currentTitle: string }) {
     const { setId, mode } = useParams<Params>();
     const [cardsMode, setCardsMode] = useState<boolean>(mode === "cards")
 
@@ -56,9 +56,9 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
     const { synth, speakerC, speakerE, voices } = useSpeech()
 
     const randomTableRef = useRef<number[] | null>(randomTable);
+    const randomTableToPlayRef = useRef<number[]>(randomTableToPlay);
     const audioRef = useRef<HTMLAudioElement>(null)
     const wordsRef = useRef<Word[]>(words)
-    const onlyPlayUnDoneRef = useRef<boolean>(onlyPlayUnDone)
 
     useEffect(() => {
         setCardsMode(mode === "cards")
@@ -115,36 +115,35 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
         }
 
         utterances.push(settings.timeWW);
+        utterances.push(-1);
         return utterances;
     }, [wordsRef, settings, createUtterance, speakerC, speakerE]);
 
     const playUtterances = useCallback((utterances: (number | SpeechSynthesisUtterance)[], thisIndex: number, playbackId: number) => {
         let index = 0;
+        setTimeout(() => {
+            console.log("啥?")
+        }, 1000);
+        // 撒小為啥不加這個setTimeout它就會停下來
 
         const checkIndexAndPlay = (startTime: number, delay: number) => {
-            // 檢查是否還在播放且 playbackId 沒變
-            if (!isPlayingRef.current || playbackIdRef.current !== playbackId) {
-                return;
-            }
-
             // 檢查 index 是否改變
             if (playIndexRef.current !== thisIndex) {
                 playWord(-10);
                 return;
             }
-
+            
             const currentTime = performance.now();
             const elapsed = currentTime - startTime;
-
+            
             if (elapsed >= delay) {
                 playNext();
             } else {
                 requestAnimationFrame(() => checkIndexAndPlay(startTime, delay));
             }
         };
-
+        
         const playNext = () => {
-
             if (!isPlayingRef.current || playbackIdRef.current !== playbackId) {
                 return
             }
@@ -152,12 +151,12 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
                 playWord(-10);
                 return
             }
-            if (index >= utterances.length) {
+            
+            const item = utterances[index];
+            if (typeof item === 'number' && item === -1) {
                 playWord(thisIndex + 1);
                 return;
             }
-
-            const item = utterances[index];
             if (typeof item === 'number') {
                 const startTime = performance.now();
                 requestAnimationFrame(() => checkIndexAndPlay(startTime, item * 1000));
@@ -165,6 +164,9 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
             } else {
                 synth.speak(item);
                 item.onend = playNext;
+                item.onerror = () => {
+                    popNotify("Something is wrong")
+                }
             }
             index++;
         };
@@ -172,73 +174,36 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
         playNext();
     }, [wordsRef, settings, speakerC, speakerE]);
 
-    const findNextWordToPlay = (currentIndex: number): number => {
-        const isWordPlayable = (word: Word) => word.selected && (!onlyPlayUnDone || !word.done);
-
-        if (isWordPlayable(wordsRef.current[randomTableRef.current![currentIndex]])) {
-            return currentIndex;
-        }
-
-        for (let i = currentIndex + 1; i < randomTableRef.current!.length; i++) {
-            if (isWordPlayable(wordsRef.current[randomTableRef.current![i]])) {
-                return i;
-            }
-        }
-
-        for (let i = 0; i < currentIndex; i++) {
-            if (isWordPlayable(wordsRef.current[randomTableRef.current![i]])) {
-                return i;
-            }
-        }
-
-        return -1;
-    };
-
-    const findPreviousWordToPlay = (currentIndex: number): number => {
-        const isWordPlayable = (word: Word) => word.selected && (!onlyPlayUnDone || !word.done);
-
-        if (isWordPlayable(wordsRef.current[randomTableRef.current![currentIndex]])) {
-            return currentIndex;
-        }
-
-        for (let i = currentIndex - 1; i > -1; i--) {
-            if (isWordPlayable(wordsRef.current[randomTableRef.current![i]])) {
-                return i;
-            }
-        }
-
-        for (let i = randomTableRef.current!.length - 1; i > currentIndex; i--) {
-            if (isWordPlayable(wordsRef.current[randomTableRef.current![i]])) {
-                return i;
-            }
-        }
-
-        return -1;
-    };
 
     const playWord = useCallback((index: number) => {
         if (index === -10) {
             index = playIndexRef.current
         }
+        
         if (index === wordsRef.current.length) {
             index = 0
         }
 
-
-        const nextIndex = findNextWordToPlay(index);
-        if (nextIndex === -1) {
+        if (randomTableToPlayRef.current.length === -1) {
             popNotify("No more words to play")
             stop()
             return
         }
-        index = nextIndex
-        const randIndex = randomTableRef.current![index]
 
+        console.log("!", index)
+        if (randomTableToPlayRef.current.indexOf(index) === -1) {
+            const nextIndex = randomTableToPlayRef.current[randomTableToPlayRef.current?.indexOf(index) + 1] || randomTableToPlayRef.current[0];
+            index = nextIndex
+        }
+        
+        const randIndex = randomTableRef.current![index]
+        
         playIndexRef.current = index
         setPlayIndex(index)
         const utterances = createUtterances(settingsRef.current, wordsRef.current[randIndex]);
         playbackIdRef.current += 1
         playUtterances(utterances, index, playbackIdRef.current);
+
     }, [wordsRef.current, createUtterances, playUtterances, settings, playIndex, speakerC, speakerE]);
 
 
@@ -300,21 +265,22 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
         playIndexRef.current = playIndex
         settingsRef.current = settings
         randomTableRef.current = randomTable
+        randomTableToPlayRef.current = randomTableToPlay
         isPlayingRef.current = isPlaying
         wordsRef.current = words
-        onlyPlayUnDoneRef.current = onlyPlayUnDone
-    }, [playIndex, settings, words, randomTable, isPlaying, onlyPlayUnDone])
+    }, [playIndex, settings, words, randomTable, isPlaying, randomTableToPlay])
 
+
+    const scrollToPlaying = () => {
+        scrollTo(playIndexRef.current)
+        setTimeout(() => {
+            scrollTo(playIndexRef.current)
+        }, 200);
+    }
     return (
         <div className="bottom-2 left-0 right-0 px-2 xs:right-0 fixed flex flex-col items-center z-40">
             <audio onPause={handleAudioChange} onPlay={handleAudioChange} onEnded={handleAudioChange} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="/test.wav"></audio>
-            <div onClick={() => {
-                scrollTo(playIndexRef.current)
-                setTimeout(() => {
-                    scrollTo(playIndexRef.current)
-                }, 200);
-            }}
-                className={`${showSetting ? "max-h-[500px]" : "max-h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 overflow-hidden transition-all duration-500 ease-in-out flex flex-col justify-end`}>
+            <div className={`${showSetting ? "max-h-[500px]" : "max-h-[3.6rem]"} shadow-md bg-purple-200 rounded-lg w-full opacity-80 overflow-hidden transition-all duration-500 ease-in-out flex flex-col justify-end`}>
                 {showSetting && <>
                     <div
                         style={{
@@ -348,14 +314,14 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
                 </>}
 
                 <div className={` min-[28rem] w-full h-14 py-1 flex justify-center items-center space-x-[2%] mdlg:space-x-[6%] xs:space-x-[8%] 2xs:space-x-[5%]`}>
-                    <div className=" w-[16%] xs:w-[26%] text-right flex-shrink-0 text-sm xs:text-lg ">{currentTitle}</div>
+                    <div onClick={scrollToPlaying} className=" w-[16%] xs:w-[26%] text-right flex-shrink-0 text-sm xs:text-lg ">{currentTitle}</div>
 
                     <div className="flex flex-shrink-0 justify-center space-x-[-1px] mt-1">
                         <button className="js-2" onClick={() => {
-                            if (playIndex > 0) {
-                                setPlayIndex((prev: number) => findPreviousWordToPlay(prev - 1))
+                            if (randomTableToPlayRef.current.indexOf(playIndex) > 0) {
+                                setPlayIndex((prev: number) => randomTableToPlayRef.current[randomTableToPlayRef.current.indexOf(prev) - 1])
                             } else {
-                                setPlayIndex(findPreviousWordToPlay(words.length - 1))
+                                setPlayIndex(randomTableToPlayRef.current[randomTableToPlayRef.current.length - 1])
                             }
                         }}>
                             <FluentPreviousFrame24Filled className=" text-3xl" />
@@ -367,17 +333,17 @@ function PlayArea({ randomTable, progress, words, currentTitle, onlyPlayUnDone, 
                             {isPlaying ? <FluentPause24Filled className=" text-3xl" /> : <FluentPlay24Filled className=" text-3xl" />}
                         </button>
                         <button className="js-2" onClick={() => {
-                            if (playIndex < words.length - 1) {
-                                setPlayIndex((prev: number) => findNextWordToPlay(prev + 1))
+                            if (randomTableToPlayRef.current.indexOf(playIndex) < randomTableToPlayRef.current.length - 1) {
+                                setPlayIndex((prev: number) => randomTableToPlayRef.current[randomTableToPlayRef.current.indexOf(prev) + 1])
                             } else {
-                                setPlayIndex(findNextWordToPlay(0))
+                                setPlayIndex(randomTableToPlay[0])
                             }
                         }}>
                             <FluentNextFrame24Filled className=" text-3xl" />
                         </button>
                     </div>
 
-                    <div className=" w-[28%] xs:w-[30%] pr-2 text-sm xs:text-lg  ">
+                    <div onClick={scrollToPlaying} className=" w-[28%] xs:w-[30%] pr-2 text-sm xs:text-lg  ">
                         {cardsMode ? "✓ " + words.filter(word => word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].english : "")}
                         <br></br>
                         {cardsMode ? "✕ " + words.filter(word => !word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].chinese : "")}
