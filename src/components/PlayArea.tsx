@@ -88,10 +88,10 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
 
     const generateTimeArray = (time: number): number[] => {
         const timeArray = [];
-        timeArray.push(...Array(Math.floor((time * 1000) / 500)).fill(500));
+        timeArray.push(...Array(Math.floor((time * 1000) / 600)).fill(500));
 
-        if ((time * 1000) % 500 > 100) {
-            timeArray.push(Math.floor((time * 1000) % 500))
+        if ((time * 1000) % 600 > 100) {
+            timeArray.push(Math.floor((time * 1000) % 600))
         }
         return timeArray
     }
