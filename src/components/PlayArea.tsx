@@ -86,6 +86,16 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
         return utterance;
     }, [voices, settings]);
 
+    const generateTimeArray = (time: number): number[] => {
+        const timeArray = [];
+        timeArray.push(...Array(Math.floor((time * 1000) / 500)).fill(500));
+
+        if ((time * 1000) % 500 > 100) {
+            timeArray.push(Math.floor((time * 1000) % 500))
+        }
+        return timeArray
+    }
+
     const createUtterances = useCallback((settings: Settings, word: Word) => {
         const utterances = [];
 
@@ -93,12 +103,12 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
         const englishUtterance = createUtterance(word.english.replaceAll("sth", "something").replaceAll("sb", "somebody").replaceAll("/", ".\n"), settings.speed, speakerE);
         for (let i = 0; i < settings.repeat; i++) {
             utterances.push(englishUtterance);
-            if (i < settings.repeat - 1) utterances.push(...Array(settings.timeEE * 10).fill(80));
+            if (i < settings.repeat - 1) utterances.push(...generateTimeArray(settings.timeEE));
         }
 
         // Letter spelling
         if (settings.letter) {
-            utterances.push(...Array(settings.timeEL * 10).fill(80));
+            utterances.push(...generateTimeArray(settings.timeEL));
             const wordSplit = word.english.split(" ")
             for (let j = 0; j < wordSplit.length; j++) {
                 const text = wordSplit[j];
@@ -109,12 +119,12 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
 
         // Chinese translation
         if (settings.chinese) {
-            utterances.push(...Array(settings.timeLC * 10).fill(80));
+            utterances.push(...generateTimeArray(settings.timeLC));
             const chineseUtterance = createUtterance(word.chinese, 0.9, speakerC);
             utterances.push(chineseUtterance);
         }
 
-        utterances.push(...Array(settings.timeWW * 10).fill(80));
+        utterances.push(...generateTimeArray(settings.timeWW));
         utterances.push(-1);
         return utterances;
     }, [wordsRef, settings, createUtterance, speakerC, speakerE]);
@@ -184,7 +194,7 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
             index = 0
         }
 
-        if (randomTableToPlayRef.current.length === -1) {
+        if (randomTableToPlayRef.current.length === 0) {
             popNotify("No more words to play")
             stop()
             return
@@ -256,7 +266,7 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
         } else {
             isPlayingRef.current = true
             setIsPlaying(true);
-            popNotify("!Start playing")
+            popNotify("Start playing")
             playWord(playIndex);
         }
     }
