@@ -5,10 +5,10 @@ import { Params, useParams } from 'react-router-dom';
 import useSpeech from "../utils/Speech";
 
 const initialSettings: Settings = {
-    timeWW: 1000,
-    timeEE: 1000,
-    timeEL: 1000,
-    timeLC: 1000,
+    timeWW: 1,
+    timeEE: 1,
+    timeEL: 1,
+    timeLC: 1,
     speed: 1,
     repeat: 3,
     letter: true,
@@ -93,12 +93,12 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
         const englishUtterance = createUtterance(word.english.replaceAll("sth", "something").replaceAll("sb", "somebody").replaceAll("/", ".\n"), settings.speed, speakerE);
         for (let i = 0; i < settings.repeat; i++) {
             utterances.push(englishUtterance);
-            if (i < settings.repeat - 1) utterances.push(...Array(settings.timeEE * 10).fill(100));
+            if (i < settings.repeat - 1) utterances.push(...Array(settings.timeEE * 10).fill(80));
         }
 
         // Letter spelling
         if (settings.letter) {
-            utterances.push(...Array(settings.timeEL * 10).fill(100));
+            utterances.push(...Array(settings.timeEL * 10).fill(80));
             const wordSplit = word.english.split(" ")
             for (let j = 0; j < wordSplit.length; j++) {
                 const text = wordSplit[j];
@@ -109,12 +109,12 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
 
         // Chinese translation
         if (settings.chinese) {
-            utterances.push(...Array(settings.timeLC * 10).fill(100));
+            utterances.push(...Array(settings.timeLC * 10).fill(80));
             const chineseUtterance = createUtterance(word.chinese, 0.9, speakerC);
             utterances.push(chineseUtterance);
         }
 
-        utterances.push(...Array(settings.timeWW * 10).fill(100));
+        utterances.push(...Array(settings.timeWW * 10).fill(80));
         utterances.push(-1);
         return utterances;
     }, [wordsRef, settings, createUtterance, speakerC, speakerE]);
