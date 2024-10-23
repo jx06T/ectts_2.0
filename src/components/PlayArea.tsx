@@ -93,12 +93,12 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
         const englishUtterance = createUtterance(word.english.replaceAll("sth", "something").replaceAll("sb", "somebody").replaceAll("/", ".\n"), settings.speed, speakerE);
         for (let i = 0; i < settings.repeat; i++) {
             utterances.push(englishUtterance);
-            if (i < settings.repeat - 1) utterances.push(settings.timeEE);
+            if (i < settings.repeat - 1) utterances.push(...Array(settings.timeEE * 10).fill(100));
         }
 
         // Letter spelling
         if (settings.letter) {
-            utterances.push(settings.timeEL);
+            utterances.push(...Array(settings.timeEL * 10).fill(100));
             const wordSplit = word.english.split(" ")
             for (let j = 0; j < wordSplit.length; j++) {
                 const text = wordSplit[j];
@@ -109,12 +109,12 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
 
         // Chinese translation
         if (settings.chinese) {
-            utterances.push(settings.timeLC);
+            utterances.push(...Array(settings.timeLC * 10).fill(100));
             const chineseUtterance = createUtterance(word.chinese, 0.9, speakerC);
             utterances.push(chineseUtterance);
         }
 
-        utterances.push(settings.timeWW);
+        utterances.push(...Array(settings.timeWW * 10).fill(100));
         utterances.push(-1);
         return utterances;
     }, [wordsRef, settings, createUtterance, speakerC, speakerE]);
@@ -132,17 +132,17 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
                 playWord(-10);
                 return;
             }
-            
+
             const currentTime = performance.now();
             const elapsed = currentTime - startTime;
-            
+
             if (elapsed >= delay) {
                 playNext();
             } else {
                 requestAnimationFrame(() => checkIndexAndPlay(startTime, delay));
             }
         };
-        
+
         const playNext = () => {
             if (!isPlayingRef.current || playbackIdRef.current !== playbackId) {
                 return
@@ -151,7 +151,7 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
                 playWord(-10);
                 return
             }
-            
+
             const item = utterances[index];
             if (typeof item === 'number' && item === -1) {
                 playWord(thisIndex + 1);
@@ -159,8 +159,8 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
             }
             if (typeof item === 'number') {
                 const startTime = performance.now();
-                requestAnimationFrame(() => checkIndexAndPlay(startTime, item * 1000));
-                // setTimeout(playNext, item);
+                // requestAnimationFrame(() => checkIndexAndPlay(startTime, item * 1000));
+                setTimeout(playNext, item);
             } else {
                 synth.speak(item);
                 item.onend = playNext;
@@ -179,7 +179,7 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
         if (index === -10) {
             index = playIndexRef.current
         }
-        
+
         if (index === wordsRef.current.length) {
             index = 0
         }
@@ -195,9 +195,9 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
             const nextIndex = randomTableToPlayRef.current[randomTableToPlayRef.current?.indexOf(index) + 1] || randomTableToPlayRef.current[0];
             index = nextIndex
         }
-        
+
         const randIndex = randomTableRef.current![index]
-        
+
         playIndexRef.current = index
         setPlayIndex(index)
         const utterances = createUtterances(settingsRef.current, wordsRef.current[randIndex]);
@@ -277,6 +277,7 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
             scrollTo(playIndexRef.current)
         }, 200);
     }
+
     return (
         <div className="bottom-2 left-0 right-0 px-2 xs:right-0 fixed flex flex-col items-center z-40">
             <audio onPause={handleAudioChange} onPlay={handleAudioChange} onEnded={handleAudioChange} className=" z-50 fixed left-5 top-6 h-36 w-full" ref={audioRef} id="backgroundAudio" src="/test.wav"></audio>

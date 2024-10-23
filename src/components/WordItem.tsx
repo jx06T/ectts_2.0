@@ -34,7 +34,7 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
     if (isFocused && englishRef.current) {
       englishRef.current?.focus();
     }
-  }, [isFocused]);
+  }, []);
 
   useEffect(() => {
     setHeight(isTop ? "100px" : "48px");
@@ -47,7 +47,20 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
     if (e.key === 'Enter' || e.key === 'Tab') {
       e.preventDefault();
       if (field === 'english') chineseRef.current?.focus();
-      else onNext(indexP);
+
+      else {
+        const nextED = document.querySelector(`[data-index='${indexP + 1}']`)
+        if (!nextED) {
+          onNext(indexP);
+          return
+        }
+        const nextEI = nextED.querySelector("input")
+        if (!nextEI) {
+          return
+        }
+        nextEI.focus()
+
+      };
     }
   };
 
@@ -63,6 +76,7 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
       window.getSelection().removeAllRanges()
     }
   };
+  console.log("單字區重渲染", indexP)
 
   return (
     <div

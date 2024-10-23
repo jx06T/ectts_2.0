@@ -194,10 +194,10 @@ function MainBlock() {
         localStorage.setItem(`set-${setId!}`, JSON.stringify(words))
     }, [words])
 
-    const scrollTo = (index: number): void => {
+    const scrollTo = (index: number, immediately: boolean = false): void => {
         scrollRef.current?.scrollTo({
             top: index * 60,
-            behavior: 'smooth'
+            behavior: (immediately ? 'instant' : 'smooth') as ScrollBehavior
         });
     }
 
@@ -283,6 +283,9 @@ function MainBlock() {
                 setWords(newWords)
                 updataRandomTable()
                 popNotify("Words deleted");
+                setTimeout(() => {
+                    scrollTo(index - 1, true)
+                }, 400);
             },
             () => {
                 popNotify("delete canceled.");
@@ -311,8 +314,9 @@ function MainBlock() {
         popNotify(`${newWords.filter(word => word.selected).length}／${newWords.length} words selected`)
     };
 
-    const addNewWord = (c: string, e: string) => {
-        setWords(prev => [...prev, { id: getRandId(16), chinese: c, english: e, done: false, selected: false }]);
+
+    const addNewWord = () => {
+        setWords(prev => [...prev, { id: getRandId(16), chinese: "", english: "", done: false, selected: false }]);
         scrollTo(words.length)
     };
 
@@ -451,7 +455,7 @@ function MainBlock() {
                                 index={index}
                                 indexP={i}
                                 state={state}
-                                isFocused={false&&index === focusIndex}
+                                isFocused={false && index === focusIndex}
                                 isTop={i === topIndex}
                                 isPlaying={i === playIndex}
                                 onDelete={handleDelete}
@@ -459,42 +463,11 @@ function MainBlock() {
                                 onChange={handleWordChange}
                                 onDoneToggle={handleDoneToggle}
                                 onNext={(indexP: number) => {
-                                    if (indexP + 2 > words.length) {
-                                        setFocusIndex(words.length)
-                                        // addNewWord(indexP)
-                                    } else {
-                                        setFocusIndex(-1)
-                                        setTimeout(() => {
-                                            setFocusIndex((indexP + 1))
-                                        }, 10);
-                                    }
+                                    addNewWord()
                                 }}
                             />)
                         })
                         }
-                        <WordItem
-                            key={"ddd"}
-                            word={newWord}
-                            index={-1}
-                            indexP={-1}
-                            state={state}
-                            isFocused={focusIndex >= words.length}
-                            isTop={false}
-                            isPlaying={false}
-                            onDelete={() => { }}
-                            onPlay={() => { }}
-                            onChange={(index: number, field: string, value) => {
-                                setNewWords({ ...newWord, [field]: value });
-                            }}
-                            onDoneToggle={handleDoneToggle}
-                            onNext={(i: number) => {
-                                setFocusIndex(focusIndex + 1)
-                                addNewWord(newWord.chinese, newWord.english)
-                                setNewWords({
-                                    ...newWord, chinese: "", english: ""
-                                })
-                            }}
-                        />
                         < div className='h-[90%] relative'>
                             <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8'></textarea>
                             <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
