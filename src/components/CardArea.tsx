@@ -63,17 +63,8 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
 
                 } else if (done === false && newX > overX.current) {
                     handleDoneToggle(index)
-
-                    setTimeout(() => {
-                        handleMove(0, 0)
-                    }, 150)
-
-                    if (state.onlyPlayUnDone) {
-                        toNext()
-                        return
-                    }
                 }
-
+                
                 handleMove(0, 0)
                 toNext()
 
