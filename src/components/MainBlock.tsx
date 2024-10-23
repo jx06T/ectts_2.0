@@ -75,7 +75,11 @@ function MainBlock() {
     const { state, setState } = useStateContext()
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [words, setWords] = useState<Word[]>([]);
-    const [newWord, setNewWords] = useState<Word>({ id: "amvjrsuiof", chinese: "", english: "", done: false, selected: false });
+
+    const [showAddArea, setShowAddArea] = useState<boolean>(false);
+    const [newWord, setNewWords] = useState({ chinese: "", english: "" });
+    const newWordChIRef = useRef<HTMLInputElement>(null)
+    const newWordEnIRef = useRef<HTMLInputElement>(null)
 
     const [focusIndex, setFocusIndex] = useState<number>(0);
     const [playIndex, setPlayIndex] = useState<number>(0);
@@ -272,6 +276,7 @@ function MainBlock() {
             inputBoxRef.current.value = ExportText
         }
         popNotify(WordsToExport.length + " words copied & exported")
+        scrollToEnd()
         copyToClipboard(ExportText)
     };
 
@@ -316,8 +321,10 @@ function MainBlock() {
 
 
     const addNewWord = () => {
-        setWords(prev => [...prev, { id: getRandId(16), chinese: "", english: "", done: false, selected: false }]);
+        setWords(prev => [...prev, { id: getRandId(16), chinese: newWord.chinese, english: newWord.english, done: false, selected: false }]);
+        setNewWords({ chinese: "", english: "" })
         scrollTo(words.length)
+        // setFocusIndex(words.length - 1)
     };
 
     const handlePlayThisWord = (index: number) => {
@@ -364,9 +371,12 @@ function MainBlock() {
     }
 
 
-    setInterval(() => {
-        // setFocusIndex((focusIndex + 1)%words.length)
-    }, 1000);
+    useEffect(() => {
+        setTimeout(() => {
+            // addNewWord()
+        }, 5000);
+
+    }, [])
 
     return (
         <div className=' main bg-slate-25 w-full sm:h-full px-1  py-2 flex flex-col relative'>
@@ -455,7 +465,7 @@ function MainBlock() {
                                 index={index}
                                 indexP={i}
                                 state={state}
-                                isFocused={false && index === focusIndex}
+                                isFocused={index === focusIndex}
                                 isTop={i === topIndex}
                                 isPlaying={i === playIndex}
                                 onDelete={handleDelete}
@@ -463,7 +473,8 @@ function MainBlock() {
                                 onChange={handleWordChange}
                                 onDoneToggle={handleDoneToggle}
                                 onNext={(indexP: number) => {
-                                    addNewWord()
+                                    // addNewWord()
+                                    setShowAddArea(true)
                                 }}
                             />)
                         })
@@ -476,8 +487,34 @@ function MainBlock() {
                     null
                 }
             </div>
+            {showAddArea && <div className=' fixed left-0 right-0 flex justify-center top-64 '>
+                <div className=' space-x-2 w-[min(95%,36rem)] flex justify-center px-2 py-10 rounded-md z-60 bg-purple-100'>
+                    <input className='jx-1 rounded-md bg-blue-50 w-[50%]' ref={newWordEnIRef} value={newWord.english} type="text"
+                        onChange={(e) => {
+                            setNewWords({ ...newWord, english: e.target.value })
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === 'Tab') {
+                                newWordChIRef.current?.focus()
+                            }
+                        }}></input>
 
-            {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} words={words} />}
+                    <input className='jx-1 rounded-md bg-blue-50 w-[50%]' ref={newWordChIRef} value={newWord.chinese} type="text"
+                        onChange={(e) => {
+                            setNewWords({ ...newWord, chinese: e.target.value })
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === 'Tab') {
+                                newWordEnIRef.current?.focus()
+                                popNotify(`add '${newWord.english}'`)
+                                addNewWord()
+                            }
+                        }}></input>
+                    <div onClick={() => setShowAddArea(false)} className=' w-6 h-6 bg-purple-400 absolute right-4 top-2 rounded-md text-center'>✕</div>
+                </div>
+            </div>}
+            {/* {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} words={words} />} */}
+            {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTableToPlay={getRandomTableToPlay()} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} words={words} />}
 
             <PlayArea scrollTo={scrollTo} randomTableToPlay={getRandomTableToPlay()} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />
         </div >

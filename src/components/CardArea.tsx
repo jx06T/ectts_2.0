@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams, Params } from "react-router-dom";
+import { useNotify } from "../context/NotifyContext";
 
 
 function Card({ english, state, chinese, done, index = 0, toNext, back, handleDoneToggle, addBias }: { addBias: Function, state: StateFormat, done: boolean, handleDoneToggle: Function, back: boolean, toNext: Function, english: string, chinese: string, index: number }) {
@@ -58,8 +60,18 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
 
                 if (newX < -overX.current && done === true) {
                     handleDoneToggle(index)
+
                 } else if (done === false && newX > overX.current) {
                     handleDoneToggle(index)
+
+                    setTimeout(() => {
+                        handleMove(0, 0)
+                    }, 150)
+
+                    if (state.onlyPlayUnDone) {
+                        toNext()
+                        return
+                    }
                 }
 
                 handleMove(0, 0)
@@ -200,35 +212,18 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
     )
 }
 
-function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { state: StateFormat, handleDoneToggle: Function, progress: { playIndex: number, setPlayIndex: Function }, randomTable: number[], words: Word[] }) {
-    const findNextWordToPlay = (words: Word[], randomTable: number[], currentIndex: number, onlyPlayUnDone: boolean): number => {
-        const isWordPlayable = (word: Word) => word.selected && (!onlyPlayUnDone || !word.done);
-
-        if (isWordPlayable(words[randomTable[currentIndex]])) {
-            return currentIndex;
-        }
-
-        for (let i = currentIndex + 1; i < randomTable.length; i++) {
-            if (isWordPlayable(words[randomTable[i]])) {
-                return i;
-            }
-        }
-
-        for (let i = 0; i < currentIndex; i++) {
-            if (isWordPlayable(words[randomTable[i]])) {
-                return i;
-            }
-        }
-
-        return -1;
-    };
-
+function CardArea({ randomTableToPlay, state, handleDoneToggle, randomTable, words, progress }: { randomTableToPlay: number[], state: StateFormat, handleDoneToggle: Function, progress: { playIndex: number, setPlayIndex: Function }, randomTable: number[], words: Word[] }) {
+    const { popNotify } = useNotify();
     const { playIndex, setPlayIndex } = progress
     const bias = useRef<number>(0)
+    const { setId } = useParams<Params>();
     const addBias = useRef<boolean>(false)
+    const navigate = useNavigate();
 
-    const CurrentIndex0 = (playIndex + bias.current) % 2 === 0 ? randomTable[playIndex] : (words[randomTable[playIndex + 1]] ? randomTable[playIndex + 1] : randomTable[0])
-    const CurrentIndex1 = (playIndex + bias.current) % 2 === 1 ? randomTable[playIndex] : (words[randomTable[playIndex + 1]] ? randomTable[playIndex + 1] : randomTable[0])
+    const nextplayIndex = randomTableToPlay[randomTableToPlay.indexOf(playIndex) + 1] ? randomTableToPlay[randomTableToPlay.indexOf(playIndex) + 1] : randomTableToPlay[0]
+
+    const CurrentIndex0 = (playIndex + bias.current) % 2 === 0 ? randomTable[playIndex] : randomTable[nextplayIndex]
+    const CurrentIndex1 = (playIndex + bias.current) % 2 === 1 ? randomTable[playIndex] : randomTable[nextplayIndex]
 
     const currentWord0 = words[CurrentIndex0] ? words[CurrentIndex0] : { id: "ddddddddddddddd", chinese: "", english: "" }
     const currentWord1 = words[CurrentIndex1] ? words[CurrentIndex1] : { id: "ddddddddddddddd", chinese: "", english: "" }
@@ -241,14 +236,21 @@ function CardArea({ state, handleDoneToggle, randomTable, words, progress }: { s
     }, [words])
 
     const toNext = () => {
-        setPlayIndex(findNextWordToPlay(words, randomTable, playIndex, state.onlyPlayUnDone))
+        setPlayIndex(randomTableToPlay[randomTableToPlay.indexOf(playIndex) + 1] || randomTableToPlay[0])
+        console.log(randomTableToPlay)
+        // setPlayIndex(findNextWordToPlay(words, randomTable, playIndex, state.onlyPlayUnDone))
     }
 
     useEffect(() => {
-        if (playIndex > randomTable.length - 1) {
-            setPlayIndex(0)
+        if (randomTableToPlay[playIndex] > randomTableToPlay.length - 1) {
+            setPlayIndex(randomTableToPlay[0])
         }
-    }, [playIndex, randomTable])
+        if (randomTableToPlay.length === 0 && randomTable.length !== 0) {
+            navigate(`/${setId}`);
+            popNotify("All done")
+        }
+        console.log(playIndex)
+    }, [playIndex, randomTable, randomTableToPlay])
 
     if (!currentWord0 || !currentWord1) {
         return null

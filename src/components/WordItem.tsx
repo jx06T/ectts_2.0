@@ -20,6 +20,7 @@ interface WordItemProps {
 
 
 function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocused, onDelete, onChange, onDoneToggle, onNext }: WordItemProps) {
+  const focusIRef = useRef<HTMLButtonElement>(null);
   const englishRef = useRef<HTMLInputElement>(null);
   const chineseRef = useRef<HTMLInputElement>(null);
   const [showEnglish, setShowEnglish] = useState<boolean>(false);
@@ -30,11 +31,12 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
   const { popNotify } = useNotify();
 
 
-  useEffect(() => {
-    if (isFocused && englishRef.current) {
-      englishRef.current?.focus();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (isFocused && englishRef.current) {
+  //     englishRef.current?.focus();
+  //     simulateTouchClick(focusIRef.current!)
+  //   }
+  // }, [isFocused]);
 
   useEffect(() => {
     setHeight(isTop ? "100px" : "48px");
@@ -51,6 +53,16 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
       else {
         const nextED = document.querySelector(`[data-index='${indexP + 1}']`)
         if (!nextED) {
+          setTimeout(() => {
+            const nextED = document.querySelector(`[data-index='${indexP + 1}']`)
+            if (!nextED) return
+            const nextEI = nextED.querySelector("input")
+            if (!nextEI) {
+              return
+            }
+            nextEI.focus()
+            popNotify("!!")
+          }, 100);
           onNext(indexP);
           return
         }
@@ -76,7 +88,6 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
       window.getSelection().removeAllRanges()
     }
   };
-  console.log("單字區重渲染", indexP)
 
   return (
     <div
@@ -90,7 +101,6 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
       className={` a-word flex my-1 ${isTopDelay ? "top" : ""}`}>
 
       <div className={`w-1 ${!isTop ? " h-[88%] rounded-md" : " h-full"} ${word.done ? " bg-green-300" : " bg-red-300"}`}>
-
       </div>
       {isTopDelay &&
         <div className=" w-8 flex-grow-0 flex-shrink-0 flex flex-col items-center justify-center space-y-4 mr-2 ml-1">
