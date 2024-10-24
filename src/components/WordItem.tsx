@@ -9,18 +9,16 @@ interface WordItemProps {
   indexP: number;
   isPlaying: boolean
   isTop: boolean
-  isFocused: boolean;
   onPlay: Function;
   onChange: (index: number, field: 'english' | 'chinese', value: string) => void;
   onDoneToggle: (index: number, type?: string) => void;
   onDelete: (index: number) => void;
-  onNext: (indexP: number) => void;
+  onNext: () => void;
   state: StateFormat
 }
 
 
-function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocused, onDelete, onChange, onDoneToggle, onNext }: WordItemProps) {
-  const focusIRef = useRef<HTMLButtonElement>(null);
+function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, onDelete, onChange, onDoneToggle, onNext }: WordItemProps) {
   const englishRef = useRef<HTMLInputElement>(null);
   const chineseRef = useRef<HTMLInputElement>(null);
   const [showEnglish, setShowEnglish] = useState<boolean>(false);
@@ -28,15 +26,6 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
   const [height, setHeight] = useState(isTop ? "100px" : "48px");
   const [isTopDelay, setIsTopDelay] = useState<boolean>(false);
   const { speakE } = useSpeech()
-  const { popNotify } = useNotify();
-
-
-  // useEffect(() => {
-  //   if (isFocused && englishRef.current) {
-  //     englishRef.current?.focus();
-  //     simulateTouchClick(focusIRef.current!)
-  //   }
-  // }, [isFocused]);
 
   useEffect(() => {
     setHeight(isTop ? "100px" : "48px");
@@ -50,31 +39,31 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
       e.preventDefault();
       if (field === 'english') chineseRef.current?.focus();
 
-      else {
-        const nextED = document.querySelector(`[data-index='${indexP + 1}']`)
-        if (!nextED) {
-          setTimeout(() => {
-            const nextED = document.querySelector(`[data-index='${indexP + 1}']`)
-            if (!nextED) return
-            const nextEI = nextED.querySelector("input")
-            if (!nextEI) {
-              return
-            }
-            nextEI.focus()
-            popNotify("!!")
-          }, 100);
-          onNext(indexP);
-          return
+      else if (!tryFocusNext()) {
+        if (!tryFocusNext()) {
+          onNext()
+          chineseRef.current?.blur()
         }
-        const nextEI = nextED.querySelector("input")
-        if (!nextEI) {
-          return
-        }
-        nextEI.focus()
-
       };
     }
   };
+
+  const tryFocusNext = (): boolean => {
+    const nextED = document.querySelector(`[data-index='${indexP + 1}']`)
+
+    if (!nextED) {
+      return false
+    }
+
+    const nextEI = nextED.querySelector("input")
+    if (!nextEI) {
+      return false
+    }
+
+    nextEI.focus()
+    return true
+
+  }
 
   // const handleFocus = (field: 'english' | 'chinese') => {
   //   if (field === 'english') setShowEnglish(true);
@@ -96,7 +85,6 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, isFocu
         scrollSnapAlign: 'start',
         height: height,
         transition: 'height 0.3s ease-in-out',
-        // overflow: 'hidden'
       }}
       className={` a-word flex my-1 ${isTopDelay ? "top" : ""}`}>
 

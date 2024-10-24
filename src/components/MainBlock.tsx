@@ -81,7 +81,6 @@ function MainBlock() {
     const newWordChIRef = useRef<HTMLInputElement>(null)
     const newWordEnIRef = useRef<HTMLInputElement>(null)
 
-    const [focusIndex, setFocusIndex] = useState<number>(0);
     const [playIndex, setPlayIndex] = useState<number>(0);
     const [topIndex, setTopIndex] = useState<number>(0);
     const [randomTable, setRandomTable] = useState<number[]>([])
@@ -465,15 +464,13 @@ function MainBlock() {
                                 index={index}
                                 indexP={i}
                                 state={state}
-                                isFocused={index === focusIndex}
                                 isTop={i === topIndex}
                                 isPlaying={i === playIndex}
                                 onDelete={handleDelete}
                                 onPlay={handlePlayThisWord}
                                 onChange={handleWordChange}
                                 onDoneToggle={handleDoneToggle}
-                                onNext={(indexP: number) => {
-                                    // addNewWord()
+                                onNext={() => {
                                     setShowAddArea(true)
                                 }}
                             />)
@@ -487,9 +484,9 @@ function MainBlock() {
                     null
                 }
             </div>
-            {showAddArea && <div className=' fixed left-0 right-0 flex justify-center top-64 '>
-                <div className=' space-x-2 w-[min(95%,36rem)] flex justify-center px-2 py-10 rounded-md z-60 bg-purple-100'>
-                    <input className='jx-1 rounded-md bg-blue-50 w-[50%]' ref={newWordEnIRef} value={newWord.english} type="text"
+            {showAddArea && <div className=' fixed left-0 right-0 flex justify-center top-20 '>
+                <div className=' space-y-2 w-[min(90%,36rem)] flex flex-col justify-center px-3 py-4 rounded-md z-60 bg-purple-100'>
+                    <input className='jx-1 bg-purple-50 w-full rounded-md' ref={newWordEnIRef} value={newWord.english} type="text"
                         onChange={(e) => {
                             setNewWords({ ...newWord, english: e.target.value })
                         }}
@@ -499,7 +496,7 @@ function MainBlock() {
                             }
                         }}></input>
 
-                    <input className='jx-1 rounded-md bg-blue-50 w-[50%]' ref={newWordChIRef} value={newWord.chinese} type="text"
+                    <input className='jx-1 bg-purple-50 w-full rounded-md' ref={newWordChIRef} value={newWord.chinese} type="text"
                         onChange={(e) => {
                             setNewWords({ ...newWord, chinese: e.target.value })
                         }}
@@ -510,10 +507,10 @@ function MainBlock() {
                                 addNewWord()
                             }
                         }}></input>
-                    <div onClick={() => setShowAddArea(false)} className=' w-6 h-6 bg-purple-400 absolute right-4 top-2 rounded-md text-center'>✕</div>
+                    <div onClick={() => setShowAddArea(false)} className=' w-6 h-6 bg-purple-400 absolute right-7 top-0 rounded-md text-center'>✕</div>
                 </div>
             </div>}
-            {/* {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} words={words} />} */}
+
             {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTableToPlay={getRandomTableToPlay()} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} words={words} />}
 
             <PlayArea scrollTo={scrollTo} randomTableToPlay={getRandomTableToPlay()} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} currentTitle={currentTitle} words={words} />

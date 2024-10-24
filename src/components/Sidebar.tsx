@@ -34,7 +34,7 @@ function PopupMenu({ isShow, y, index, callback }: { isShow: boolean, y: number,
 }
 
 function Aset({ title = "", index, onShowOption, selected, id }: { title: string, index: number, onShowOption: Function, selected: boolean, id: string }) {
-    const {  popNotify } = useNotify();
+    const { popNotify } = useNotify();
 
     const setId = window.location.pathname.slice(1);
     const setRef = useRef<HTMLDivElement>(null)
@@ -42,7 +42,7 @@ function Aset({ title = "", index, onShowOption, selected, id }: { title: string
 
     return (
         <div ref={setRef} className={` cursor-pointer rounded-md ${selected2 ? "bg-blue-100" : "bg-blue-50"} hover:bg-blue-100 relative h-10 text-base flex items-center gap-2 my-[2px] justify-between`}>
-            <Link onClick={()=>popNotify('Switch word set')} to={`/${id}`} className='h-full p-2 overflow-x-hidden w-full'>{title}</Link>
+            <Link onClick={() => popNotify('Switch word set')} to={`/${id}`} className='h-full p-2 overflow-x-hidden w-full'>{title}</Link>
             <button className='option-button h-8 hover:bg-blue-150 rounded-md mr-[1px]' onClick={() => onShowOption(selected ? -1 : index, selected ? -99999 : setRef.current?.offsetTop)}>
                 <AkarIconsMoreVerticalFill className='option-button w-5 mr-0 flex-shrink-0' />
             </button>
@@ -53,11 +53,11 @@ function Aset({ title = "", index, onShowOption, selected, id }: { title: string
 function Sidebar() {
     const { setId } = useParams<Params>();
     const [allSet, setAllSet] = useState<Aset[]>([])
-    
+
     const [optionY, setOptionY] = useState<number>(-99999)
     const [optionIndex, setOptionIndex] = useState<number>(-1)
     const [scrollBarY, setScrollBarYY] = useState<number>(0)
-    
+
     const [showSidebar, setshowSidebar] = useState<boolean>(false)
     const [showReNamed, setShowReNamed] = useState<boolean>(false)
 
@@ -65,7 +65,7 @@ function Sidebar() {
     const reNamedRef = useRef<HTMLInputElement>(null)
     const isNew = useRef<string | null>(null)
 
-    const {  popNotify } = useNotify();
+    const { popNotify } = useNotify();
 
 
     useEffect(() => {
@@ -102,10 +102,15 @@ function Sidebar() {
         function handleClickOutside(e: MouseEvent) {
 
             //@ts-ignore
-            if (e.target.classList.contains('option-button') || e.target.parentNode.classList.contains('option-button')) {
+            if (!e.target || !e.target!.parentNode||!e.target!.parentNode.classList) {
                 return
             }
-
+            
+            //@ts-ignore
+            if (e.target.classList!.contains('option-button') || e.target.parentNode.classList.contains('option-button')) {
+                return
+            }
+            
             //@ts-ignore
             if (!e.target.classList.contains('option-button2') && !e.target.parentNode.classList.contains('option-button2')) {
                 setOptionIndex(-1)
