@@ -3,7 +3,7 @@ import { useNavigate, useParams, Params } from "react-router-dom";
 import { useNotify } from "../context/NotifyContext";
 
 
-function Card({ english, state, chinese, done, index = 0, toNext, back, handleDoneToggle, addBias }: { addBias: Function, state: StateFormat, done: boolean, handleDoneToggle: Function, back: boolean, toNext: Function, english: string, chinese: string, index: number }) {
+function Card({ english, state, chinese, done, index = 0, toNext, back, handleDoneToggle }: { state: StateFormat, done: boolean, handleDoneToggle: Function, back: boolean, toNext: Function, english: string, chinese: string, index: number }) {
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [isMoving, setIsMoving] = useState<boolean>(false);
     const [position, setPosition] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
@@ -39,6 +39,10 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
         setAlpha(Math.min(90, Math.max(0, (Math.abs(position.x) - overX.current + 70) * 0.5)))
     }, [position])
 
+    useEffect(() => {
+        setIsFlipped(!state.showC ? (!state.showE ? (Math.random() < 0.5) : true) : false)
+    }, [chinese, english])
+
     const handleMoveEnd = (newX: number, newY: number): void => {
         lastX.current = newX
         lastY.current = newY
@@ -64,7 +68,7 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
                 } else if (done === false && newX > overX.current) {
                     handleDoneToggle(index)
                 }
-                
+
                 handleMove(0, 0)
                 toNext()
 
@@ -249,8 +253,8 @@ function CardArea({ randomTableToPlay, state, handleDoneToggle, randomTable, wor
 
     return (
         <div className=" pointer-events-none pb-16 overflow-hidden card-area left-0 right-0 top-0 bottom-0 absolute flex flex-col items-center z-20 bg-slate-100 bg-opacity-5">
-            <Card state={state} chinese={currentWord0.chinese} english={currentWord0.english} done={!!currentWord0.done} index={CurrentIndex0} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(playIndex + bias.current) % 2 === 1} addBias={() => addBias.current = true} />
-            <Card state={state} chinese={currentWord1.chinese} english={currentWord1.english} done={!!currentWord1.done} index={CurrentIndex1} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(playIndex + bias.current) % 2 === 0} addBias={() => addBias.current = true} />
+            <Card state={state} chinese={currentWord0.chinese} english={currentWord0.english} done={!!currentWord0.done} index={CurrentIndex0} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(playIndex + bias.current) % 2 === 1} />
+            <Card state={state} chinese={currentWord1.chinese} english={currentWord1.english} done={!!currentWord1.done} index={CurrentIndex1} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(playIndex + bias.current) % 2 === 0} />
         </div>
     )
 }

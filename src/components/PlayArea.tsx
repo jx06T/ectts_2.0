@@ -60,6 +60,23 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
     const audioRef = useRef<HTMLAudioElement>(null)
     const wordsRef = useRef<Word[]>(words)
 
+    const [shouldAnimate, setShouldAnimate] = useState(false);
+    const textRef = useRef(null);
+
+    useEffect(() => {
+        const checkOverflow = () => {
+            if (textRef.current) {
+                //@ts-ignore
+                setShouldAnimate(textRef.current.scrollWidth > textRef.current.clientWidth);
+            }
+        };
+
+        checkOverflow();
+        window.addEventListener('resize', checkOverflow);
+        return () => window.removeEventListener('resize', checkOverflow);
+    }, [words, playIndex, cardsMode]);
+
+
     useEffect(() => {
         setCardsMode(mode === "cards")
     }, [mode])
@@ -354,10 +371,15 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
                         </button>
                     </div>
 
-                    <div onClick={scrollToPlaying} className=" w-[28%] xs:w-[30%] pr-2 text-sm xs:text-lg  ">
+                    {/* <div onClick={scrollToPlaying} className=" w-[28%] xs:w-[30%] pr-2 text-sm xs:text-lg animate-marquee">
                         {cardsMode ? "✓ " + words.filter(word => word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].english : "")}
                         <br></br>
                         {cardsMode ? "✕ " + words.filter(word => !word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].chinese : "")}
+                    </div>*/}
+
+                    <div onClick={scrollToPlaying} className=" w-[28%] xs:w-[30%] pr-2 text-sm xs:text-l overflow-hidden">
+                        <p className=" animate-marquee" >{cardsMode ? "✓ " + words.filter(word => word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].english : "")}</p>
+                        <p>{cardsMode ? "✕ " + words.filter(word => !word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].chinese : "")}</p>
                     </div>
                 </div >
             </div>

@@ -164,7 +164,7 @@ hr {
   border-top: 0.1px solid #feeeff;
 }
 
-.tool-icon-div > a {
+.tool-icon-div>a {
   @apply h-fit p-1 text-center;
 }
 
@@ -176,10 +176,27 @@ hr {
   border-radius: 0%;
   outline: none;
 }
+
 .a-word.top {
   @apply bg-blue-50 p-2 -ml-1 -mr-1 rounded-md;
 }
 
 .a-word:not(.top) * {
   @apply rounded-md;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(200%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 5s linear infinite;
 }
