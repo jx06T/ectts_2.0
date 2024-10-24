@@ -164,7 +164,7 @@ hr {
   border-top: 0.1px solid #feeeff;
 }
 
-.tool-icon-div>a {
+.tool-icon-div > a {
   @apply h-fit p-1 text-center;
 }
 
@@ -195,8 +195,33 @@ hr {
   }
 }
 
-.animate-marquee {
-  display: inline-block;
-  white-space: nowrap;
-  animation: marquee 5s linear infinite;
+@keyframes marquee {
+  from {
+    transform: translateX(10px);
+  }
+  90% {
+    transform: translateX(var(--marquee-distance));
+  }
+  93% {
+    transform: translateX(calc(var(--marquee-distance) - 100px));
+  }
+  97% {
+    transform: translateX(calc(var(--marquee-distance) + 400px));
+  }
+  to {
+    transform: translateX(10px);
+  }
+}
+
+.animate-div:has(.animateee) {
+  overflow-x: hidden;
+}
+
+.animate-div {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  scrollbar-width: none; /* For Firefox */
+}
+
+.animate-div::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Edge */
 }

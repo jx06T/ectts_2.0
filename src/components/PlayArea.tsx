@@ -1,4 +1,4 @@
-import React, { useReducer, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useReducer, useCallback, useEffect, useMemo, useRef, useState, Children, ReactHTMLElement } from "react";
 import { MingcuteSettings6Fill, FluentNextFrame24Filled, FluentPreviousFrame24Filled, FluentPause24Filled, FluentPlay24Filled } from "../utils/Icons";
 import { useNotify } from '../context/NotifyContext'
 import { Params, useParams } from 'react-router-dom';
@@ -59,23 +59,6 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
     const randomTableToPlayRef = useRef<number[]>(randomTableToPlay);
     const audioRef = useRef<HTMLAudioElement>(null)
     const wordsRef = useRef<Word[]>(words)
-
-    const [shouldAnimate, setShouldAnimate] = useState(false);
-    const textRef = useRef(null);
-
-    useEffect(() => {
-        const checkOverflow = () => {
-            if (textRef.current) {
-                //@ts-ignore
-                setShouldAnimate(textRef.current.scrollWidth > textRef.current.clientWidth);
-            }
-        };
-
-        checkOverflow();
-        window.addEventListener('resize', checkOverflow);
-        return () => window.removeEventListener('resize', checkOverflow);
-    }, [words, playIndex, cardsMode]);
-
 
     useEffect(() => {
         setCardsMode(mode === "cards")
@@ -371,20 +354,64 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
                         </button>
                     </div>
 
-                    {/* <div onClick={scrollToPlaying} className=" w-[28%] xs:w-[30%] pr-2 text-sm xs:text-lg animate-marquee">
-                        {cardsMode ? "✓ " + words.filter(word => word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].english : "")}
-                        <br></br>
-                        {cardsMode ? "✕ " + words.filter(word => !word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].chinese : "")}
-                    </div>*/}
 
-                    <div onClick={scrollToPlaying} className=" w-[28%] xs:w-[30%] pr-2 text-sm xs:text-l overflow-hidden">
-                        <p className=" animate-marquee" >{cardsMode ? "✓ " + words.filter(word => word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].english : "")}</p>
-                        <p>{cardsMode ? "✕ " + words.filter(word => !word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].chinese : "")}</p>
+                    <div
+                        onClick={scrollToPlaying}
+                        className={`w-[28%] xs:w-[30%] pr-2 text-sm xs:text-l animate-div`}
+                    >
+                        <Marquee text={`${playIndex}${cardsMode}`}>
+                            <div>
+                                {cardsMode ? "✓ " + words.filter(word => word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].english : "")}
+                                <br></br>
+                                {cardsMode ? "✕ " + words.filter(word => !word.done).length : (words[randomTableRef.current![playIndex]] ? words[randomTableRef.current![playIndex]].chinese : "")}
+                            </div>
+                        </Marquee>
                     </div>
                 </div >
-            </div>
-        </div>
+            </div >
+        </div >
     )
+}
+
+function Marquee({ children ,text}: { children: React.ReactNode,text:string }) {
+    const [shouldAnimate, setShouldAnimate] = useState(false);
+    const [translateX, setTranslateX] = useState(0);
+    const textRef = useRef(null);
+
+    useEffect(() => {
+        const checkOverflow = () => {
+            if (textRef.current) {
+                setShouldAnimate(false);
+                //@ts-ignore
+                setTranslateX(-(textRef.current.scrollWidth - textRef.current.clientWidth + 10));
+                setTimeout(() => {
+                    //@ts-ignore
+                    setShouldAnimate(textRef.current.scrollWidth > textRef.current.clientWidth);
+                }, 50);
+            }
+        };
+
+        // console.log(shouldAnimate)
+        checkOverflow();
+        window.addEventListener('resize', checkOverflow);
+        return () => window.removeEventListener('resize', checkOverflow);
+    }, [text]);
+
+    return (<div
+        ref={textRef}
+        style={{
+            whiteSpace: "nowrap",
+            //@ts-ignore
+            '--marquee-distance': `${translateX}px`,
+            animationName: shouldAnimate ? 'marquee' : 'none',
+            animationDuration: `${Math.floor(((-translateX) / 12) ** 0.7)}s`,
+            animationTimingFunction: 'linear',
+            animationIterationCount: 'infinite'
+        }}
+        className={` bg-transparent ${shouldAnimate ? " animateee" : ""}`} >
+        {children}
+    </div>)
+
 }
 
 export default PlayArea
