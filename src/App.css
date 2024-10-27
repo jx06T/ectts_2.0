@@ -164,6 +164,10 @@ hr {
   border-top: 0.1px solid #feeeff;
 }
 
+hr.black {
+  border-top: 1px solid #1d4ed8;
+}
+
 .tool-icon-div > a {
   @apply h-fit p-1 text-center;
 }
@@ -223,5 +227,15 @@ hr {
 }
 
 .animate-div::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Edge */
+}
+
+
+.jx-8 {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  scrollbar-width: none; /* For Firefox */
+}
+
+.jx-8::-webkit-scrollbar {
   display: none; /* For Chrome, Safari, and Edge */
 }

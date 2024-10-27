@@ -12,6 +12,8 @@ import createConfirmDialog from './ConfirmDialog';
 import WordItem from './WordItem'
 import PlayArea from './PlayArea'
 import CardArea from './CardArea'
+
+import CustomSelect from './Select';
 // import SmallCard from './SmallCard';
 
 function FunctionMenu({ handleImport, handleExport }: { handleExport: React.MouseEventHandler, handleImport: React.MouseEventHandler }) {
@@ -25,9 +27,14 @@ function FunctionMenu({ handleImport, handleExport }: { handleExport: React.Mous
 
     return (
         <div className=' flex flex-col w-full space-y-4 p-3 '>
-            <Link to={"/" + setId! + "/settings"} className='cursor-pointer' onClick={() => {
-                popNotify("Coming soon")
-            }}>
+            <Link to={"/profile"} className='cursor-pointer' >
+                <div className=' flex overflow-hidden'>
+                    <IcRoundAccountCircle className={` text-2xl`} />
+                    <span className=' whitespace-nowrap ml-2'>Profile</span>
+                </div>
+            </Link>
+
+            <Link to={"/" + setId! + "/settings"} className='cursor-pointer' >
                 <div className=' flex overflow-hidden'>
                     <AntDesignSettingFilled className={` text-2xl`} />
                     <span className=' whitespace-nowrap ml-2'>Settings</span>
@@ -448,68 +455,73 @@ function MainBlock() {
             </div>
 
 
-            <div className=' relative flex justify-center h-full w-full overflow-y-auto px-1'>
-                {randomTable.length === words.length ?
-                    <div ref={scrollRef}
-                        style={{
-                            // scrollSnapType: 'y mandatory',
-                            // scrollPadding: '0px 0px',
-                        }}
-                        className='jx-5 h-full px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 overflow-x-hidden '>
-                        {randomTable.map((index, i) => {
-                            const word = words[index]
-                            return (<WordItem
-                                key={word.id}
-                                word={word}
-                                index={index}
-                                indexP={i}
-                                state={state}
-                                isTop={i === topIndex}
-                                isPlaying={i === playIndex}
-                                onDelete={handleDelete}
-                                onPlay={handlePlayThisWord}
-                                onChange={handleWordChange}
-                                onDoneToggle={handleDoneToggle}
-                                onNext={() => {
-                                    setShowAddArea(true)
-                                }}
-                            />)
-                        })
-                        }
-                        < div className='h-[90%] relative'>
-                            <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8'></textarea>
-                            <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
-                        </div>
-                    </div> :
-                    null
-                }
-            </div>
-            {showAddArea && <div className=' fixed left-0 right-0 flex justify-center top-20 '>
-                <div className=' space-y-2 w-[min(90%,36rem)] flex flex-col justify-center px-3 py-4 rounded-md z-60 bg-purple-100'>
-                    <input className='jx-1 bg-purple-50 w-full rounded-md' ref={newWordEnIRef} value={newWord.english} type="text"
-                        onChange={(e) => {
-                            setNewWords({ ...newWord, english: e.target.value })
-                        }}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === 'Tab') {
-                                newWordChIRef.current?.focus()
+            {mode !== "settings" ?
+                <div className=' relative flex justify-center h-full w-full overflow-y-auto px-1'>
+                    {randomTable.length === words.length ?
+                        <div ref={scrollRef}
+                            style={{
+                                // scrollSnapType: 'y mandatory',
+                                // scrollPadding: '0px 0px',
+                            }}
+                            className='jx-5 h-full px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 overflow-x-hidden '>
+                            {randomTable.map((index, i) => {
+                                const word = words[index]
+                                return (<WordItem
+                                    key={word.id}
+                                    word={word}
+                                    index={index}
+                                    indexP={i}
+                                    state={state}
+                                    isTop={i === topIndex}
+                                    isPlaying={i === playIndex}
+                                    onDelete={handleDelete}
+                                    onPlay={handlePlayThisWord}
+                                    onChange={handleWordChange}
+                                    onDoneToggle={handleDoneToggle}
+                                    onNext={() => {
+                                        setShowAddArea(true)
+                                    }}
+                                />)
+                            })
                             }
-                        }}></input>
+                            < div className='h-[90%] relative'>
+                                <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8'></textarea>
+                                <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
+                            </div>
+                        </div> :
+                        null
+                    }
+                </div> :
+                <SettingArea />
+            }
+            {
+                showAddArea && <div className=' fixed left-0 right-0 flex justify-center top-20 '>
+                    <div className=' space-y-2 w-[min(90%,36rem)] flex flex-col justify-center px-3 py-4 rounded-md z-60 bg-purple-100'>
+                        <input className='jx-1 bg-purple-50 w-full rounded-md' ref={newWordEnIRef} value={newWord.english} type="text"
+                            onChange={(e) => {
+                                setNewWords({ ...newWord, english: e.target.value })
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === 'Tab') {
+                                    newWordChIRef.current?.focus()
+                                }
+                            }}></input>
 
-                    <input className='jx-1 bg-purple-50 w-full rounded-md' ref={newWordChIRef} value={newWord.chinese} type="text"
-                        onChange={(e) => {
-                            setNewWords({ ...newWord, chinese: e.target.value })
-                        }}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === 'Tab') {
-                                newWordEnIRef.current?.focus()
-                                popNotify(`add '${newWord.english}'`)
-                                addNewWord()
-                            }
-                        }}></input>
-                    <div onClick={() => setShowAddArea(false)} className=' w-6 h-6 bg-purple-400 absolute right-7 top-0 rounded-md text-center'>✕</div>
+                        <input className='jx-1 bg-purple-50 w-full rounded-md' ref={newWordChIRef} value={newWord.chinese} type="text"
+                            onChange={(e) => {
+                                setNewWords({ ...newWord, chinese: e.target.value })
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === 'Tab') {
+                                    newWordEnIRef.current?.focus()
+                                    popNotify(`add '${newWord.english}'`)
+                                    addNewWord()
+                                }
+                            }}></input>
+                        <div onClick={() => setShowAddArea(false)} className=' cursor-pointer w-6 h-6 bg-purple-400 absolute right-7 top-0 rounded-md text-center'>✕</div>
+                    </div>
                 </div>
-            </div>}
+            }
 
             {cardsMode && <CardArea state={state} handleDoneToggle={handleDoneToggle} randomTableToPlay={getRandomTableToPlay()} randomTable={randomTable} progress={{ playIndex: playIndex, setPlayIndex: setPlayIndex }} words={words} />}
 
@@ -519,3 +531,92 @@ function MainBlock() {
 }
 
 export default MainBlock
+
+function Tag({ children, handleDelete }: { handleDelete: Function, children: string }) {
+    return (
+        <div className=' px-2 border-2 border-blue-700 rounded-full bg-transparent h-7 whitespace-nowrap'>
+            <strong className=' text-blue-700'>#</strong>
+            {children}
+            <label onClick={() => handleDelete(children)} className=' ml-1 text-red-800'><strong>✕</strong></label></div>
+    )
+}
+
+
+function SettingArea() {
+    const { setId } = useParams<Params>();
+    const { popNotify } = useNotify();
+    const newTagRef = useRef<HTMLInputElement>(null)
+    const [setData, setSetData] = useState<{ tags?: string[], title?: string, id?: string }>({})
+    const navigate = useNavigate();
+    const { allSet, setAllSet, allSetMap, setAllSetMap } = useStateContext()
+
+    useEffect(() => {
+        const thisSet = allSet.find(e => e.id === setId)
+        if (!thisSet && allSet.length > 0) {
+            popNotify("Set not found")
+        }
+        setSetData(thisSet!)
+    }, [allSet])
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' || e.key === 'Tab') {
+            e.preventDefault();
+            popNotify("Update successful")
+            setAllSet(allSet.map((e: Aset) => e.id !== setId ? e : { ...e, ...setData }))
+        }
+    };
+
+    const handleAddTag = (tag: string) => {
+        if ((setData.tags || []).includes(tag)) {
+            return
+        }
+        setSetData((prev: any) => {
+            const newData = { ...prev, tags: [...(prev.tags || []), tag] }
+            popNotify("Update successful")
+            setAllSet(allSet.map((e: Aset) => e.id !== setId ? e : { ...e, ...newData }))
+            return newData
+        })
+    };
+
+    const handleDelete = (tag: string) => {
+        setSetData((prev: any) => {
+            const newData = {
+                ...prev, tags: (prev.tags || []).filter((e: String) => e !== tag)
+            }
+            popNotify("Update successful")
+            setAllSet(allSet.map((e: Aset) => e.id !== setId ? e : { ...e, ...newData }))
+            return newData
+        })
+    }
+
+    if (!setData) {
+        return null
+    }
+
+    return (
+        <div className='flex flex-col items-center mt-1 space-y-4'>
+            <h1 className=' text-xl'>settings</h1>
+            <hr className='black w-[80%]' />
+            <div className=' flex space-x-2'>
+                <p>title：</p>
+                <input onKeyDown={handleKeyDown} onChange={(e) => setSetData({ ...setData, title: e.target.value })} defaultValue={setData.title} type="text" className=' bg-transparent border-b-[2px] outline-none border-blue-700' />
+            </div>
+            <div className=' flex space-x-2 max-w-[80%] !-mb-4'>
+                <p className=' pt-3'>tags：</p>
+                <div className=' w-full overflow-x-auto flex h-13 py-3 space-x-2'>
+                    {setData.tags && setData.tags.length > 0 &&
+                        setData.tags.map((e: string) => (
+                            <Tag handleDelete={handleDelete} key={e + getRandId(2)}>{e}</Tag>
+                        ))
+                    }
+                </div>
+            </div>
+            <CustomSelect
+                options={Object.keys(allSetMap)}
+                placeholder="Select a tag or type your own..."
+                onChange={handleAddTag}
+                initialValue=""
+            />
+            <Link className=' underline text-lg' to={`/${setId}`}>Go back to words list</Link>
+        </div>
+    )
+}

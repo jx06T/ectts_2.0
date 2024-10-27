@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import WordLayout from './page/WordLayout';
 import Home from './page/Home';
+import Profile from './page/Profile';
 
 function NotifyBlock() {
   const { notify, aboutToDisappear } = useNotify();
@@ -33,6 +34,9 @@ function App() {
           } />
           <Route path="/" element={
             <Home />
+          } />
+          <Route path="/profile" element={
+            <Profile />
           } />
         </Routes>
       </NotifyProvider>

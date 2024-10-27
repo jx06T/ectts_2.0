@@ -9,6 +9,7 @@ interface Word {
 
 interface Aset {
     id: string,
+    tags: string[],
     title: string
 }
 
@@ -32,4 +33,8 @@ interface Settings {
     letter: boolean,
     chinese: boolean,
     init?: boolean
+}
+
+interface GroupsIndexMap {
+    [key: string]: string[]
 }

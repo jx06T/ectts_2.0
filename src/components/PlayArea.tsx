@@ -373,7 +373,7 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
     )
 }
 
-function Marquee({ children ,text}: { children: React.ReactNode,text:string }) {
+function Marquee({ children, text }: { children: React.ReactNode, text: string }) {
     const [shouldAnimate, setShouldAnimate] = useState(false);
     const [translateX, setTranslateX] = useState(0);
     const textRef = useRef(null);
@@ -385,8 +385,10 @@ function Marquee({ children ,text}: { children: React.ReactNode,text:string }) {
                 //@ts-ignore
                 setTranslateX(-(textRef.current.scrollWidth - textRef.current.clientWidth + 10));
                 setTimeout(() => {
-                    //@ts-ignore
-                    setShouldAnimate(textRef.current.scrollWidth > textRef.current.clientWidth);
+                    if (textRef.current) {
+                        // @ts-ignore
+                        setShouldAnimate(textRef.current.scrollWidth > textRef.current.clientWidth);
+                    }
                 }, 50);
             }
         };
