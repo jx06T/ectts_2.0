@@ -105,7 +105,7 @@ function Profile() {
                     <hr className=' black w-full' />
 
                     <h2 className=' text-xl mt-3'>About you</h2>
-                    <pre>哈哈哈哈哈哈哈啥都沒有</pre>
+                    <pre  className=' whitespace-pre-line'>哈哈哈哈哈哈哈啥都沒有</pre>
 
                     <h2 className=' text-xl mt-3'>Your words</h2>
                     <button onClick={handleExportAll} className=' block underline'>匯出全部單字</button>
