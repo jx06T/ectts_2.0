@@ -166,6 +166,21 @@ function Sidebar() {
     const [scrollBarY, setScrollBarY] = useState<number>(0)
     const scrollBarRef = useRef<HTMLDivElement>(null)
 
+    const sidebarRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) {
+                setshowSidebar(false);
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     const handleAdd = () => {
         const id = getRandId()
         localStorage.setItem(`set-${id}`, JSON.stringify([{ id: getRandId(), chinese: "", english: "" }]))
@@ -190,7 +205,7 @@ function Sidebar() {
     };
 
     return (
-        <div className='sidebar h-full flex z-50'>
+        <div ref={sidebarRef} className='sidebar h-full flex z-50'>
             <div className={`bg-blue-50 ${showSidebar ? " w-[16.5rem] px-2 p-1" : "min-w-0 w-0 px-0"} fixed xs:static h-full flex flex-col rounded-md transition-all duration-300 ease-in-out`}>
                 <div className=' h-8 flex mt-1 items-center justify-between'>
                     <SolarSiderbarBold className=' cursor-pointer text-3xl' onClick={() => setshowSidebar(!showSidebar)} />
