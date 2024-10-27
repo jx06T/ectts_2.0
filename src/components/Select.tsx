@@ -70,7 +70,7 @@ const CustomSelect = ({
             </div>
 
             {isOpen && (
-                <div className=" outline-none absolute z-10 w-full mt-1 bg-blue-50 border rounded-lg shadow-lg max-h-60 overflow-auto">
+                <div className=" outline-none absolute z-10 w-full mt-1 bg-blue-50 border rounded-lg shadow-lg max-h-32 overflow-auto">
                     {filteredOptions.length > 0 ? (
                         filteredOptions.map((option, index) => (
                             <div
