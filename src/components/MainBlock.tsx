@@ -598,7 +598,7 @@ function SettingArea() {
             <hr className='black w-[80%]' />
             <div className=' flex space-x-2'>
                 <p>title：</p>
-                <input onKeyDown={handleKeyDown} onChange={(e) => setSetData({ ...setData, title: e.target.value })} defaultValue={setData.title} type="text" className=' bg-transparent border-b-[2px] outline-none border-blue-700' />
+                <input onKeyDown={handleKeyDown} onChange={(e) => setSetData({ ...setData, title: e.target.value })} defaultValue={setData.title} type="text" className=' rounded-none bg-transparent border-b-[2px] outline-none border-blue-700' />
             </div>
             <div className=' flex space-x-2 max-w-[80%] !-mb-4'>
                 <p className=' pt-3'>tags：</p>
