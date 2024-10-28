@@ -484,8 +484,8 @@ function MainBlock() {
                                 />)
                             })
                             }
-                            < div className='h-[90%] relative'>
-                                <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8'></textarea>
+                            < div className=' h-[110%] relative pb-24'>
+                                <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8 rounded-md '></textarea>
                                 <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
                             </div>
                         </div> :
@@ -537,7 +537,7 @@ function Tag({ children, handleDelete }: { handleDelete: Function, children: str
         <div className=' px-2 border-2 border-blue-700 rounded-full bg-transparent h-7 whitespace-nowrap'>
             <strong className=' text-blue-700'>#</strong>
             {children}
-            <label onClick={() => handleDelete(children)} className=' ml-1 text-red-800'><strong>✕</strong></label></div>
+            <label onClick={() => handleDelete(children)} className=' ml-1 text-red-800 cursor-pointer'><strong>✕</strong></label></div>
     )
 }
 
@@ -594,7 +594,7 @@ function SettingArea() {
     }
 
     return (
-        <div className='flex flex-col items-center mt-1 space-y-4'>
+        <div className='flex flex-col items-center mt-1 space-y-4 max-h-[80vh] overflow-y-auto pb-36 '>
             <h1 className=' text-xl'>settings</h1>
             <hr className='black w-[80%]' />
             <div className=' flex space-x-2'>
@@ -617,7 +617,7 @@ function SettingArea() {
                 onChange={handleAddTag}
                 initialValue=""
             />
-            <Link className=' underline text-lg' to={`/${setId}`}>Go back to words list</Link>
+            <Link className=' border-2 border-blue-700 rounded-full px-4 text-lg ' to={`/${setId}`}>Go back to words list</Link>
         </div>
     )
 }

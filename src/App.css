@@ -230,7 +230,6 @@ hr.black {
   display: none; /* For Chrome, Safari, and Edge */
 }
 
-
 .jx-8 {
   overflow-x: auto; /* Enable horizontal scrolling */
   scrollbar-width: none; /* For Firefox */
@@ -238,4 +237,9 @@ hr.black {
 
 .jx-8::-webkit-scrollbar {
   display: none; /* For Chrome, Safari, and Edge */
+}
+
+.scroll-y{
+  max-height: 100vh;
+  overflow-y: auto;
 }

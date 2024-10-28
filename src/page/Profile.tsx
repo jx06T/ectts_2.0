@@ -2,8 +2,7 @@ import React, { useRef } from 'react';
 
 import { Link, useNavigate } from 'react-router-dom';
 import { useNotify } from '../context/NotifyContext'
-import Sidebar from '../components/Sidebar';
-import { StateProvider } from '../context/StateContext';
+import PageLayout from './PageLayout';
 
 function Profile() {
     const navigate = useNavigate();
@@ -97,24 +96,21 @@ function Profile() {
     };
 
     return (
-        <StateProvider>
-            <div className=' flex'>
-                <Sidebar></Sidebar>
-                <div className='profile px-4 sm:px-16 space-y-3 w-full'>
-                    <div className=' flex'>
-                        <Link to="/" className=' cursor-pointer mt-[13px] min-w-[70px]'>ECTTS 2.0</Link>
-                        <h1 className=' w-full text-center text-2xl mt-3'>Profile</h1>
-                    </div>
-                    <hr className=' black w-full' />
-
-                    <h2 className=' text-xl mt-3'>About you</h2>
-                    <pre className=' whitespace-pre-line'>哈哈哈哈哈哈哈啥都沒有</pre>
-
-                    <h2 className=' text-xl mt-3'>Your words</h2>
-                    <button onClick={handleExportAll} className=' block underline'>匯出全部單字</button>
-                    <button onClick={handleImportBtnClick} className=' block underline'>匯入全部單字</button>
-
+        <PageLayout>
+            <div className='profile px-4 sm:px-16 space-y-3 w-full pb-20'>
+                <div className=' ml-8 sm:-ml-4 flex'>
+                    <Link to="/" className=' cursor-pointer mt-[12px] min-w-[70px]'>ECTTS 2.0</Link>
                 </div>
+                <h1 className=' w-full text-center text-2xl mt-3'>Profile</h1>
+                <hr className=' black w-full' />
+
+                <h2 className=' text-xl mt-3'>About you</h2>
+                <pre className=' whitespace-pre-line'>哈哈哈哈哈哈哈啥都沒有</pre>
+
+                <h2 className=' text-xl mt-3'>Your words</h2>
+                <button onClick={handleExportAll} className=' block underline'>匯出全部單字</button>
+                <button onClick={handleImportBtnClick} className=' block underline'>匯入全部單字</button>
+
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -122,7 +118,7 @@ function Profile() {
                     className="hidden w-0"
                 />
             </div>
-        </StateProvider>
+        </PageLayout >
     )
 }
 
