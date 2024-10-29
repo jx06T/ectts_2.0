@@ -34,14 +34,14 @@ function FunctionMenu({ handleImport, handleExport }: { handleExport: React.Mous
                 </div>
             </Link>
 
-            <Link to={"/" + setId! + "/settings"} className='cursor-pointer' >
+            <Link to={"/set/" + setId! + "/settings"} className='cursor-pointer' >
                 <div className=' flex overflow-hidden'>
                     <AntDesignSettingFilled className={` text-2xl`} />
                     <span className=' whitespace-nowrap ml-2'>Settings</span>
                 </div>
             </Link>
 
-            <Link to={"/" + setId! + (cardsMode ? "/" : "/cards")} className='cursor-pointer' onClick={() => {
+            <Link to={"/set/" + setId! + (cardsMode ? "/" : "/cards")} className='cursor-pointer' onClick={() => {
                 popNotify(!cardsMode ? "Cards mode" : "Normal mode")
             }}>
                 <div className=' flex overflow-hidden'>
@@ -329,7 +329,9 @@ function MainBlock() {
     const addNewWord = () => {
         setWords(prev => [...prev, { id: getRandId(16), chinese: newWord.chinese, english: newWord.english, done: false, selected: false }]);
         setNewWords({ chinese: "", english: "" })
-        scrollTo(words.length)
+        setTimeout(() => {
+            scrollTo(words.length - 2)
+        }, 100);
         // setFocusIndex(words.length - 1)
     };
 
@@ -545,9 +547,7 @@ function Tag({ children, handleDelete }: { handleDelete: Function, children: str
 function SettingArea() {
     const { setId } = useParams<Params>();
     const { popNotify } = useNotify();
-    const newTagRef = useRef<HTMLInputElement>(null)
     const [setData, setSetData] = useState<{ tags?: string[], title?: string, id?: string }>({})
-    const navigate = useNavigate();
     const { allSet, setAllSet, allSetMap, setAllSetMap } = useStateContext()
 
     useEffect(() => {
@@ -617,7 +617,7 @@ function SettingArea() {
                 onChange={handleAddTag}
                 initialValue=""
             />
-            <Link className=' border-2 border-blue-700 rounded-full px-4 text-lg ' to={`/${setId}`}>Go back to words list</Link>
+            <Link className=' border-2 border-blue-700 rounded-full px-4 text-lg ' to={`/set/${setId}`}>Go back to words list</Link>
         </div>
     )
 }

@@ -2,6 +2,7 @@ import './App.css';
 import { NotifyProvider } from './context/NotifyContext';
 import { useNotify } from './context/NotifyContext';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import WordLayout from './page/WordLayout';
 import Home from './page/Home';
@@ -29,15 +30,19 @@ function App() {
       <NotifyProvider>
         <NotifyBlock />
         <Routes>
-          <Route path="/:setId/:mode?" element={
+          <Route path="/set/:setId/:mode?" element={
             <WordLayout />
           } />
           <Route path="/" element={
             <Home />
           } />
+          <Route path="/home" element={
+            <Home />
+          } />
           <Route path="/profile" element={
             <Profile />
           } />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </NotifyProvider>
     </Router>

@@ -53,7 +53,7 @@ function Aset({ title = "", index, onShowOption, selected, id, rename, handleRen
     return (
         <div ref={setRef} className={` cursor-pointer rounded-md ${selected2 ? "bg-blue-50" : "bg-blue-100"} hover:bg-blue-50 relative h-10 text-base flex items-center gap-2 my-[2px] justify-between`}>
             {!rename ?
-                <Link onClick={() => popNotify('Switch word set')} to={`/${id}`} className='h-full p-2 overflow-x-hidden w-full'>{title}</Link> :
+                <Link onClick={() => popNotify('Switch word set')} to={`/set/${id}`} className='h-full p-2 overflow-x-hidden w-full'>{title}</Link> :
                 <input ref={reNamedRef} className=' p-2 bg-transparent' onKeyDown={handleKeyDown} defaultValue={title} type="text" />
             }
             <button className='option-button h-8 hover:bg-blue-150 rounded-md mr-[1px]' onClick={() => onShowOption(id, setRef.current?.offsetTop)}>
@@ -185,8 +185,9 @@ function Sidebar() {
         const id = getRandId()
         localStorage.setItem(`set-${id}`, JSON.stringify([{ id: getRandId(), chinese: "", english: "" }]))
         setAllSet((prev: Aset[]) => [{ id: id, title: "", tags: [] }, ...prev])
+        setshowSidebar(false)
         setTimeout(() => {
-            navigate(`/${id}/settings`);
+            navigate(`/set/${id}/settings`);
         }, 500);
     }
 

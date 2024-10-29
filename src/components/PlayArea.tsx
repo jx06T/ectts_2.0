@@ -175,7 +175,7 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
                 synth.speak(item);
                 item.onend = playNext;
                 item.onerror = () => {
-                    popNotify("Something is wrong")
+                    popNotify("Something went wrong")
                 }
             }
             index++;
@@ -200,9 +200,8 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
             return
         }
 
-        console.log("!", index)
         if (randomTableToPlayRef.current.indexOf(index) === -1) {
-            const nextIndex = randomTableToPlayRef.current[randomTableToPlayRef.current?.indexOf(index) + 1] || randomTableToPlayRef.current[0];
+            const nextIndex = randomTableToPlayRef.current[randomTableToPlayRef.current?.indexOf(index - 1) + 1] || randomTableToPlayRef.current[0];
             index = nextIndex
         }
 
