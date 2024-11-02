@@ -324,7 +324,11 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
                 </>}
 
                 <div className={` min-[28rem] w-full h-14 py-1 flex justify-center items-center space-x-[2%] mdlg:space-x-[6%] xs:space-x-[8%] 2xs:space-x-[5%]`}>
-                    <div onClick={scrollToPlaying} className=" w-[16%] xs:w-[26%] text-right flex-shrink-0 text-sm xs:text-lg ">{currentTitle}</div>
+                    <div onClick={scrollToPlaying} className="animate-div w-[16%] xs:w-[26%]">
+                        <Marquee className="" text={`${playIndex}${cardsMode}`}>
+                            <div className="">{currentTitle}</div>
+                        </Marquee>
+                    </div>
 
                     <div className="flex flex-shrink-0 justify-center space-x-[-1px] mt-1">
                         <button className="js-2" onClick={() => {
@@ -372,7 +376,7 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
     )
 }
 
-function Marquee({ children, text }: { children: React.ReactNode, text: string }) {
+function Marquee({ children, text, className = "" }: { className?: string, children: React.ReactNode, text: string }) {
     const [shouldAnimate, setShouldAnimate] = useState(false);
     const [translateX, setTranslateX] = useState(0);
     const textRef = useRef(null);
@@ -409,7 +413,7 @@ function Marquee({ children, text }: { children: React.ReactNode, text: string }
             animationTimingFunction: 'linear',
             animationIterationCount: 'infinite'
         }}
-        className={` bg-transparent ${shouldAnimate ? " animateee" : ""}`} >
+        className={` ${className} bg-transparent ${shouldAnimate ? " animateee " : ""}`} >
         {children}
     </div>)
 
