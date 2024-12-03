@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { Link, Params, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { AntDesignSettingFilled, TablerCircleArrowUpFilled, TablerEyeClosed, IcRoundAccountCircle, MdiCardsOutline, MaterialChecklistRtl, MdiDice5, Fa6SolidFileImport, MaterialLock, MaterialLockOpen, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, BxBxsShow } from '../utils/Icons'
+import { MaterialSymbolsQuizRounded, AntDesignSettingFilled, TablerCircleArrowUpFilled, TablerEyeClosed, IcRoundAccountCircle, MdiCardsOutline, MaterialChecklistRtl, MdiDice5, Fa6SolidFileImport, MaterialLock, MaterialLockOpen, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, BxBxsShow } from '../utils/Icons'
 import { getRandId, copyToClipboard } from '../utils/tool';
 
 import { useNotify } from '../context/NotifyContext'
@@ -16,7 +16,7 @@ import CardArea from './CardArea'
 import CustomSelect from './Select';
 // import SmallCard from './SmallCard';
 
-function FunctionMenu({ handleImport, handleExport }: { handleExport: React.MouseEventHandler, handleImport: React.MouseEventHandler }) {
+function FunctionMenu() {
     const { popNotify } = useNotify();
     const { setId, mode } = useParams<Params>();
     const [cardsMode, setCardsMode] = useState<boolean>(mode === "cards")
@@ -50,19 +50,14 @@ function FunctionMenu({ handleImport, handleExport }: { handleExport: React.Mous
                 </div>
             </Link>
 
-            <a className='cursor-pointer' onClick={handleImport}>
+            <Link to={"/quiz/" + setId!} className='cursor-pointer' onClick={() => {
+                popNotify("Start quiz")
+            }}>
                 <div className=' flex overflow-hidden'>
-                    <Fa6SolidFileImport className=' text-xl mr-[0.2rem] mt-[0.1rem]  text-red-800' />
-                    <span className=' whitespace-nowrap ml-[0.6rem]'>Import</span>
+                    <MaterialSymbolsQuizRounded className={` text-xl`} style={{ fontSize: "22px" }} />
+                    <span className=' whitespace-nowrap ml-2'>Start quiz</span>
                 </div>
-            </a>
-
-            <a className='cursor-pointer pt-[2px]' onClick={handleExport}>
-                <div className=' flex overflow-hidden'>
-                    <Fa6SolidFileExport className='text-xl ml-[0.2rem]' />
-                    <span className=' whitespace-nowrap ml-2'>Export</span>
-                </div>
-            </a>
+            </Link>
 
         </div>
 
@@ -245,7 +240,7 @@ function MainBlock() {
                 return
             }
             createConfirmDialog(
-                "Are you sure you want to import these words? \nThis action will replace your current word list. \nIf you want to keep the current word list, you can import words into a new set.",
+                "Import these words ? \nThis action will replace your current word list. \nIf you want to keep the current word list, you can import words into a new set.",
                 () => {
                     const lines = inputBoxRef.current!.value.split("\n");
                     const result = [];
@@ -265,7 +260,9 @@ function MainBlock() {
                 },
                 () => {
                     popNotify("Import canceled.");
-                }
+                },
+                "Import",
+                "Cancel"
             );
         }
     };
@@ -300,7 +297,8 @@ function MainBlock() {
             },
             () => {
                 popNotify("delete canceled.");
-            }
+            },
+            "delete"
         );
 
 
@@ -389,8 +387,16 @@ function MainBlock() {
     return (
         <div className=' main bg-slate-25 w-full sm:h-full px-1  py-2 flex flex-col relative'>
 
-            <div className='flex justify-between relative'>
-                <Link to="/" className=' cursor-pointer ml-11 m-1 mt-[3px] min-w-[70px]'>ECTTS 2.0</Link>
+            <div className=' ml-11 mt-[0.25rem] flex justify-between relative'>
+                < Link to="/" className=' flex cursor-pointer min-w-[70px]' >
+                    <div className=' w-7 h-7 mr-1' style={{
+                        backgroundImage: "url(../../icon.png)",
+                        backgroundPosition: "center",
+                        backgroundSize: "contain"
+                    }}></div>
+                    <span>ECTTS 2.0</span>
+                </Link>
+
                 <div
                     style={{
                         width: showFunctionMenu ? "140px" : "40px",
@@ -401,7 +407,8 @@ function MainBlock() {
                         <IcRoundAccountCircle className=' w-full h-full text-center text-3xl' />
                     </div>
                     {showFunctionMenu &&
-                        <FunctionMenu handleExport={handleExport} handleImport={handleImport} />
+                        // <FunctionMenu handleExport={handleExport} handleImport={handleImport} />
+                        <FunctionMenu />
                     }
                 </div>
             </div>
@@ -486,9 +493,24 @@ function MainBlock() {
                                 />)
                             })
                             }
-                            < div className=' h-[110%] relative pb-24'>
+                            < div className=' h-[100%] relative pb-24'>
                                 <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8 rounded-md '></textarea>
-                                <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-20' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
+                                <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-20 inline' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
+                                <div className=' space-x-4 flex h-24'>
+                                    <a className='cursor-pointer inline rounded-md h-fit bg-blue-100 px-4 p-1 ' onClick={handleImport}>
+                                        <div className=' flex overflow-hidden'>
+                                            <Fa6SolidFileImport className=' text-xl mr-[0.2rem] mt-[0.1rem]  text-red-800' />
+                                            <span className=' whitespace-nowrap ml-[0.6rem]'>Import</span>
+                                        </div>
+                                    </a>
+
+                                    <a className='cursor-pointer inline rounded-md h-fit bg-blue-100 px-4 p-1' onClick={handleExport}>
+                                        <div className=' flex overflow-hidden'>
+                                            <Fa6SolidFileExport className='text-xl ml-[0.2rem] pt-[0.2rem]' />
+                                            <span className=' whitespace-nowrap ml-2'>Export</span>
+                                        </div>
+                                    </a>
+                                </div>
                             </div>
                         </div> :
                         null

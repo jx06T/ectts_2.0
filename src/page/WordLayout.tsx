@@ -2,8 +2,9 @@ import React, { useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import MainBlock from "../components/MainBlock";
 import { StateProvider } from "../context/StateContext";
+import SetBlock from "../components/SetBlock";
 
-function WordLayout() {
+function WordLayout({ home = false }: { home?: boolean }) {
     const rootRef = useRef<HTMLInputElement>(null)
 
 
@@ -23,7 +24,10 @@ function WordLayout() {
     return <div ref={rootRef} className="word-layout flex">
         <StateProvider>
             <Sidebar></Sidebar>
-            <MainBlock></MainBlock>
+            {!home ?
+                <MainBlock></MainBlock> :
+                <SetBlock></SetBlock>
+            }
         </StateProvider>
     </div>
 }

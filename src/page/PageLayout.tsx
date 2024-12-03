@@ -1,6 +1,7 @@
 import React, { ReactElement, useEffect, useRef } from "react";
-import Sidebar from "../components/Sidebar";
+
 import { StateProvider } from "../context/StateContext";
+import FunSidebar from "../components/FunSidebar";
 
 function PageLayout({ children }: { children: ReactElement }) {
     const rootRef = useRef<HTMLInputElement>(null)
@@ -21,7 +22,7 @@ function PageLayout({ children }: { children: ReactElement }) {
 
     return <div ref={rootRef} className="word-layout flex">
         <StateProvider>
-            <Sidebar></Sidebar>
+            <FunSidebar></FunSidebar>
             {children}
         </StateProvider>
     </div>

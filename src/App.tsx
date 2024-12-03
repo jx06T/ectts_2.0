@@ -33,6 +33,9 @@ function App() {
           <Route path="/set/:setId/:mode?" element={
             <WordLayout />
           } />
+          <Route path="/set" element={
+            <WordLayout home={true}/>
+          } />
           <Route path="/" element={
             <Home />
           } />

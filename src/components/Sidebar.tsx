@@ -83,13 +83,15 @@ function Agroup({ tagName = "", sets, deleteSet, renameSet, scrollBarY }: { scro
         console.log(type)
         if (type === "D") {
             createConfirmDialog(
-                `You are trying to delete "${sets.find(e => e.id === id)?.title}".\nAre you sure you want to delete this set? \nThis operation is irreversible.`,
+                `Delete "${sets.find(e => e.id === id)?.title}" ? \nThis operation is irreversible.`,
                 () => {
                     deleteSet(id)
                 },
                 () => {
                     popNotify("Delete operation canceled.");
-                }
+                },
+                "Delete",
+                "Cancel"
             );
 
         } else {
