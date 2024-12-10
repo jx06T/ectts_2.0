@@ -1,8 +1,6 @@
 import React, { useRef } from 'react';
 
-import { Params, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { useNotify } from '../context/NotifyContext'
 import PageLayout from './PageLayout';
 import ReactMarkdown from 'react-markdown'
 

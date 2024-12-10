@@ -101,7 +101,7 @@
 
 .jx-4::after {
   opacity: 1;
-  content: "";
+  content: '';
   left: -0.5px;
   top: -0.5px;
   position: absolute;
@@ -124,12 +124,12 @@
   background-color: #9025f3;
 }
 
-.jx-5::-webkit-scrollbar {
+.no-y-scrollbar::-webkit-scrollbar {
   display: none;
   /* 隱藏滾動條 */
 }
 
-.jx-5 {
+.no-y-scrollbar {
   /* 隱藏滾動條（WebKit 瀏覽器，如 Chrome、Safari） */
   -ms-overflow-style: none;
   /* 針對 Internet Explorer 和 Edge */
@@ -239,7 +239,14 @@ hr.black {
   display: none; /* For Chrome, Safari, and Edge */
 }
 
-.scroll-y{
+.scroll-y {
   max-height: 100vh;
   overflow-y: auto;
+}
+
+.cardsL {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 240px);
+  gap: 24px;
+  justify-content: center;
 }

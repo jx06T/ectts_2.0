@@ -9,7 +9,7 @@ function Aset({ label = "", path }: { label: string, path: string }) {
     const { popNotify } = useNotify();
 
     return (
-        <div className={` cursor-pointer rounded-md bg-blue-100 hover:bg-blue-200 relative h-10 text-base flex items-center gap-2 my-[2px] justify-between`}>
+        <div className={` rounded-sm border-b-2 cursor-pointer bg-blue-50 hover:bg-blue-100 relative h-fit text-base flex items-center gap-2 my-[2px] justify-between`}>
             <Link to={`/${path}`} className='h-full p-2 overflow-x-hidden w-full'>{label}</Link>
         </div>
     )
@@ -17,11 +17,14 @@ function Aset({ label = "", path }: { label: string, path: string }) {
 
 function FunSidebar() {
     const allPage: { label: string, path: string }[] = [
-        { label: 'Account settings', path: 'account' },
-        { label: 'Sets management', path: 'sets-management' },
-        { label: 'General settings', path: 'general-settings' },
-        { label: 'Words Set', path: 'set' },
-        { label: 'Guidance and Q&A', path: 'guidance' }
+        { label: 'Home', path: '' },
+        { label: 'Words Sets', path: 'set' },
+        { label: 'Account Settings', path: 'account' },
+        { label: 'Sets Management', path: 'sets-management' },
+        { label: 'General Settings', path: 'general-settings' },
+        { label: 'Guidance', path: 'guidance' },
+        { label: 'Privacy', path: 'privacy' },
+        { label: 'Contact Us', path: 'contact' }
     ]
 
     const [showSidebar, setshowSidebar] = useState<boolean>(false)
@@ -58,7 +61,7 @@ function FunSidebar() {
 
                 <hr className=' my-1'></hr>
 
-                <div ref={scrollBarRef} onScroll={handleScroll} className={` jx-8 ${showSidebar ? "overflow-y-auto" : "overflow-y-hidden"} flex-auto`}>
+                <div ref={scrollBarRef} onScroll={handleScroll} className={` jx-8 ${showSidebar ? "overflow-y-auto" : "overflow-y-hidden"} flex-auto space-y-2`}>
                     {allPage.map((page) => <Aset key={page.path} label={page.label} path={page.path} />)}
                 </div>
 

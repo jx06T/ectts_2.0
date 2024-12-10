@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useRef } from "react";
-
+import Footer from "../components/Footer";
 import { StateProvider } from "../context/StateContext";
 import FunSidebar from "../components/FunSidebar";
 
@@ -23,7 +23,10 @@ function PageLayout({ children }: { children: ReactElement }) {
     return <div ref={rootRef} className="word-layout flex">
         <StateProvider>
             <FunSidebar></FunSidebar>
-            {children}
+            <main className=" w-full overflow-y-auto pb-24">
+                {children}
+            </main>
+            <Footer></Footer>
         </StateProvider>
     </div>
 }

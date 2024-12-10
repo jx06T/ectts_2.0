@@ -14,6 +14,7 @@ import PlayArea from './PlayArea'
 import CardArea from './CardArea'
 
 import CustomSelect from './Select';
+import Tag from './Tag';
 // import SmallCard from './SmallCard';
 
 function FunctionMenu() {
@@ -472,7 +473,7 @@ function MainBlock() {
                                 // scrollSnapType: 'y mandatory',
                                 // scrollPadding: '0px 0px',
                             }}
-                            className='jx-5 h-full px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 overflow-x-hidden '>
+                            className='no-y-scrollbar h-full px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 overflow-x-hidden '>
                             {randomTable.map((index, i) => {
                                 const word = words[index]
                                 return (<WordItem
@@ -520,7 +521,7 @@ function MainBlock() {
             }
             {
                 showAddArea && <div className=' fixed left-0 right-0 flex justify-center top-20 '>
-                    <div className=' space-y-2 w-[min(90%,36rem)] flex flex-col justify-center px-3 py-4 rounded-md z-60 bg-purple-100'>
+                    <div className=' space-y-2 w-[min(90%,36rem)] flex flex-col justify-center px-3 py-4 rounded-md z-60 bg-purple-100 absolute'>
                         <input className='jx-1 bg-purple-50 w-full rounded-md' ref={newWordEnIRef} value={newWord.english} type="text"
                             onChange={(e) => {
                                 setNewWords({ ...newWord, english: e.target.value })
@@ -538,11 +539,11 @@ function MainBlock() {
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === 'Tab') {
                                     newWordEnIRef.current?.focus()
-                                    popNotify(`add '${newWord.english}'`)
+                                    popNotify(`'${newWord.english}' added`)
                                     addNewWord()
                                 }
                             }}></input>
-                        <div onClick={() => setShowAddArea(false)} className=' cursor-pointer w-6 h-6 bg-purple-400 absolute right-7 top-0 rounded-md text-center'>✕</div>
+                        <div onClick={() => setShowAddArea(false)} className=' cursor-pointer w-6 h-6 bg-purple-400 absolute right-2 top-0 rounded-md text-center'>✕</div>
                     </div>
                 </div>
             }
@@ -556,14 +557,6 @@ function MainBlock() {
 
 export default MainBlock
 
-function Tag({ children, handleDelete }: { handleDelete: Function, children: string }) {
-    return (
-        <div className=' px-2 border-2 border-blue-700 rounded-full bg-transparent h-7 whitespace-nowrap'>
-            <strong className=' text-blue-700'>#</strong>
-            {children}
-            <label onClick={() => handleDelete(children)} className=' ml-1 text-red-800 cursor-pointer'><strong>✕</strong></label></div>
-    )
-}
 
 
 function SettingArea() {

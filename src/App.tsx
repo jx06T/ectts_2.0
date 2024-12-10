@@ -34,7 +34,7 @@ function App() {
             <WordLayout />
           } />
           <Route path="/set" element={
-            <WordLayout home={true}/>
+            <WordLayout home={true} />
           } />
           <Route path="/" element={
             <Home />
@@ -43,6 +43,24 @@ function App() {
             <Home />
           } />
           <Route path="/profile" element={
+            <Profile />
+          } />
+          <Route path="/account" element={
+            <Profile />
+          } />
+          <Route path="/sets-management" element={
+            <Profile />
+          } />
+          <Route path="/general-settings" element={
+            <Profile />
+          } />
+          <Route path="/guidance" element={
+            <Profile />
+          } />
+          <Route path="/privacy" element={
+            <Profile />
+          } />
+          <Route path="/contact" element={
             <Profile />
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
