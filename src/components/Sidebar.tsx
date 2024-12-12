@@ -60,7 +60,7 @@ function Aset({ title = "", index, onShowOption, selected, id, rename, handleRen
                 // <div className=' h-6 w-6 rounded-md mr-1 bg-purple-200 pl-1'></div>
                 <IcRoundDoneOutline onClick={() => {
                     handleRename(id, reNamedRef.current?.value)
-                }} className=' mr-2' />
+                }} className=' shadow-sm mr-2 text-lg bg-blue-100 rounded-lg ' />
                 :
                 <button className='option-button h-8 hover:bg-blue-150 rounded-md mr-[1px]' onClick={() => onShowOption(id, setRef.current?.offsetTop)}>
                     <AkarIconsMoreVerticalFill className='option-button w-5 mr-0 flex-shrink-0' />

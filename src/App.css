@@ -246,7 +246,7 @@ hr.black {
 
 .cardsL {
   display: grid;
-  grid-template-columns: repeat(auto-fit, 240px);
+  grid-template-columns: repeat(auto-fit, 288px);
   gap: 24px;
   justify-content: center;
 }

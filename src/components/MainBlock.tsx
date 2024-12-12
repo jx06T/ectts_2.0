@@ -389,15 +389,16 @@ function MainBlock() {
         <div className=' main bg-slate-25 w-full sm:h-full px-1  py-2 flex flex-col relative'>
 
             <div className=' ml-11 mt-[0.25rem] flex justify-between relative'>
-                < Link to="/" className=' flex cursor-pointer min-w-[70px]' >
+                <div className=' min-w-[70px] flex'>
                     <div className=' w-7 h-7 mr-1' style={{
                         backgroundImage: "url(../../icon.png)",
                         backgroundPosition: "center",
                         backgroundSize: "contain"
                     }}></div>
-                    <span>ECTTS 2.0</span>
-                </Link>
-
+                    < Link to="/set" className=' cursor-pointer' >
+                        <span>ECTTS 2.0</span>
+                    </Link>
+                </div>
                 <div
                     style={{
                         width: showFunctionMenu ? "140px" : "40px",

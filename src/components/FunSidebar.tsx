@@ -19,9 +19,9 @@ function FunSidebar() {
     const allPage: { label: string, path: string }[] = [
         { label: 'Home', path: '' },
         { label: 'Words Sets', path: 'set' },
-        { label: 'Account Settings', path: 'account' },
-        { label: 'Sets Management', path: 'sets-management' },
+        { label: 'Profile', path: 'profile' },
         { label: 'General Settings', path: 'general-settings' },
+        { label: 'Sets Management', path: 'sets-management' },
         { label: 'Guidance', path: 'guidance' },
         { label: 'Privacy', path: 'privacy' },
         { label: 'Contact Us', path: 'contact' }

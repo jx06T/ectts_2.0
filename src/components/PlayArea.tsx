@@ -325,7 +325,7 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
 
                 <div className={` min-[28rem] w-full h-14 py-1 flex justify-center items-center space-x-[2%] mdlg:space-x-[6%] xs:space-x-[8%] 2xs:space-x-[5%]`}>
                     <div onClick={scrollToPlaying} className="animate-div w-[16%] xs:w-[26%]">
-                        <Marquee className="" text={`${playIndex}${cardsMode}`}>
+                        <Marquee className=" text-right" text={`${playIndex}${cardsMode}`}>
                             <div className="">{currentTitle}</div>
                         </Marquee>
                     </div>
@@ -375,48 +375,61 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
         </div >
     )
 }
-
-function Marquee({ children, text, className = "" }: { className?: string, children: React.ReactNode, text: string }) {
+function Marquee({ children, text, className = "" }: {
+    className?: string,
+    children: React.ReactNode,
+    text: string
+}) {
+    // 使用 useMemo 避免不必要的重新计算
     const [shouldAnimate, setShouldAnimate] = useState(false);
     const [translateX, setTranslateX] = useState(0);
-    const textRef = useRef(null);
+    const textRef = useRef<HTMLDivElement>(null);
+
+    // 使用 useCallback 优化性能
+    const checkOverflow = useCallback(() => {
+        if (textRef.current) {
+            const { scrollWidth, clientWidth } = textRef.current;
+            setShouldAnimate(false);
+            setTranslateX(-(scrollWidth - clientWidth + 10));
+
+            // 使用微任务优化性能，替代 setTimeout
+            queueMicrotask(() => {
+                if (textRef.current) {
+                    setShouldAnimate(textRef.current.scrollWidth > textRef.current.clientWidth);
+                }
+            });
+        }
+    }, []);
 
     useEffect(() => {
-        const checkOverflow = () => {
-            if (textRef.current) {
-                setShouldAnimate(false);
-                //@ts-ignore
-                setTranslateX(-(textRef.current.scrollWidth - textRef.current.clientWidth + 10));
-                setTimeout(() => {
-                    if (textRef.current) {
-                        // @ts-ignore
-                        setShouldAnimate(textRef.current.scrollWidth > textRef.current.clientWidth);
-                    }
-                }, 50);
-            }
-        };
-
-        // console.log(shouldAnimate)
         checkOverflow();
         window.addEventListener('resize', checkOverflow);
         return () => window.removeEventListener('resize', checkOverflow);
-    }, [text]);
+    }, [text, checkOverflow]);
 
-    return (<div
-        ref={textRef}
-        style={{
-            whiteSpace: "nowrap",
-            //@ts-ignore
-            '--marquee-distance': `${translateX}px`,
-            animationName: shouldAnimate ? 'marquee' : 'none',
-            animationDuration: `${Math.floor(((-translateX) / 12) ** 0.7)}s`,
-            animationTimingFunction: 'linear',
-            animationIterationCount: 'infinite'
-        }}
-        className={` ${className} bg-transparent ${shouldAnimate ? " animateee " : ""}`} >
-        {children}
-    </div>)
+    // 使用 useMemo 计算动画持续时间
+    const animationDuration = useMemo(() =>
+        `${Math.floor(((-translateX) / 12) ** 0.7)}s`,
+        [translateX]
+    );
 
+    return (
+        <div
+            ref={textRef}
+            style={{
+                whiteSpace: "nowrap",
+                // @ts-ignore
+                '--marquee-distance': `${translateX}px`,
+                animationName: shouldAnimate ? 'marquee' : 'none',
+                animationDuration,
+                animationTimingFunction: 'linear',
+                animationIterationCount: 'infinite'
+            }}
+            className={`${className} bg-transparent ${shouldAnimate ? "animateee" : ""}`}
+        >
+            {children}
+        </div>
+    );
 }
 
 export default PlayArea

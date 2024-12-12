@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react';
 import './App.css';
 import { NotifyProvider } from './context/NotifyContext';
 import { useNotify } from './context/NotifyContext';
@@ -7,6 +8,12 @@ import { Navigate } from 'react-router-dom';
 import WordLayout from './page/WordLayout';
 import Home from './page/Home';
 import Profile from './page/Profile';
+
+const Contact = React.lazy(() => import('./page/Contact'));
+const General = React.lazy(() => import('./page/General'));
+const Guidance = React.lazy(() => import('./page/Guidance'));
+const SetsManagement = React.lazy(() => import('./page/SetsManagement'));
+const Privacy = React.lazy(() => import('./page/Privacy'));
 
 function NotifyBlock() {
   const { notify, aboutToDisappear } = useNotify();
@@ -29,42 +36,41 @@ function App() {
     <Router>
       <NotifyProvider>
         <NotifyBlock />
-        <Routes>
-          <Route path="/set/:setId/:mode?" element={
-            <WordLayout />
-          } />
-          <Route path="/set" element={
-            <WordLayout home={true} />
-          } />
-          <Route path="/" element={
-            <Home />
-          } />
-          <Route path="/home" element={
-            <Home />
-          } />
-          <Route path="/profile" element={
-            <Profile />
-          } />
-          <Route path="/account" element={
-            <Profile />
-          } />
-          <Route path="/sets-management" element={
-            <Profile />
-          } />
-          <Route path="/general-settings" element={
-            <Profile />
-          } />
-          <Route path="/guidance" element={
-            <Profile />
-          } />
-          <Route path="/privacy" element={
-            <Profile />
-          } />
-          <Route path="/contact" element={
-            <Profile />
-          } />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            <Route path="/set/:setId/:mode?" element={
+              <WordLayout />
+            } />
+            <Route path="/set" element={
+              <WordLayout home={true} />
+            } />
+            <Route path="/" element={
+              <Home />
+            } />
+            <Route path="/home" element={
+              <Home />
+            } />
+            <Route path="/profile" element={
+              <Profile />
+            } />
+            <Route path="/sets-management" element={
+              <SetsManagement />
+            } />
+            <Route path="/general-settings" element={
+              <General />
+            } />
+            <Route path="/guidance" element={
+              <Guidance />
+            } />
+            <Route path="/privacy" element={
+              <Privacy />
+            } />
+            <Route path="/contact" element={
+              <Contact />
+            } />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
       </NotifyProvider>
     </Router>
   );

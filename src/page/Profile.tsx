@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useNotify } from '../context/NotifyContext'
 import PageLayout from './PageLayout';
 
@@ -98,16 +98,7 @@ function Profile() {
     return (
         <PageLayout>
             <div className='profile px-4 sm:px-16 space-y-3 w-full pb-20'>
-                <div className=' ml-8 sm:-ml-4 flex'>
-                    < Link to="/" className=' flex cursor-pointer mt-[12px] min-w-[70px]' >
-                        <div className=' w-7 h-7 mr-1' style={{
-                            backgroundImage: "url(icon.png)",
-                            backgroundPosition: "center",
-                            backgroundSize: "contain"
-                        }}></div>
-                        <span>ECTTS 2.0</span>
-                    </Link>
-                </div>
+
                 <h1 className=' w-full text-center text-2xl mt-3'>Profile</h1>
                 <hr className=' black w-full' />
 
