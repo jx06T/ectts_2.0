@@ -474,7 +474,7 @@ function MainBlock() {
                                 // scrollSnapType: 'y mandatory',
                                 // scrollPadding: '0px 0px',
                             }}
-                            className=' ml-4 px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 '>
+                            className=' md:ml-4 px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 '>
                             {randomTable.map((index, i) => {
                                 const word = words[index]
                                 return (<WordItem

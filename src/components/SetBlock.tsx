@@ -39,9 +39,9 @@ function SetBlock() {
                 <hr className=' black w-full' />
             </div>
         </div>
-        {allSet.length == 0 ? <div className=" mt-3">
+        {allSet.length == 0 ? <div className=" mt-3  mr-10">
             展開側邊欄並點擊加號圖標新增單字集！
-        </div> : <div className=" mt-3">
+        </div> : <div className=" mt-3 mr-10">
         點擊單字集標題進入單字集！展開側邊欄查看更多單字集！
         </div>}
         <div className=" cardsL w-full h-full mt-6 -ml-6 overflow-y-auto no-y-scrollbar pb-36">
@@ -50,7 +50,7 @@ function SetBlock() {
                 return (
                     <div className=" w-72 h-60 bg-blue-50 rounded-md border-0 border-blue-100 hover:bg-blue-100">
                         <Link to={"/set/" + aSet.id} key={aSet.id}>
-                            <h1 className=" w-full text-center text-2xl mt-3 whitespace-nowrap overflow-x-hidden pl-3 truncate">{aSet.title}   <JamChevronCircleRight className=" inline-block" /></h1>
+                            <h1 className=" w-full text-center text-2xl mt-3 whitespace-nowrap overflow-x-hidden pl-3 truncate">{aSet.title}   <JamChevronCircleRight className=" inline-block -mt-[0.3rem]" /></h1>
                         </Link>
                         <div className=" mx-auto mt-1 w-[90%] rounded-lg h-1 bg-purple-200"></div>
                         <div className=" no-y-scrollbar h-32 mb-2 overflow-y-auto ml-4">{

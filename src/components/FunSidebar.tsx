@@ -70,7 +70,7 @@ function FunSidebar() {
                         <MdiGithub className=' text-3xl' />
                     </a>
                     <span className='ml-2 text-xs text-slate-300'>
-                        2.2.3 - jx06T
+                        2.2.4 - jx06T
                     </span>
                 </div>}
 
