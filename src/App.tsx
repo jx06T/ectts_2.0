@@ -36,7 +36,7 @@ function App() {
     <Router>
       <NotifyProvider>
         <NotifyBlock />
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className=' w-10 h-10 m-auto'>Loading...</div>}>
           <Routes>
             <Route path="/set/:setId/:mode?" element={
               <WordLayout />

@@ -101,7 +101,7 @@
 
 .jx-4::after {
   opacity: 1;
-  content: '';
+  content: "";
   left: -0.5px;
   top: -0.5px;
   position: absolute;
@@ -249,4 +249,48 @@ hr.black {
   grid-template-columns: repeat(auto-fit, 288px);
   gap: 24px;
   justify-content: center;
+}
+
+.w-full-jx {
+  margin-left: auto;
+  margin-right: auto;
+  width: min(96%, 65em);
+}
+
+.md p {
+  margin: 0;
+}
+.md ul {
+  list-style-type: disc;
+  padding-left: 1.4em;
+  margin-top: 0.2em;
+}
+
+.md ol {
+  list-style-type: decimal;
+  padding-left: 1.4em;
+}
+
+.md h1 {
+  margin-top: 0.5em;
+  font-size: 20px;
+}
+.md h2 {
+  margin-top: 0.4em;
+  font-size: 20px;
+}
+.md h3 {
+  margin-top: 0.3em;
+  font-size: 1.6em;
+}
+.md h4 {
+  margin-top: 0.2em;
+  font-size: 1.4em;
+}
+.md h5 {
+  font-size: 1.2em;
+}
+
+.md a {
+  text-decoration-line: underline;
 }

@@ -132,7 +132,7 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
     const playUtterances = useCallback((utterances: (number | SpeechSynthesisUtterance)[], thisIndex: number, playbackId: number) => {
         let index = 0;
         setTimeout(() => {
-            console.log("啥?")
+            // console.log("啥?")
         }, 1000);
         // 撒小為啥不加這個setTimeout它就會停下來
 

@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, Params } from "react-router-dom";
 import { useNotify } from "../context/NotifyContext";
-
+import useSpeech from "../utils/Speech";
+import { MingcuteVolumeLine } from "../utils/Icons";
 
 function Card({ english, state, chinese, done, index = 0, toNext, back, handleDoneToggle }: { state: StateFormat, done: boolean, handleDoneToggle: Function, back: boolean, toNext: Function, english: string, chinese: string, index: number }) {
     const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -11,6 +12,8 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
     const [isFlipped, setIsFlipped] = useState<boolean>(!state.showC ? (!state.showE ? (Math.random() < 0.5) : true) : false);
     const [action, setAction] = useState<number>(0);
     const [alpha, setAlpha] = useState<number>(0);
+
+    const { speakE } = useSpeech()
 
     const lastX = useRef<number>(0)
     const lastY = useRef<number>(0)
@@ -77,12 +80,14 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
     }
 
     const handleDragStart = (e: React.MouseEvent): void => {
-        if (back) {
+        // @ts-ignore
+        if (back || !e.target || e.target.classList.contains("dontDoIt")) {
             return
         }
         setIsMoving(false)
         const startX = e.clientX - position.x;
         const startY = e.clientY - position.y;
+
         const handleMouseMove = (moveEvent: MouseEvent) => {
             const newX = moveEvent.clientX - startX;
             const newY = moveEvent.clientY - startY;
@@ -114,13 +119,15 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
     };
 
     const handleTouchStart = (e: React.TouchEvent): void => {
-        if (back) {
+        // @ts-ignore
+        if (back || !e.target || e.target.classList.contains("dontDoIt")) {
             return
         }
         const touch = e.changedTouches[0];
         setIsMoving(false)
         const startX = touch.clientX - position.x;
         const startY = touch.clientY - position.y;
+        console.log(startX)
 
         const handleTouchMove = (moveEvent: TouchEvent) => {
             const moceTouch = moveEvent.changedTouches[0];
@@ -184,6 +191,12 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
                 </div>
                 <div className={` opacity-70 absolute right-2 top-2 rounded-lg w-8 h-8 ${done ? " bg-green-300" : " bg-red-300"}`}>
                 </div>
+                <div className=" dontDoIt absolute left-2 top-2 w-8 flex-">
+                    <button className="dontDoIt" onClick={(e) => {
+                        e.stopPropagation()
+                        speakE(english)
+                    }}><MingcuteVolumeLine className=" dontDoIt text-3xl" /></button>
+                </div>
             </div>
             <div
                 className={`bg-blue-200 small-card ${back ? "back" : ""}`}
@@ -201,6 +214,12 @@ function Card({ english, state, chinese, done, index = 0, toNext, back, handleDo
                     <h1 className=" select-text leading-none text-center text-4xl">{english}</h1>
                 </div>
                 <div className={` opacity-70 absolute right-2 top-2 rounded-lg w-8 h-8 ${done ? " bg-green-300" : " bg-red-300"}`}>
+                </div>
+                <div className=" dontDoIt absolute left-2 top-2 w-8 flex-">
+                    <button className="dontDoIt" onClick={(e) => {
+                        e.stopPropagation()
+                        speakE(english)
+                    }}><MingcuteVolumeLine className="dontDoIt  text-3xl" /></button>
                 </div>
             </div>
         </div >
@@ -236,15 +255,16 @@ function CardArea({ randomTableToPlay, state, handleDoneToggle, randomTable, wor
         // setPlayIndex(findNextWordToPlay(words, randomTable, playIndex, state.onlyPlayUnDone))
     }
 
+    console.log(playIndex, randomTableToPlay)
     useEffect(() => {
-        if (randomTableToPlay[playIndex] > randomTableToPlay.length - 1) {
+        if (randomTableToPlay.indexOf(playIndex) < 0) {
             setPlayIndex(randomTableToPlay[0])
         }
         if (randomTableToPlay.length === 0 && randomTable.length !== 0) {
-            navigate(`/${setId}`);
+            navigate(`/set/${setId}`);
             popNotify("All done")
         }
-        console.log(playIndex)
+        // console.log(playIndex)
     }, [playIndex, randomTable, randomTableToPlay])
 
     if (!currentWord0 || !currentWord1) {
@@ -252,7 +272,7 @@ function CardArea({ randomTableToPlay, state, handleDoneToggle, randomTable, wor
     }
 
     return (
-        <div className=" pointer-events-none pb-16 overflow-hidden card-area left-0 right-0 top-0 bottom-0 absolute flex flex-col items-center z-20 bg-slate-100 bg-opacity-5">
+        <div className=" *:opacity-50 pointer-events-none pb-16 overflow-hidden card-area left-0 right-0 top-0 bottom-0 absolute flex flex-col items-center z-20 bg-slate-100 bg-opacity-5">
             <Card state={state} chinese={currentWord0.chinese} english={currentWord0.english} done={!!currentWord0.done} index={CurrentIndex0} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(playIndex + bias.current) % 2 === 1} />
             <Card state={state} chinese={currentWord1.chinese} english={currentWord1.english} done={!!currentWord1.done} index={CurrentIndex1} toNext={toNext} handleDoneToggle={handleDoneToggle} back={(playIndex + bias.current) % 2 === 0} />
         </div>

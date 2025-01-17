@@ -467,14 +467,14 @@ function MainBlock() {
 
 
             {mode !== "settings" ?
-                <div className=' relative flex justify-center h-full w-full overflow-y-auto px-1'>
+                <div className=' relative flex justify-center h-full w-full px-1 overflow-y-auto '>
                     {randomTable.length === words.length ?
                         <div ref={scrollRef}
                             style={{
                                 // scrollSnapType: 'y mandatory',
                                 // scrollPadding: '0px 0px',
                             }}
-                            className='no-y-scrollbar h-full px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 overflow-x-hidden '>
+                            className=' ml-4 px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 '>
                             {randomTable.map((index, i) => {
                                 const word = words[index]
                                 return (<WordItem
@@ -495,8 +495,8 @@ function MainBlock() {
                                 />)
                             })
                             }
-                            < div className=' h-[100%] relative pb-24'>
-                                <textarea placeholder='Export and Import area' ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8 rounded-md '></textarea>
+                            < div className=' w-[100%] relative pb-24'>
+                                <textarea placeholder='Export and Import area' rows={10}  ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8 rounded-md '></textarea>
                                 <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-20 inline' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
                                 <div className=' space-x-4 flex h-24'>
                                     <a className='cursor-pointer inline rounded-md h-fit bg-blue-100 px-4 p-1 ' onClick={handleImport}>

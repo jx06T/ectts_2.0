@@ -35,7 +35,7 @@ function PageLayout({ children }: { children: ReactElement }) {
                         <span>ECTTS 2.0</span>
                     </Link>
                 </div>
-                <main className=" w-full flex-grow overflow-y-auto pb-24">
+                <main className=" w-full-jx flex-grow overflow-y-auto pb-24">
                     {children}
                 </main>
                 <Footer></Footer>

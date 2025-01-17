@@ -3,6 +3,7 @@ import { useStateContext } from '../context/StateContext';
 import { Link } from "react-router-dom";
 import { getRandId } from '../utils/tool';
 import Tag from './Tag';
+import { JamChevronCircleRight } from "../utils/Icons";
 
 
 function SetBlock() {
@@ -31,13 +32,25 @@ function SetBlock() {
             </Link>
         </div>
 
+
+        <div className=" w-full-jx">
+            <div className=" -ml-12">
+                <h2 className=" text-2xl mb-1 mt-3 text-center -ml-6">Commonly used word set</h2>
+                <hr className=' black w-full' />
+            </div>
+        </div>
+        {allSet.length == 0 ? <div className=" mt-3">
+            展開側邊欄並點擊加號圖標新增單字集！
+        </div> : <div className=" mt-3">
+        點擊單字集標題進入單字集！展開側邊欄查看更多單字集！
+        </div>}
         <div className=" cardsL w-full h-full mt-6 -ml-6 overflow-y-auto no-y-scrollbar pb-36">
             {allSet.slice(0, Math.min(6, allSet.length)).map(aSet => {
                 const words = getSetWords(aSet.id);
                 return (
                     <div className=" w-72 h-60 bg-blue-50 rounded-md border-0 border-blue-100 hover:bg-blue-100">
                         <Link to={"/set/" + aSet.id} key={aSet.id}>
-                            <h1 className=" w-full text-center text-2xl mt-3 whitespace-nowrap overflow-x-hidden pl-3 truncate">{aSet.title}</h1>
+                            <h1 className=" w-full text-center text-2xl mt-3 whitespace-nowrap overflow-x-hidden pl-3 truncate">{aSet.title}   <JamChevronCircleRight className=" inline-block" /></h1>
                         </Link>
                         <div className=" mx-auto mt-1 w-[90%] rounded-lg h-1 bg-purple-200"></div>
                         <div className=" no-y-scrollbar h-32 mb-2 overflow-y-auto ml-4">{
@@ -46,6 +59,7 @@ function SetBlock() {
                             }
                             )
                         }
+
                         </div>
                         <div className=" flex ml-3">
                             <div className=" w-24 text-left pt-[14px]">✓ {words.filter(word => word.done).length}/{words.length}</div>
@@ -60,6 +74,7 @@ function SetBlock() {
                     </div>)
             })}
         </div>
+
     </div>)
 }
 
