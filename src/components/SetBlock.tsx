@@ -37,13 +37,13 @@ function SetBlock() {
             <div className=" -ml-12">
                 <h2 className=" text-2xl mb-1 mt-3 text-center -ml-6">Commonly used word set</h2>
                 <hr className=' black w-full' />
+                {allSet.length == 0 ? <div className=" ml-1 mt-2  mr-10">
+                    展開側邊欄並點擊加號圖標新增單字集！
+                </div> : <div className=" ml-1 mt-2 mr-10">
+                    點擊單字集標題進入單字集！展開側邊欄查看更多單字集！
+                </div>}
             </div>
         </div>
-        {allSet.length == 0 ? <div className=" mt-3  mr-10">
-            展開側邊欄並點擊加號圖標新增單字集！
-        </div> : <div className=" mt-3 mr-10">
-        點擊單字集標題進入單字集！展開側邊欄查看更多單字集！
-        </div>}
         <div className=" cardsL w-full h-full mt-6 -ml-6 overflow-y-auto no-y-scrollbar pb-36">
             {allSet.slice(0, Math.min(6, allSet.length)).map(aSet => {
                 const words = getSetWords(aSet.id);

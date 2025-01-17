@@ -51,8 +51,10 @@ function FunctionMenu() {
                 </div>
             </Link>
 
-            <Link to={"/quiz/" + setId!} className='cursor-pointer' onClick={() => {
-                popNotify("Start quiz")
+            {/* <Link to={"/quiz/" + setId!} className='cursor-pointer' onClick={() => { */}
+            <Link to={"/set/" + setId!} className='cursor-pointer' onClick={() => {
+                // popNotify("Start quiz")
+                popNotify("Coming soon")
             }}>
                 <div className=' flex overflow-hidden'>
                     <MaterialSymbolsQuizRounded className={` text-xl`} style={{ fontSize: "22px" }} />
@@ -497,7 +499,7 @@ function MainBlock() {
                             }
                             < div className=' w-[100%] relative pb-24'>
                                 <textarea placeholder='Export and Import area' rows={10}  ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8 rounded-md '></textarea>
-                                <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-20 inline' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
+                                <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-36 inline' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
                                 <div className=' space-x-4 flex h-24'>
                                     <a className='cursor-pointer inline rounded-md h-fit bg-blue-100 px-4 p-1 ' onClick={handleImport}>
                                         <div className=' flex overflow-hidden'>
