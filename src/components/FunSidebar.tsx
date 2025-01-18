@@ -1,15 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Link, useParams, Params, useNavigate } from 'react-router-dom';
+import React, { useRef, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom';
 import { MdiGithub, SolarSiderbarBold } from '../utils/Icons'
-import { useNotify } from '../context/NotifyContext'
 
 
 
-function Aset({ label = "", path }: { label: string, path: string }) {
-    const { popNotify } = useNotify();
-
+function Aset({ label = "", path, isActive }: { label: string, path: string, isActive: boolean }) {
     return (
-        <div className={` rounded-sm border-b-2 cursor-pointer bg-blue-50 hover:bg-blue-100 relative h-fit text-base flex items-center gap-2 my-[2px] justify-between`}>
+        <div className={` rounded-sm cursor-pointer hover:bg-blue-100 relative h-fit text-base flex items-center gap-2 my-[2px] justify-between  ${isActive ? 'bg-blue-100' : 'bg-blue-50'} `}>
             <Link to={`/${path}`} className='h-full p-2 overflow-x-hidden w-full'>{label}</Link>
         </div>
     )
@@ -27,29 +24,19 @@ function FunSidebar() {
         { label: 'Contact Us', path: 'contact' }
     ]
 
-    const [showSidebar, setshowSidebar] = useState<boolean>(false)
+    const [showSidebar, setshowSidebar] = useState<boolean>(true)
 
     const [scrollBarY, setScrollBarY] = useState<number>(0)
     const scrollBarRef = useRef<HTMLDivElement>(null)
 
     const sidebarRef = useRef<HTMLDivElement>(null)
 
-    useEffect(() => {
-        function handleClickOutside(e: MouseEvent) {
-            if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) {
-                setshowSidebar(false);
-            }
-        }
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         setScrollBarY(scrollBarRef.current?.scrollTop || 0)
     };
+
+    const location = useLocation();
+    const currentPath = location.pathname.replace(/^\//, '');
 
     return (
         <div ref={sidebarRef} className='sidebar h-full flex z-50'>
@@ -62,7 +49,14 @@ function FunSidebar() {
                 <hr className=' my-1'></hr>
 
                 <div ref={scrollBarRef} onScroll={handleScroll} className={` jx-8 ${showSidebar ? "overflow-y-auto" : "overflow-y-hidden"} flex-auto space-y-2`}>
-                    {allPage.map((page) => <Aset key={page.path} label={page.label} path={page.path} />)}
+                    {allPage.map((page) =>
+                        <Aset
+                            key={page.path}
+                            label={page.label}
+                            path={page.path}
+                            isActive={currentPath === page.path}
+                        />
+                    )}
                 </div>
 
                 {showSidebar && <div className=' z-30 mt-1 h-10 p-1 flex items-center'>

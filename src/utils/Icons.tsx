@@ -241,3 +241,16 @@ export function JamChevronCircleRight(props: SVGProps<SVGSVGElement>) {
     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="-2 -2 24 24" {...props}><path fill="currentColor" d="M10 20C4.477 20 0 15.523 0 10S4.477 0 10 0s10 4.477 10 10s-4.477 10-10 10m0-2a8 8 0 1 0 0-16a8 8 0 0 0 0 16m1.828-8L8.293 6.464A1 1 0 0 1 9.707 5.05l4.243 4.243a1 1 0 0 1 0 1.414L9.707 14.95a1 1 0 1 1-1.414-1.414z"></path></svg>
   )
 }
+
+export function LineMdMenuToCloseAltTransition(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" {...props}><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M5 12H19"><animate fill="freeze" attributeName="d" dur="0.2s" values="M5 12H19;M12 12H12"></animate><set fill="freeze" attributeName="opacity" begin="0.2s" to="0"></set></path><path d="M5 5L19 5M5 19L19 19" opacity="0"><animate fill="freeze" attributeName="d" begin="0.2s" dur="0.2s" values="M5 5L19 5M5 19L19 19;M5 5L19 19M5 19L19 5"></animate><set fill="freeze" attributeName="opacity" begin="0.2s" to="1"></set></path></g></svg>
+  )
+}
+
+
+export function LineMdCloseToMenuAltTransition(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" {...props}><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M5 5L19 19M5 19L19 5"><animate fill="freeze" attributeName="d" dur="0.2s" values="M5 5L19 19M5 19L19 5;M5 5L19 5M5 19L19 19"></animate></path><path d="M12 12H12" opacity="0"><animate fill="freeze" attributeName="d" begin="0.2s" dur="0.2s" values="M12 12H12;M5 12H19"></animate><set fill="freeze" attributeName="opacity" begin="0.2s" to="1"></set></path></g></svg>
+  )
+}

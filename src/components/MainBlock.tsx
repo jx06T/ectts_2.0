@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { Link, Params, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { MaterialSymbolsQuizRounded, AntDesignSettingFilled, TablerCircleArrowUpFilled, TablerEyeClosed, IcRoundAccountCircle, MdiCardsOutline, MaterialChecklistRtl, MdiDice5, Fa6SolidFileImport, MaterialLock, MaterialLockOpen, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, BxBxsShow } from '../utils/Icons'
+import { LineMdMenuToCloseAltTransition, LineMdCloseToMenuAltTransition, MaterialSymbolsQuizRounded, AntDesignSettingFilled, TablerCircleArrowUpFilled, TablerEyeClosed, IcRoundAccountCircle, MdiCardsOutline, MaterialChecklistRtl, MdiDice5, Fa6SolidFileImport, MaterialLock, MaterialLockOpen, Fa6SolidFileExport, PhSelectionBold, PhSelectionDuotone, BxBxsShow } from '../utils/Icons'
 import { getRandId, copyToClipboard } from '../utils/tool';
 
 import { useNotify } from '../context/NotifyContext'
@@ -408,7 +408,12 @@ function MainBlock() {
                     }}
                     className={`z-50 flex items-end flex-col absolute right-2 top-0 rounded-md pt-2 pr-2 ${showFunctionMenu ? " bg-blue-100" : " bg-transparent"}`}>
                     <div onClick={() => setShowFunctionMenu(!showFunctionMenu)} className='  hover:bg-blue-50 w-[2.15rem] h-[2.15rem] rounded-full p-[2px]'>
-                        <IcRoundAccountCircle className=' w-full h-full text-center text-3xl' />
+                        {showFunctionMenu ?
+                            <LineMdMenuToCloseAltTransition className=' w-full h-full text-center text-3xl' />
+                            :
+                            <LineMdCloseToMenuAltTransition className=' w-full h-full text-center text-3xl' />
+
+                        }
                     </div>
                     {showFunctionMenu &&
                         // <FunctionMenu handleExport={handleExport} handleImport={handleImport} />
@@ -469,9 +474,9 @@ function MainBlock() {
 
 
             {mode !== "settings" ?
-                <div className=' relative flex justify-center h-full w-full px-1 overflow-y-auto '>
+                <div ref={scrollRef} className=' relative flex justify-center h-full w-full px-1 overflow-y-auto '>
                     {randomTable.length === words.length ?
-                        <div ref={scrollRef}
+                        <div
                             style={{
                                 // scrollSnapType: 'y mandatory',
                                 // scrollPadding: '0px 0px',
@@ -498,8 +503,8 @@ function MainBlock() {
                             })
                             }
                             < div className=' w-[100%] relative pb-24'>
-                                <textarea placeholder='Export and Import area' rows={10}  ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8 rounded-md '></textarea>
-                                <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-36 inline' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
+                                <textarea placeholder='Export and Import area' rows={10} ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8 rounded-md '></textarea>
+                                <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-[9.6rem] inline' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
                                 <div className=' space-x-4 flex h-24'>
                                     <a className='cursor-pointer inline rounded-md h-fit bg-blue-100 px-4 p-1 ' onClick={handleImport}>
                                         <div className=' flex overflow-hidden'>
