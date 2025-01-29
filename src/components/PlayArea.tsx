@@ -54,7 +54,7 @@ function PlayArea({ randomTableToPlay, randomTable, progress, words, currentTitl
     const playIndexRef = useRef<number>(0)
 
     const { synth, speakerC, speakerE, voices } = useSpeech()
-
+  
     const randomTableRef = useRef<number[] | null>(randomTable);
     const randomTableToPlayRef = useRef<number[]>(randomTableToPlay);
     const audioRef = useRef<HTMLAudioElement>(null)

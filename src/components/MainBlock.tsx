@@ -617,7 +617,7 @@ function SettingArea() {
     }
 
     return (
-        <div className='flex flex-col items-center mt-1 space-y-4 max-h-[80vh] overflow-y-auto pb-36 '>
+        <div className='flex flex-col items-center mt-1 space-y-4 overflow-y-auto h-full'>
             <h1 className=' text-xl'>settings</h1>
             <hr className='black w-[80%]' />
             <div className=' flex space-x-2'>
@@ -639,6 +639,7 @@ function SettingArea() {
                 placeholder="Select a tag or type your own..."
                 onChange={handleAddTag}
                 initialValue=""
+                className=' max-w-sm'
             />
             <Link className=' border-2 border-blue-700 rounded-full px-4 text-lg ' to={`/set/${setId}`}>Go back to words list</Link>
         </div>

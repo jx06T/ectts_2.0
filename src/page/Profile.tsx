@@ -97,7 +97,7 @@ function Profile() {
 
     return (
         <PageLayout>
-            <div className='profile px-4 sm:px-16 space-y-3 w-full pb-20'>
+            <div className='profile  px-4 sm:px-16 space-y-3 w-full overflow-y-auto h-full'>
 
                 <h1 className=' w-full text-center text-2xl mt-3'>Profile</h1>
                 <hr className=' black w-full' />

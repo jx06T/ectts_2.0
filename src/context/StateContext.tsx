@@ -194,7 +194,7 @@ export const StateProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     if (allSet.length === 0) {
       return
     }
-    console.log(allSet)
+    // console.log(allSet)
     localStorage.setItem('all-set', JSON.stringify(allSet))
     setAllSetMap(generateAllSetMap())
   }, [allSet])

@@ -9,7 +9,7 @@ function Privacy() {
 
     return (
         <PageLayout>
-            <div className='privacy px-4 sm:px-16 space-y-3 w-full overflow-y-auto pb-20'>
+            <div className='privacy px-4 sm:px-16 space-y-3 w-full overflow-y-auto h-full'>
                 <h1 className=' w-full text-center text-2xl mt-3'>Privacy Policy</h1>
                 <hr className=' black w-full' />
 

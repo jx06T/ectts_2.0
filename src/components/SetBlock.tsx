@@ -48,8 +48,8 @@ function SetBlock() {
             {allSet.slice(0, Math.min(6, allSet.length)).map(aSet => {
                 const words = getSetWords(aSet.id);
                 return (
-                    <div className=" w-72 h-60 bg-blue-50 rounded-md border-0 border-blue-100 hover:bg-blue-100">
-                        <Link to={"/set/" + aSet.id} key={aSet.id}>
+                    <div key={aSet.id} className=" w-72 h-60 bg-blue-50 rounded-md border-0 border-blue-100 hover:bg-blue-100">
+                        <Link to={"/set/" + aSet.id} >
                             <h1 className=" w-full text-center text-2xl mt-3 whitespace-nowrap overflow-x-hidden pl-3 truncate">{aSet.title}   <JamChevronCircleRight className=" inline-block -mt-[0.3rem]" /></h1>
                         </Link>
                         <div className=" mx-auto mt-1 w-[90%] rounded-lg h-1 bg-purple-200"></div>

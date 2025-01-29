@@ -6,7 +6,9 @@ const CustomSelect = ({
     placeholder = "Select or type...",
     onChange = (value: string) => { },
     initialValue = "",
-}: { options: string[], placeholder: string, onChange: Function, initialValue: string }) => {
+    className = "",
+    maxH = 120,
+}: { maxH?: number, options: string[], placeholder: string, onChange: Function, initialValue: string, className?: string }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [inputValue, setInputValue] = useState(initialValue);
     const [filteredOptions, setFilteredOptions] = useState(options);
@@ -55,7 +57,7 @@ const CustomSelect = ({
         }
     };
     return (
-        <div ref={wrapperRef} className="relative w-full max-w-xs ">
+        <div ref={wrapperRef} className={"relative w-full pt-1 " + className} >
             <div className="relative">
                 <input
                     ref={inputRef}
@@ -69,27 +71,30 @@ const CustomSelect = ({
                 />
             </div>
 
-            {isOpen && (
-                <div className=" outline-none absolute z-10 w-full mt-1 bg-blue-50 border rounded-lg shadow-lg max-h-32 overflow-auto">
-                    {filteredOptions.length > 0 ? (
-                        filteredOptions.map((option, index) => (
-                            <div
-                                key={index}
-                                onClick={() => handleOptionClick(option)}
-                                className="px-4 py-2 cursor-pointer bg-blue-50 hover:bg-blue-100"
-                            >
-                                {option}
-                                {/* <hr className=' black'/> */}
+            {
+                isOpen && (
+                    <div className=" outline-none absolute z-10 w-full mt-1 bg-blue-50 border rounded-l-lg rounded-r-md shadow-lg overflow-auto"
+                        style={{ maxHeight: maxH + 'px' }}>
+                        {filteredOptions.length > 0 ? (
+                            filteredOptions.map((option, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() => handleOptionClick(option)}
+                                    className="px-4 py-2 cursor-pointer bg-blue-50 hover:bg-blue-100"
+                                >
+                                    {option}
+                                    {/* <hr className=' black'/> */}
+                                </div>
+                            ))
+                        ) : (
+                            <div className="px-4 py-2 text-gray-500">
+                                No matches found
                             </div>
-                        ))
-                    ) : (
-                        <div className="px-4 py-2 text-gray-500">
-                            No matches found
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
+                        )}
+                    </div>
+                )
+            }
+        </div >
     );
 };
 

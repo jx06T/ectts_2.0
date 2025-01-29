@@ -10,7 +10,7 @@ function SetsManagement() {
 
     return (
         <PageLayout>
-            <div className='sets-management px-4 sm:px-16 space-y-3 w-full overflow-y-auto pb-20'>
+            <div className='sets-management px-4 sm:px-16 space-y-3 w-full overflow-y-auto h-full'>
                 <h1 className=' w-full text-center text-2xl mt-3'>Sets Management</h1>
                 <hr className=' black w-full' />
 
