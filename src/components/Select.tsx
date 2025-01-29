@@ -8,7 +8,7 @@ const CustomSelect = ({
     initialValue = "",
     className = "",
     maxH = 120,
-}: { maxH?: number, options: string[], placeholder: string, onChange: Function, initialValue: string, className?: string }) => {
+}: { maxH?: number, options: { label: string, value: string }[], placeholder: string, onChange: Function, initialValue: string, className?: string }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [inputValue, setInputValue] = useState(initialValue);
     const [filteredOptions, setFilteredOptions] = useState(options);
@@ -29,8 +29,8 @@ const CustomSelect = ({
 
     useEffect(() => {
         if (inputValue) {
-            const filtered = options.filter((option: string) =>
-                option.toLowerCase().includes(inputValue.toLowerCase())
+            const filtered = options.filter((option: { label: string, value: string }) =>
+                option.label.toLowerCase().includes(inputValue.toLowerCase())
             );
             setFilteredOptions(filtered);
         } else {
@@ -79,10 +79,10 @@ const CustomSelect = ({
                             filteredOptions.map((option, index) => (
                                 <div
                                     key={index}
-                                    onClick={() => handleOptionClick(option)}
+                                    onClick={() => handleOptionClick(option.value)}
                                     className="px-4 py-2 cursor-pointer bg-blue-50 hover:bg-blue-100"
                                 >
-                                    {option}
+                                    {option.label}
                                     {/* <hr className=' black'/> */}
                                 </div>
                             ))

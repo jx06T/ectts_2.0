@@ -635,7 +635,7 @@ function SettingArea() {
                 </div>
             </div>
             <CustomSelect
-                options={Object.keys(allSetMap)}
+                options={Object.keys(allSetMap).map(e => ({ value: e, label: e }))}
                 placeholder="Select a tag or type your own..."
                 onChange={handleAddTag}
                 initialValue=""
