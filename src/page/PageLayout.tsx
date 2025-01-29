@@ -24,7 +24,7 @@ function PageLayout({ children }: { children: ReactElement }) {
     return <div ref={rootRef} className="word-layout flex w-full relative">
         <StateProvider>
             <FunSidebar></FunSidebar>
-            <div className="w-full flex flex-col">
+            <div className="w-full overflow-y-auto">
                 <div className=' mt-[0.25rem] ml-12 flex h-16'>
                     <div className=' w-7 h-7 mr-1 mt-2' style={{
                         backgroundImage: "url(icon.png)",
@@ -35,10 +35,15 @@ function PageLayout({ children }: { children: ReactElement }) {
                         <span>ECTTS 2.0</span>
                     </Link>
                 </div>
-                <main className=" w-full-jx flex-grow overflow-y-auto">
-                    {children}
-                </main>
-                <Footer></Footer>
+                <div className="flex flex-col">
+                    <main
+                        className=" w-full-jx flex-grow  overflow-y-auto"
+                        style={{ minHeight: "calc(100vh - 192px)" }}
+                    >
+                        {children}
+                    </main>
+                    <Footer></Footer>
+                </div>
             </div>
         </StateProvider>
     </div>

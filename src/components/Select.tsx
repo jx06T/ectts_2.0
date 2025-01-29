@@ -67,7 +67,7 @@ const CustomSelect = ({
                     onChange={handleInputChange}
                     onClick={() => setIsOpen(true)}
                     placeholder={placeholder}
-                    className=" outline-none w-full h-8 px-4 py-2 border-blue-700 border-2 bg-transparent rounded-full focus:outline-none pr-20"
+                    className=" outline-none w-full h-8 px-4 py-2 border-blue-700 border-2 bg-transparent rounded-full focus:outline-none"
                 />
             </div>
 
