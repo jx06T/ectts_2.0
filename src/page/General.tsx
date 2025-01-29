@@ -32,8 +32,8 @@ function General() {
                     }
                 </ReactMarkdown>
                 <div>
-                    <h1 className=' w-full text-2xl'>Tone settings</h1>
-                    <h2 className=' text-lg'>English
+                    <h1 className=' w-full text-2xl border-l pl-1 border-blue-700'>Tone settings</h1>
+                    <h2 className=' text-lg mt-1'>English
                         <button className=' ml-2 align-text-bottom' onClick={() => speakE("The quick brown fox jumps over the lazy dog")}><MingcuteVolumeLine className=' text-2xl ' /></button>
                     </h2>
                     <h3>{speakerE}</h3>
@@ -44,7 +44,7 @@ function General() {
                         initialValue=""
                         maxH={200}
                     />
-                    <h2 className=' text-lg'>Chinese
+                    <h2 className=' text-lg mt-3'>Chinese
                         <button className=' ml-2 align-text-bottom' onClick={() => speakC("快速的棕色狐狸跳過了懶狗")}><MingcuteVolumeLine className=' text-2xl ' /></button>
                     </h2>
                     <h3>{speakerC}</h3>

@@ -24,7 +24,7 @@ function PageLayout({ children }: { children: ReactElement }) {
     return <div ref={rootRef} className="word-layout flex w-full relative">
         <StateProvider>
             <FunSidebar></FunSidebar>
-            <div className="w-full flex flex-col min-h-screen">
+            <div className="w-full flex flex-col">
                 <div className=' mt-[0.25rem] ml-12 flex h-16'>
                     <div className=' w-7 h-7 mr-1 mt-2' style={{
                         backgroundImage: "url(icon.png)",
