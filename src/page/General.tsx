@@ -8,7 +8,7 @@ import CustomSelect from '../components/Select';
 import useSpeech from '../utils/Speech';
 
 function General() {
-    const { voicesList, speakerE, speakerC, setSpeakerE, setSpeakerC, speakC, speakE } = useSpeech()
+    const { voices, speakerE, speakerC, setSpeakerE, setSpeakerC, speakC, speakE } = useSpeech()
 
     const HandleEToneSelect = (newTone: string) => {
         setSpeakerE(newTone)
@@ -38,7 +38,7 @@ function General() {
                     </h2>
                     <h3>{speakerE}</h3>
                     <CustomSelect
-                        options={voicesList}
+                        options={voices.map(e => (`${e.name} (${e.lang})`))}
                         placeholder="Select a voice or type your own..."
                         onChange={HandleEToneSelect}
                         initialValue=""
@@ -49,7 +49,7 @@ function General() {
                     </h2>
                     <h3>{speakerC}</h3>
                     <CustomSelect
-                        options={voicesList}
+                        options={voices.map(e => (`${e.name} (${e.lang})`))}
                         placeholder="Select a voice or type your own..."
                         onChange={HandleCToneSelect}
                         initialValue=""

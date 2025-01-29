@@ -35,6 +35,7 @@ class SpeechService {
 
         const loadVoices = () => {
             this.voices = this.synth.getVoices();
+            // console.log(this.voices[0])
             for (let voice of this.voices) {
                 if (this.speakerE == "" && (voice.name === "Microsoft Emma Online (Natural) - English (United States)" ||
                     voice.name === "Fred")) {
@@ -177,7 +178,7 @@ class SpeechService {
 
 export function useSpeech() {
     const speechService = SpeechService.getInstance();
-    const [voicesList, setVoicesList] = useState<string[]>([])
+    const [voicesList, setVoicesList] = useState<SpeechSynthesisVoice[]>([])
     const [currentSpeakerE, setCurrentSpeakerE] = useState(speechService.getSpeakerE());
     const [currentSpeakerC, setCurrentSpeakerC] = useState(speechService.getSpeakerC());
 
@@ -185,7 +186,7 @@ export function useSpeech() {
         const handleVoiceChange = () => {
             setCurrentSpeakerE(speechService.getSpeakerE());
             setCurrentSpeakerC(speechService.getSpeakerC());
-            setVoicesList(speechService.getVoices().map(e => (e.name)))
+            setVoicesList(speechService.getVoices())
         };
 
         speechService.addVoiceChangeListener(handleVoiceChange);
@@ -213,8 +214,7 @@ export function useSpeech() {
 
     return {
         synth: speechService.synth,
-        voices: speechService.getVoices(),
-        voicesList: voicesList,
+        voices: voicesList,
         speakerE: currentSpeakerE,
         speakerC: currentSpeakerC,
         speakE: (text: string) => speechService.speakE(text),
