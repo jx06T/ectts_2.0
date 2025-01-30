@@ -62,7 +62,7 @@ function FunSidebar() {
                 <div className=' h-8 flex mt-1 items-center justify-between d-close'>
                     <button>
                     <SolarSiderbarBold className=' cursor-pointer text-3xl' onClick={() => setshowSidebar(!showSidebar)} />
-                    <button/> 
+                    </button> 
                     {/* <MaterialAddToPhotos className=' cursor-pointer text-3xl mr-1' onClick={handleAdd} /> */}
                 </div>
 
