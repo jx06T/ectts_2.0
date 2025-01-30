@@ -2,7 +2,7 @@ import React from 'react';
 
 function Footer() {
     return (
-        <footer className="rounded-t-lg bg-purple-200 px-4 py-2 mt-16 ">
+        <footer className="rounded-t-lg bg-purple-200 px-4 py-2 mt-6 ">
             <div className="container mx-auto text-left text-slate-600 text-sm">
                 <p>&copy; {new Date().getFullYear()} ECTTS 2.0 . All rights reserved.</p>
                 <nav>
