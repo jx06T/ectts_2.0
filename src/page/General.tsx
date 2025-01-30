@@ -19,11 +19,11 @@ function General() {
 
     return (
         <PageLayout>
-            <div className='general px-4 sm:px-16 space-y-3 w-full overflow-y-auto h-full '>
+            <div className='general px-4 sm:px-16 space-y-3 w-full overflow-y-auto h-full min-h-[550px] '>
                 <h1 className=' w-full text-center text-2xl mt-3'>General Settings</h1>
                 <hr className=' black w-full' />
 
-                <div className='pb-26'>
+                <div className=''>
                     <h1 className=' w-full text-xl'>{"<Tone Settings>"}</h1>
                     <h2 className=' text-lg mt-1'>English
                         <button className=' ml-2 align-text-bottom' onClick={() => speakE("The quick brown fox jumps over the lazy dog")}><MingcuteVolumeLine className=' text-2xl ' /></button>
