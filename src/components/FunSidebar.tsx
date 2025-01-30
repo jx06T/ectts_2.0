@@ -42,11 +42,7 @@ function FunSidebar() {
         function handleClickOutside(e: MouseEvent) {
 
             //@ts-ignore
-            if (!e.target.classList) {
-                return
-            }
-            //@ts-ignore
-            if (e.target.classList.contains('d-close')) {
+            if (e.target.classList&&e.target.classList.contains('d-close')) {
                 return
             }
 
