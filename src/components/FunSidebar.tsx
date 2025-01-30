@@ -59,8 +59,8 @@ function FunSidebar() {
     return (
         <div ref={sidebarRef} className='sidebar h-full flex z-50'>
             <div className={`bg-blue-50 ${showSidebar ? " w-[16.5rem] px-2 p-1" : "min-w-0 w-0 px-0"} fixed xs:static h-full flex flex-col rounded-md transition-all duration-300 ease-in-out d-close`}>
-                <div className=' h-8 flex items-center mt-1'>
-                    <SolarSiderbarBold className=' cursor-pointer text-3xl' onClick={() => setshowSidebar(!showSidebar)} />
+                <div className=' h-8 flex items-center d-close mt-1'>
+                    <SolarSiderbarBold className=' cursor-pointer text-3xl d-close ' onClick={() => setshowSidebar(!showSidebar)} />
                     {/* <MaterialAddToPhotos className=' cursor-pointer text-3xl mr-1' onClick={handleAdd} /> */}
                 </div>
 
