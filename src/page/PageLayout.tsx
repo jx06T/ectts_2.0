@@ -38,7 +38,7 @@ function PageLayout({ children }: { children: ReactElement }) {
                 <div className="flex flex-col">
                     <main
                         className=" w-full-jx flex-grow  overflow-y-auto"
-                        style={{ minHeight: "calc(100vh - 192px)" }}
+                        style={{ minHeight: "calc(100vh - 160px)" }}
                     >
                         {children}
                     </main>

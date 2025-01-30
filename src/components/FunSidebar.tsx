@@ -42,7 +42,7 @@ function FunSidebar() {
         function handleClickOutside(e: MouseEvent) {
 
             //@ts-ignore
-            if (e.target.classList&&e.target.classList.contains('d-close')) {
+            if ((e.target.classList&&e.target.classList.contains('d-close'))||(e.target.parentNode.classList&&e.target.parentNode.classList.contains('d-close'))) {
                 return
             }
 
@@ -78,7 +78,7 @@ function FunSidebar() {
                 </div>
 
                 {showSidebar && <div className=' z-30 mt-1 h-10 p-1 flex items-center d-close'>
-                    <a href='https://github.com/jx06T/ectts_2.0' target='_blank'>
+                    <a href='https://github.com/jx06T/ectts_2.0' className='d-close' target='_blank'>
                         <MdiGithub className=' text-3xl' />
                     </a>
                     <span className='ml-2 text-xs text-slate-300 d-close'>
@@ -88,7 +88,7 @@ function FunSidebar() {
 
             </div>
 
-            <div className={` ${showSidebar ? " opacity-0" : " opacity-100 w-11 pl-2 p-1 "} bg-transparent absolute flex flex-col justify-between`}>
+            <div className={` ${showSidebar ? " opacity-0 pointer-events-none" : " opacity-100 w-11 pl-2 p-1 "} bg-transparent absolute flex flex-col justify-between`}>
                 <div className=' h-8 flex mt-1 items-center'>
                     <SolarSiderbarBold className=' text-3xl' onClick={() => setshowSidebar(!showSidebar)} />
                 </div>
