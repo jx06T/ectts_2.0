@@ -510,7 +510,7 @@ function MainBlock() {
                     onScroll={handleScroll}
                 >
                     <div
-                        style={{ height: randomTable.length * itemHeight }}
+                        style={{ height: (randomTable.length + 12) * itemHeight }}
                     >
                         {randomTable.length === words.length ?
                             <div
