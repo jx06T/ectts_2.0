@@ -99,7 +99,8 @@ function MainBlock() {
     const observerRef = useRef<IntersectionObserver | null>(null);
 
     const [scrollTop, setScrollTop] = useState(0);
-    const itemHeight = 48;
+
+    const itemHeight = 60;
     const containerHeight = 480;
     const bufferSize = 5;
     const [startIndex, setStartIndex] = useState<number>(0)

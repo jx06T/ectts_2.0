@@ -86,7 +86,7 @@ function WordItem({ onPlay, isPlaying, state, word, index, indexP, isTop, onDele
         height: height,
         transition: 'height 0.3s ease-in-out',
       }}
-      className={` a-word flex my-1 ${isTopDelay ? "top" : ""}`}>
+      className={` a-word flex ${isTopDelay ? "top" : ""}`}>
 
       <div className={`w-1 ${!isTop ? " h-[88%] rounded-md" : " h-full"} ${word.done ? " bg-green-300" : " bg-red-300"}`}>
       </div>
