@@ -98,6 +98,35 @@ function MainBlock() {
 
     const observerRef = useRef<IntersectionObserver | null>(null);
 
+    const [scrollTop, setScrollTop] = useState(0);
+    const itemHeight = 48;
+    const containerHeight = 480;
+    const bufferSize = 5;
+    const [startIndex, setStartIndex] = useState<number>(0)
+    const [endIndex, setEndIndex] = useState<number>(15)
+
+    const calculateVisibleItems = () => {
+        if (!scrollRef.current) return;
+
+        const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - bufferSize);
+        const endIndex = Math.min(
+            randomTable.length,
+            Math.ceil((scrollTop + containerHeight) / itemHeight) + bufferSize
+        );
+        setStartIndex(startIndex)
+        setEndIndex(endIndex)
+        init()
+    };
+
+    const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+        // @ts-ignore
+        setScrollTop(event.target.scrollTop);
+    };
+
+    useEffect(() => {
+        calculateVisibleItems();
+    }, [scrollTop]);
+
     const onIdle = (cb: IdleRequestCallback) =>
         (window.requestIdleCallback || ((cb) => setTimeout(cb, 1)))(cb);
 
@@ -140,7 +169,7 @@ function MainBlock() {
     };
 
     const getRootMargin = () => {
-        const top = 110;
+        const top = 76;
         const bottom = top + 60;
         const height = document.documentElement.clientHeight;
         return `-${top}px 0% ${bottom - height}px`;
@@ -474,56 +503,61 @@ function MainBlock() {
 
 
             {mode !== "settings" ?
-                <div ref={scrollRef} className=' relative flex justify-center h-full w-full px-1 overflow-y-auto '>
-                    {randomTable.length === words.length ?
-                        <div
-                            style={{
-                                // scrollSnapType: 'y mandatory',
-                                // scrollPadding: '0px 0px',
-                            }}
-                            className=' md:ml-4 px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 '>
-                            {randomTable.map((index, i) => {
-                                const word = words[index]
-                                return (<WordItem
-                                    key={word.id}
-                                    word={word}
-                                    index={index}
-                                    indexP={i}
-                                    state={state}
-                                    isTop={i === topIndex}
-                                    isPlaying={i === playIndex}
-                                    onDelete={handleDelete}
-                                    onPlay={handlePlayThisWord}
-                                    onChange={handleWordChange}
-                                    onDoneToggle={handleDoneToggle}
-                                    onNext={() => {
-                                        setShowAddArea(true)
-                                    }}
-                                />)
-                            })
-                            }
-                            < div className=' w-[100%] relative pb-24'>
-                                <textarea placeholder='Export and Import area' rows={10} ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8 rounded-md '></textarea>
-                                <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-[9.6rem] inline' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
-                                <div className=' space-x-4 flex h-24'>
-                                    <a className='cursor-pointer inline rounded-md h-fit bg-blue-100 px-4 p-1 ' onClick={handleImport}>
-                                        <div className=' flex overflow-hidden'>
-                                            <Fa6SolidFileImport className=' text-xl mr-[0.2rem] mt-[0.1rem]  text-red-800' />
-                                            <span className=' whitespace-nowrap ml-[0.6rem]'>Import</span>
-                                        </div>
-                                    </a>
+                <div
+                    ref={scrollRef}
+                    className=' relative flex justify-center h-full w-full px-1 overflow-y-auto '
+                    onScroll={handleScroll}
+                >
+                    <div
+                        style={{ height: randomTable.length * itemHeight }}
+                    >
+                        {randomTable.length === words.length ?
+                            <div
+                                style={{ transform: `translateY(${startIndex * itemHeight}px)` }}
+                                className=' md:ml-4 px-1 sm:px-2 max-w-full sm:max-w-[28rem] sm:min-w-[22rem] space-y-3 pt-2'>
+                                {randomTable.slice(startIndex, endIndex).map((index, i) => {
+                                    const word = words[index]
+                                    return (<WordItem
+                                        key={word.id}
+                                        word={word}
+                                        index={index}
+                                        indexP={startIndex + i}
+                                        state={state}
+                                        isTop={startIndex + i === topIndex}
+                                        isPlaying={startIndex + i === playIndex}
+                                        onDelete={handleDelete}
+                                        onPlay={handlePlayThisWord}
+                                        onChange={handleWordChange}
+                                        onDoneToggle={handleDoneToggle}
+                                        onNext={() => {
+                                            setShowAddArea(true)
+                                        }}
+                                    />)
+                                })
+                                }
+                                < div className=' w-[100%] relative pb-24'>
+                                    <textarea placeholder='Export and Import area' rows={10} ref={inputBoxRef} className='h-full outline-none w-full p-2 mt-8 rounded-md '></textarea>
+                                    <button onClick={() => scrollToTop()} className=' absolute right-2 bottom-[9.6rem] inline' ><TablerCircleArrowUpFilled className='text-5xl' /></button>
+                                    <div className=' space-x-4 flex h-24'>
+                                        <a className='cursor-pointer inline rounded-md h-fit bg-blue-100 px-4 p-1 ' onClick={handleImport}>
+                                            <div className=' flex overflow-hidden'>
+                                                <Fa6SolidFileImport className=' text-xl mr-[0.2rem] mt-[0.1rem]  text-red-800' />
+                                                <span className=' whitespace-nowrap ml-[0.6rem]'>Import</span>
+                                            </div>
+                                        </a>
 
-                                    <a className='cursor-pointer inline rounded-md h-fit bg-blue-100 px-4 p-1' onClick={handleExport}>
-                                        <div className=' flex overflow-hidden'>
-                                            <Fa6SolidFileExport className='text-xl ml-[0.2rem] pt-[0.2rem]' />
-                                            <span className=' whitespace-nowrap ml-2'>Export</span>
-                                        </div>
-                                    </a>
+                                        <a className='cursor-pointer inline rounded-md h-fit bg-blue-100 px-4 p-1' onClick={handleExport}>
+                                            <div className=' flex overflow-hidden'>
+                                                <Fa6SolidFileExport className='text-xl ml-[0.2rem] pt-[0.2rem]' />
+                                                <span className=' whitespace-nowrap ml-2'>Export</span>
+                                            </div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                        </div> :
-                        null
-                    }
+                            </div> :
+                            null
+                        }
+                    </div>
                 </div> :
                 <SettingArea />
             }
