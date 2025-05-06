@@ -65,7 +65,7 @@ function Profile() {
                 const jsonData = JSON.parse(e.target!.result as string);
                 jsonData.forEach((aSet: Aset & { words: Word[] }) => {
                     if (!allSet.find((e): e is Aset => e !== undefined && e.id === aSet.id)) {
-                        allSet.push({ id: aSet.id, title: aSet.title } as Aset)
+                        allSet.push({ id: aSet.id, title: aSet.title,tags:aSet.tags } as Aset)
                     }
                     localStorage.setItem(`set-${aSet.id}`, JSON.stringify(aSet.words));
 

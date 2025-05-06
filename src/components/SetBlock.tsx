@@ -47,6 +47,7 @@ function SetBlock() {
         <div className=" cardsL w-full h-full mt-6 -ml-6 overflow-y-auto no-y-scrollbar pb-36">
             {allSet.slice(0, Math.min(6, allSet.length)).map(aSet => {
                 const words = getSetWords(aSet.id);
+                // console.log(words.filter(word => word.done))
                 return (
                     <div key={aSet.id} className=" w-72 h-60 bg-blue-50 rounded-md border-0 border-blue-100 hover:bg-blue-100">
                         <Link to={"/set/" + aSet.id} >
