@@ -2,7 +2,7 @@
 ###### *version-V2.2.5* 
 ---
 ## 簡介&功能
-- 前往 [ectts-2.vercel.app](https：//ectts-2.vercel.app/)
+- 前往 [ectts-2.vercel.app](https://ectts-2.vercel.app/)
 - 個人檔案頁面（Profile）可以匯出匯入所有單字集，單字集具有唯一 **id** 匯入時，同 **id** 的單字集會被覆蓋為匯入資料，其他舊的單字集則不會被覆蓋（點擊上方的 **ECTTS 2.0** 可以跳至首頁）
 - 左側欄可建立單字集，可針對單字集重命名或刪除
 - 進入單字集後，中間可輸入英文和中文，要新增單字只要先點選到最後一個單字再按下 **enter** 就會叫出介面
@@ -25,7 +25,8 @@
   - 左右箭頭可以跳至前後單字
   - 中間偏右的按鈕可以開始與暫停
   - 單擊右側文字可以滾動到正在撥放的字
- 
+
+
 ## 單字匯出格式
 ```
 victim 
@@ -77,6 +78,18 @@ harmful
 - repeat-英文的重複次數
 - letter-是否逐字朗讀英文
 - chinese-是否念中文
+
+## 螢幕截圖
+![er97oCo.png (1920×1020)](https://i.imgur.com/er97oCo.png)
+![waWKkAG.png (1920×1020)](https://i.imgur.com/waWKkAG.png)
+![0CmtpjC.png (1920×1020)](https://i.imgur.com/0CmtpjC.png)
+![bZJhHt0.png (1920×1020)](https://i.imgur.com/bZJhHt0.png)
+![uFAKBjF.png (1920×1020)](https://i.imgur.com/uFAKBjF.png)
+![C0SA0Hu.png (1920×1020)](https://i.imgur.com/C0SA0Hu.png)
+![jdEJC7t.png (1920×1020)](https://i.imgur.com/jdEJC7t.png)
+![LuVItr6.png (1920×1020)](https://i.imgur.com/LuVItr6.png)
+![rVBnjS9.png (1920×1020)](https://i.imgur.com/rVBnjS9.png)
+![yo8CxnJ.png (1920×1020)](https://i.imgur.com/yo8CxnJ.png)
 
 ## 更新
 
