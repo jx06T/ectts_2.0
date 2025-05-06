@@ -65,7 +65,7 @@ function SetBlock() {
                         <div className=" flex ml-3">
                             <div className=" w-24 text-left pt-[14px]">✓ {words.filter(word => word.done).length}/{words.length}</div>
                             <div className=' w-full overflow-x-auto flex h-13 py-3 space-x-2'>
-                                {aSet.tags.length > 0 &&
+                                {(aSet.tags&&aSet.tags.length > 0) &&
                                     aSet.tags.map((e: string) => (
                                         <Tag key={e + getRandId(2)}>{e}</Tag>
                                     ))
